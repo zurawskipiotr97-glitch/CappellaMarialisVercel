@@ -452,11 +452,11 @@ section p {
     width: 100%;
 }
 
-.brand-logo-link:hover {
-    /* background: linear-gradient(135deg, #45457c 0%, #1e65bd 50%, #2a3e74 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(24, 119, 242, 0.3); */
-}
+/* .brand-logo-link:hover {
+        background: linear-gradient(135deg, #45457c 0%, #1e65bd 50%, #2a3e74 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(24, 119, 242, 0.3); 
+} */
 
 .player-tagline {
     margin: 0;
@@ -826,9 +826,9 @@ footer {
 }
 
 .fb-cta:hover {
-    /* background: linear-gradient(135deg, #45457c 0%, #1e65bd 50%, #2a3e74 100%);
+    background: linear-gradient(135deg, #45457c 0%, #1e65bd 50%, #2a3e74 100%);
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(24, 119, 242, 0.3); */
+    box-shadow: 0 6px 14px rgba(24, 119, 242, 0.3);
 }
 
 
