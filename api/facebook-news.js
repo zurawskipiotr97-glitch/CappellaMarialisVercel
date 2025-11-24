@@ -138,8 +138,27 @@ export default async function handler(req, res) {
       const message = item.message || item.story || '';
       if (!message) continue;
 
-      const titleRaw = message || item.story || '';
-      const title = titleRaw.length > 100 ? titleRaw.slice(0, 99) + '…' : titleRaw;
+      let titleRaw = message || item.story || '';
+      let title = titleRaw.trim();
+
+      // 1. Tytuł do pierwszego znaku kończącego zdanie (. ! ?)
+      const stopIndex = title.search(/[.!?]/);
+      if (stopIndex !== -1) {
+        title = title.slice(0, stopIndex + 1).trim();
+      } else {
+        // 2. Jeśli nie ma kropki/!/?, bierzemy pierwszą linię
+        const newlineIndex = title.indexOf('\n');
+        if (newlineIndex !== -1) {
+          title = title.slice(0, newlineIndex).trim();
+        }
+      }
+
+      // 3. Ostateczne skrócenie, jeśli bardzo długie (np. > 60 znaków)
+      const maxTitle = 60;
+      if (title.length > maxTitle) {
+        title = title.slice(0, maxTitle - 1) + '…';
+      }
+
 
       posts.push({
         title,
