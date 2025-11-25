@@ -54,6 +54,37 @@ header p {
     font-weight: 500;
 }
 
+.lang-switcher {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  padding: 6px 14px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: Arial, sans-serif;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.lang-switcher .lang {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.lang-switcher .lang:hover {
+  color: #007BFF;
+  transform: translateY(-2px);
+}
+
+.separator {
+  color: #777;
+}
+
 /* NAVIGATION */
 nav {
     background: linear-gradient(135deg, #11111b 0%, #0c2544 50%, #16213e 100%);
@@ -756,19 +787,13 @@ footer {
     height: 168px;
     width: 168px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .fb-header-container
 {
     width: 90%;
     justify-content: right;
-    text-align: right;
-}
-
-.fb-stub img
-{
-    width: 100%;
-    object-fit: contain;
     text-align: right;
 }
 
