@@ -318,6 +318,11 @@ section p {
 
 .fb-page {
     text-align: center;
+    /* margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f0f0f0;
+    border-radius: 5px;
+    border-left: 4px solid #d4af37; */
 }
 
 /* POSŁUCHAJ NAS */
@@ -679,6 +684,36 @@ footer {
     padding: 1rem;
     text-align: center;
 }
+
+/* FACEBOOK BOX – pełna szerokość sekcji, w środku wtyczka 500px */
+/* .fb-wrapper {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f0f0f0;
+    border-radius: 5px;
+    border-left: 4px solid #d4af37;
+    display: flex;
+    justify-content: center;   wyśrodkowanie wtyczki
+}     */
+
+/* FACEBOOK FULL-WIDTH FIX */
+/* .fb-wrapper {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f0f0f0;
+    border-radius: 5px;
+    border-left: 4px solid #d4af37;
+    display: flex;
+    justify-content: center;
+}
+.fb-wrapper .fb-page,
+.fb-wrapper .fb-page > span,
+.fb-wrapper iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+} *
 
 .news-link {
     display: inline-block;
