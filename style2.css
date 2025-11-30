@@ -4,8 +4,13 @@
     box-sizing: border-box;
 }
 
+@font-face {
+  font-family: 'opensans';
+  src: url('OpenSans-Italic-VariableFont_wdth,wght.ttf') format('woff2'),
+       url('OpenSans-VariableFont_wdth,wght.tff') format('woff');
+}
 body {
-    font-family: 'Garamond', 'Georgia', serif;
+    font-family: 'opensans', sans-serif;
     background: #f8f7f4;
     color: #2c2c2c;
     line-height: 1.7;
