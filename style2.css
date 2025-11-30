@@ -838,6 +838,7 @@ footer {
     .donation-details p {
         color: white;
         margin-bottom: 0.7rem;
+        font-size: 0.9rem;
     }
 
     .block-display
@@ -857,7 +858,7 @@ footer {
     }
 
     .header-logo {
-        width: 480px;
+        width: 360px;
         height: 140px;
     }
 
