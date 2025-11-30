@@ -277,7 +277,9 @@ section p {
     width: 33%;
     object-fit: cover;
     border-radius: 10px;
+    min-height: 200px;
 }
+
 
 .news-content {
     width: 67%;
@@ -838,7 +840,7 @@ footer {
     .donation-details p {
         color: white;
         margin-bottom: 0.7rem;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
     }
 
     .block-display
