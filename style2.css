@@ -846,6 +846,12 @@ footer {
     letter-spacing: 1px;
 }
 
+#rodo-footer
+{
+    position: absolute; 
+    bottom: 0;
+    width: 100%;
+}
 
 @media (max-width: 768px) {
     .fb-promo {
@@ -916,6 +922,10 @@ footer {
         margin-bottom: 0rem;
     }
 
+    #rodo-footer
+    {
+        position: relative; 
+    }
 }
 
 
