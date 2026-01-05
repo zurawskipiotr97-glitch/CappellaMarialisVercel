@@ -262,7 +262,7 @@
 
     <div class="player-embed spotify-embed">
         <iframe style="border-radius:12px"
-            src="https://open.spotify.com/embed/album/0jaKaj1nfsDEEikiDxb3Qk?utm_source=generator"
+            src="https://open.spotify.com/embed/album/0jaKaj1nfsDEEikiDxb3Qk?utm_source=generator&theme=0"
             width="100%"
             height=152
             frameborder="0"
@@ -283,34 +283,75 @@
 
 </div>
 
-        <!-- BLOK ALBUMÓW CD -->
+     <!-- CD ALBUMS -->
 <div class="albums-block">
-    <h3 class="album-header">CD ALBUMS</h3>
+  <h3 class="album-header">CD ALBUMS</h3>
 
-    <div class="album-card">
+  <div class="album-tabs" role="tablist" aria-label="CD albums">
+    <button class="album-tab is-active" type="button" role="tab"
+            aria-selected="true" aria-controls="album-msza-esdur-en" id="tab-msza-esdur-en"
+            data-target="album-msza-esdur-en">
+      Msza Es-dur
+    </button>
+
+    <button class="album-tab" type="button" role="tab"
+            aria-selected="false" aria-controls="album-cm-2019-en" id="tab-cm-2019-en"
+            data-target="album-cm-2019-en">
+      Cappella Marialis
+    </button>
+  </div>
+
+  <div class="album-panels">
+    <div class="album-panel is-active" role="tabpanel"
+         id="album-msza-esdur-en" aria-labelledby="tab-msza-esdur-en">
+      <div class="album-card">
         <div class="album-cover">
-            <img src="images/CM_CM_frontcover.png"
-                 onerror="this.src='images/CM_news.jpg';"
-                 alt="Okładka płyty Cappella Marialis">
+          <img src="images/CM_Mirecki_frontcover.png"
+               onerror="this.src='images/CM_news.jpg';"
+               alt="Album cover: Mass in E flat major – Franciszek Mirecki">
         </div>
 
         <div class="album-info">
-            <p class="album-title">Cappella Marialis</p>
-            <p class="album-subtitle">
-                The vocal ensemble of St. Mary's Basilica in Krakow
-            </p>
-            <!-- tył okładki + lista utworów w nowej karcie -->
-            <a href="images/CM_CM_backcover.png" target="_blank" class="album-link">
-                See back cover and tracklist
-            </a>
+          <p class="album-title">Msza Es-dur</p>
+          <p class="album-subtitle">
+            Franciszek Mirecki (1791–1862) –&nbsp;audiovisual recording (2025)
+          </p>
+
+          <!-- optional back cover -->
+          <!-- <a href="images/CM_Mirecki_backcover.png" target="_blank" class="album-link">
+            See back cover and tracklist
+          </a> -->
         </div>
+      </div>
     </div>
 
-    <p class="album-note">
-        CDs are available at St. Mary's Basilica after selected masses and concerts.
-    </p>
-    
+    <div class="album-panel" role="tabpanel"
+         id="album-cm-2019-en" aria-labelledby="tab-cm-2019-en">
+      <div class="album-card">
+        <div class="album-cover">
+          <img src="images/CM_CM_frontcover.png"
+               onerror="this.src='images/CM_news.jpg';"
+               alt="Album cover: Cappella Marialis">
+        </div>
+
+        <div class="album-info">
+          <p class="album-title">Cappella Marialis</p>
+          <p class="album-subtitle">
+            The vocal ensemble of St.&nbsp;Mary's Basilica in Krakow
+          </p>
+          <a href="images/CM_CM_backcover.png" target="_blank" class="album-link">
+            See back cover and tracklist
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="album-note">
+    CDs are available at St.&nbsp;Mary's Basilica after selected masses and concerts.
+  </p>
 </div>
+
 
 </section>
 
@@ -362,6 +403,39 @@
             });
         });
     </script>
+
+    <script>
+  function initAlbumTabs() {
+    document.querySelectorAll('.albums-block').forEach(block => {
+      const tabs = block.querySelectorAll('.album-tab');
+      const panels = block.querySelectorAll('.album-panel');
+
+      if (!tabs.length || !panels.length) return;
+
+      function activate(targetId) {
+        tabs.forEach(t => {
+          const isActive = t.dataset.target === targetId;
+          t.classList.toggle('is-active', isActive);
+          t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        panels.forEach(p => {
+          p.classList.toggle('is-active', p.id === targetId);
+        });
+      }
+
+      tabs.forEach(t => {
+        t.addEventListener('click', () => activate(t.dataset.target));
+      });
+
+      // Domyślnie: najnowszy = pierwszy tab (czyli pierwszy w HTML)
+      activate(tabs[0].dataset.target);
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', initAlbumTabs);
+</script>
+
 
 <script>
     async function loadFacebookNews() {
