@@ -503,6 +503,12 @@ section p {
 }
 
 
+.albums-block {
+    background: #f8f7f4;
+    padding: 0.5rem 0.5rem 0.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
 
 /* NOWA KARTA ALBUMU CD */
 .album-card {
@@ -515,7 +521,7 @@ section p {
 }
 
 /* złoty pasek na górze */
-.album-card::before {
+/* .album-card::before {
     content: "";
     position: absolute;
     top: 0;
@@ -523,12 +529,13 @@ section p {
     width: 100%;
     height: 6px;
     background: linear-gradient(90deg, #d4af37, #f5e29e, #d4af37);
-}
+} */
 
 .album-header {
     width: 100%;
+    text-align: center;
     display: block;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
     font-size: 1.3rem;
 }
 
@@ -572,6 +579,7 @@ section p {
 
 .album-link {
     display: inline-block;
+    font-size: 0.85rem;
     text-decoration: none;
     color: #d4af37;
     border-bottom: 1px solid rgba(212,175,55,0.4);
@@ -599,7 +607,9 @@ section p {
 /* ===== ZAKŁADKI ALBUMÓW – JAK PRZYCISKI ===== */
 
 .album-tabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); */
   gap: 0.6rem;
   flex-wrap: wrap;
   margin: 0.6rem 0 1rem;
@@ -617,6 +627,21 @@ section p {
   font-weight: 700;
   letter-spacing: 0.04em;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 44px;              /* ← jedna, stała wysokość */
+    padding: 0 1rem;           /* poziomy padding */
+    text-align: center;
+    white-space: nowrap;       /* nie łam tekstu */
+}
+
+.album-tab:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 0.3rem);
 }
 
 .album-tab:hover {
@@ -742,7 +767,7 @@ section p {
 footer {
     background: #2c2c2c;
     color: white;
-    padding: 1rem;
+    padding: 0.6rem 1rem 1rem;
     text-align: center;
 }
 
