@@ -563,6 +563,7 @@ section p {
     margin: 0 0 0.6rem 0;
     opacity: 0.9;
     color: #f8f7f4;
+    text-wrap: wrap;
 }
 
 .album-link {
@@ -587,6 +588,7 @@ section p {
     border-left: 4px solid #d4af37;
     border-radius: 6px;
     line-height: 1.5;
+    text-wrap: wrap;
 }
 
 /* ===== ZAKŁADKI ALBUMÓW – JAK PRZYCISKI ===== */
