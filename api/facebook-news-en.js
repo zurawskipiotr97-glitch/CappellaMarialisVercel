@@ -39,35 +39,55 @@ function buildTitleFromBody(text) {
 }
 
 async function translateLibre(text, source = 'pl', target = 'en') {
-  const endpoint = 'https://libretranslate.com/translate';
+  const endpoints = [
+    'https://translate.argosopentech.com/translate',
+    'https://trans.zillyhuhn.com/translate',
+    'https://translate.terraprint.co/translate'
+  ];
 
-  // Prosty timeout, żeby funkcja nie wisiała
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 8000);
+  let lastErr = null;
 
-  try {
-    const resp = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: ctrl.signal,
-      body: JSON.stringify({
-        q: text,
-        source,
-        target,
-        format: 'text'
-      })
-    });
+  for (const endpoint of endpoints) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
 
-    if (!resp.ok) {
-      throw new Error(`LibreTranslate HTTP ${resp.status}`);
+    try {
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: ctrl.signal,
+        body: JSON.stringify({
+          q: text,
+          source,
+          target,
+          format: 'text'
+        })
+      });
+
+      if (!resp.ok) {
+        // weź kawałek body do diagnostyki
+        const msg = await resp.text().catch(() => '');
+        throw new Error(`LibreTranslate mirror HTTP ${resp.status} @ ${endpoint} :: ${msg.slice(0, 200)}`);
+      }
+
+      const data = await resp.json();
+      const out = (data && data.translatedText) ? String(data.translatedText) : '';
+
+      if (!out.trim()) {
+        throw new Error(`Mirror returned empty translation @ ${endpoint}`);
+      }
+
+      return out;
+    } catch (e) {
+      lastErr = e;
+    } finally {
+      clearTimeout(t);
     }
-
-    const data = await resp.json();
-    return (data && data.translatedText) ? String(data.translatedText) : '';
-  } finally {
-    clearTimeout(t);
   }
+
+  throw lastErr || new Error('All LibreTranslate mirrors failed');
 }
+
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
