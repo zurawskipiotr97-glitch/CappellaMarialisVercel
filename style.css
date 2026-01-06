@@ -44,6 +44,8 @@ header {
   align-items: center;
   justify-content: center;
   gap: 2rem;
+
+  position: relative; /* ⬅️ KLUCZOWE */
 }
 
 .header-logo {
@@ -62,9 +64,10 @@ header {
 }
 
 .lang-switcher {
-  position: fixed;
-  top: 20px;
+  position: absolute;
+  top: 16px;
   right: 20px;
+
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(6px);
   padding: 6px 14px;
@@ -842,6 +845,10 @@ color: #fff;
   text-align: right;
 }
 
+.fb-header-facebook{
+    text-align: left;
+  }
+
 .fb-note
 {
   color:#f8f7f4;
@@ -1025,6 +1032,13 @@ padding: 30px 0;
   {
     position: relative;
   }
+
+   .lang-switcher {
+    top: 8px;
+    right: 10px;
+    padding: 5px 12px;
+    font-size: 0.85rem;
+  }
 }
 
 /* ==========================================================================
@@ -1084,7 +1098,7 @@ padding: 30px 0;
   .donation-box {
     background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
     color: white;
-    padding: 1rem;
+    padding: 2rem 1rem;
     border-radius: 8px;
     text-align: center;
     margin-top: 2rem;
@@ -1118,6 +1132,9 @@ padding: 30px 0;
     width: 95%;
     height: 250px;
     object-fit: cover;
+  }
+  .fb-header-facebook{
+    text-align: center;
   }
 
   /* eksperymentalny dodatek */
