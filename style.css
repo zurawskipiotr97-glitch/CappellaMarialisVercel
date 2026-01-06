@@ -920,7 +920,7 @@ color: #fff;
   justify-content: center;     /* środek w pionie */
   /* align-items: center;         /* środek w poziomie */
   text-align: center;          /* centrowanie linii tekstu */
-  height: 100%;                /* ważne – musi znać wysokość */
+  height: 90%;                /* ważne – musi znać wysokość */
 }
 
 .fb-note
