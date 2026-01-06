@@ -169,6 +169,56 @@ section p {
   color: #444;
 }
 
+.regulations {
+  font-size: 1rem; 
+  padding: 5px;
+  /* text-wrap: wrap;
+  letter-spacing: 0.05rem;
+  text-wrap: pretty; */
+  text-wrap: pretty;
+  hyphens: auto;
+  overflow-wrap: break-word;
+  widows: 2;
+  margin-left: 1rem;
+}
+/* ===============================
+   Legal text – lists & spacing (privacy/regulations)
+   Wklej pod .regulations
+   =============================== */
+
+/* Akapit bezpośrednio przed listą – mniejszy odstęp, łatwo regulować */
+.regulations-before-list {
+  margin-bottom: 0.35rem; /* ustaw wg potrzeb */
+}
+
+/* Lista w dokumentach prawnych */
+.regulations-list {
+  list-style-type: disc;       /* kropki jak standardowo */
+  margin-left: 2rem;         /* przesunięcie całej listy w prawo */
+  margin-top: 0;               /* bez dodatkowej "dziury" u góry */
+  margin-bottom: 1.25rem;      /* odstęp po liście */
+  padding-left: 1.25rem;       /* kontrola pozycji kropek/tekstu */
+}
+
+/* Elementy listy */
+.regulations-list li {
+  margin-bottom: 0.4rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+/* Opcjonalnie: ciaśniejsza lista (np. jedno zdanie) */
+.regulations-list.is-tight {
+  margin-bottom: 0.75rem;
+}
+
+/* Opcjonalnie: gdy lista jest bezpośrednio po <p class="regulations ...">,
+   możesz jeszcze bardziej skrócić odstęp między nimi */
+.regulations.regulations-before-list + .regulations-list {
+  margin-top: 0.15rem; /* ustaw wg potrzeb */
+}
+
+
 .wesprzyj {
   text-align: justify;
   text-wrap: wrap;
@@ -770,6 +820,12 @@ footer {
   color: white;
   padding: 0.6rem 1rem 1rem;
   text-align: center;
+}
+
+.copyright {
+  font-size: 0.65rem; 
+  margin-top: 0.2rem; 
+  color: #999;
 }
 
 /* FACEBOOK BOX – pełna szerokość sekcji, w środku wtyczka 500px */
