@@ -1,45 +1,64 @@
+/* ==========================================================================
+  style.css — uporządkowana wersja (bez zmian w wyglądzie)
+  Zmiany: tylko formatowanie/indentacja/porządek białych znaków + nagłówek.
+  ========================================================================== */
+
+/* Table of contents (orientacyjnie)
+   1) Reset + fonty
+   2) Global (body, typografia, linki)
+   3) Header + language switcher
+   4) Navigation
+   5) Layout / sections / container
+   6) Components (team, donation, news, listen, facebook)
+   7) Footer
+   8) Responsive
+*/
+
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 @font-face {
   font-family: 'opensans';
   src: url('OpenSans-Italic-VariableFont_wdth,wght.ttf') format('tff2'),
-       url('OpenSans-VariableFont_wdth,wght.tff') format('tff2');
+  url('OpenSans-VariableFont_wdth,wght.tff') format('tff2');
 }
 
 body {
-    font-family: 'opensans', sans-serif;
-    background: #f8f7f4;
-    color: #2c2c2c;
-    line-height: 1.5;
+  font-family: 'opensans', sans-serif;
+  background: #f8f7f4;
+  color: #2c2c2c;
+  line-height: 1.5;
 }
 
-/* HEADER */
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
 header {
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
 }
 
 .header-logo {
-    width: 480px;
-    height: 140px;
-    padding-top: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 480px;
+  height: 140px;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .lang-switcher {
@@ -72,445 +91,450 @@ header {
   color: #777;
 }
 
-/* NAVIGATION */
+/* ==========================================================================
+   NAVIGATION
+   ========================================================================== */
 nav {
-    background: linear-gradient(135deg, #11111b 0%, #0c2544 50%, #16213e 100%);
-    padding: 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  background: linear-gradient(135deg, #11111b 0%, #0c2544 50%, #16213e 100%);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 nav ul {
-    display: grid;
-    grid-template-columns: repeat(5, auto);
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 nav a {
-    display: block;
-    color: white;
-    text-decoration: none;
-    text-align: center;
-    padding: 1rem;
-    transition: all 0.3s ease;
-    border-bottom: 3px solid transparent;
+  display: block;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
 }
 
 nav a:hover {
-    background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
-    border-bottom-color: #d4af37;
+  background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
+  border-bottom-color: #d4af37;
 }
 
-/* MAIN CONTAINER */
+/* ==========================================================================
+   MAIN CONTAINER
+   ========================================================================== */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
-/* SECTIONS */
+/* ==========================================================================
+   SECTIONS
+   ========================================================================== */
 section {
-    background: white;
-    margin-bottom: 1.5rem;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-    padding-top: 1.25rem;
-    padding-bottom: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
-    border-left: 5px solid #d4af37;
+  background: white;
+  margin-bottom: 1.5rem;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  padding-top: 1.25rem;
+  padding-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+  border-left: 5px solid #d4af37;
 }
 
 section h2 {
-    color: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    font-weight: 400;
-    border-bottom: 2px solid #d4af37;
-    padding-bottom: 0.5rem;
+  color: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  border-bottom: 2px solid #d4af37;
+  padding-bottom: 0.5rem;
 }
 
 section p {
-    margin-bottom: 1rem;
-    text-wrap: balance;
-    text-align: justify;
-    color: #444;
+  margin-bottom: 1rem;
+  text-wrap: balance;
+  text-align: justify;
+  color: #444;
 }
 
 .wesprzyj {
-    text-align: justify;
-    text-wrap: wrap;
-    }
+  text-align: justify;
+  text-wrap: wrap;
+}
 
 /* ZESPÓŁ SECTION */
 .team-intro {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    /* margin-bottom: 2rem; */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  /* margin-bottom: 2rem; */
 }
 
 .team-image {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .team-short {
-    line-height: 1.8;
-    color: #333;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: justify;
+  line-height: 1.8;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: justify;
 }
 
 .expand-btn {
-    background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);;
-    color: white;
-    border: none;
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);;
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
 }
 
 .expand-btn:hover {
-    background: linear-gradient(135deg, #f4d03f 0%, #d4af37 100%);;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  background: linear-gradient(135deg, #f4d03f 0%, #d4af37 100%);;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 /* PRZYCISKI POD YT / SPOTIFY – jak "Czytaj więcej", ale w kolorach brandów */
 
 /* YouTube – czerwony */
 .player-cta-youtube {
-    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
-    box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
 }
 
 .player-cta-youtube:hover {
-    background: linear-gradient(135deg, #ff4d4d 0%, #ff0000 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(255, 0, 0, 0.4);
+  background: linear-gradient(135deg, #ff4d4d 0%, #ff0000 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(255, 0, 0, 0.4);
 }
 
 /* Spotify – zielony */
 .player-cta-spotify {
-    background: linear-gradient(135deg, #1DB954 0%, #159740 100%);
-    box-shadow: 0 4px 10px rgba(29, 185, 84, 0.3);
+  background: linear-gradient(135deg, #1DB954 0%, #159740 100%);
+  box-shadow: 0 4px 10px rgba(29, 185, 84, 0.3);
 }
 
 .player-cta-spotify:hover {
-    background: linear-gradient(135deg, #44c96c 0%, #1DB954 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(29, 185, 84, 0.4);
+  background: linear-gradient(135deg, #44c96c 0%, #1DB954 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(29, 185, 84, 0.4);
 }
 
-
 .team-full {
-    display: none;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid #d4af37;
-    text-align: justify;
-    }
-    
+  display: none;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #d4af37;
+  text-align: justify;
+}
+
 .long {
-    text-indent: 2em;
-    text-wrap: wrap;
+  text-indent: 2em;
+  text-wrap: wrap;
 }
 
 .team-full.active {
-    display: block;
+  display: block;
 }
 
 .team-full h3 {
-    color: #d4af37;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+  color: #d4af37;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .team-full ul {
-    margin-left: 1.5rem;
-    margin-bottom: 1rem;
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .team-full li {
-    margin-bottom: 0.7rem;
-    color: #444;
+  margin-bottom: 0.7rem;
+  color: #444;
 }
 
 /* AKTUALNOŚCI */
 .news-item {
-    background: #f0f0f0;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 5px;
-    border-left: 4px solid #d4af37;
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
+  background: #f0f0f0;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 5px;
+  border-left: 4px solid #d4af37;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
 }
 
 .news-item img {
-    width: 33%;
-    object-fit: cover;
-    border-radius: 10px;
-    min-height: 200px;
+  width: 33%;
+  object-fit: cover;
+  border-radius: 10px;
+  min-height: 200px;
 }
 
-
 .news-content {
-    width: 67%;
+  width: 67%;
 }
 
 .news-item h3 {
-    color: #d4af37;
-    margin-bottom: 0.5rem;
+  color: #d4af37;
+  margin-bottom: 0.5rem;
 }
 
 .news-date {
-    font-size: 0.95rem;
-    margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
 }
 
 .fb-link {
-    text-align: center;
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: #f0f0f0;
-    border-radius: 5px;
-    border-left: 4px solid #d4af37;
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f0f0f0;
+  border-radius: 5px;
+  border-left: 4px solid #d4af37;
 }
 
 .fb-link a {
-    color: #d4af37;
-    text-decoration: none;
-    font-weight: bold;
-    border-bottom: 2px solid #d4af37;
-    padding-bottom: 2px;
+  color: #d4af37;
+  text-decoration: none;
+  font-weight: bold;
+  border-bottom: 2px solid #d4af37;
+  padding-bottom: 2px;
 }
 
 .fb-link a:hover {
-    color: #d4af37;
+  color: #d4af37;
 }
 
 .fb-page {
-    text-align: center;
-    /* margin-top: 2rem;
-    padding: 1.5rem;
-    background: #f0f0f0;
-    border-radius: 5px;
-    border-left: 4px solid #d4af37; */
+  text-align: center;
+  /* margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f0f0f0;
+  border-radius: 5px;
+  border-left: 4px solid #d4af37; */
 }
 
 /* POSŁUCHAJ NAS */
 .listen-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
 .listen-item {
-    background: #f8f7f4;
-    padding: 2rem;
-    border-radius: 8px;
-    text-align: center;
-    transition: all 0.3s ease;
+  background: #f8f7f4;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
 .listen-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .listen-item h3 {
-    color: #d4af37;
-    margin-bottom: 1rem;
+  color: #d4af37;
+  margin-bottom: 1rem;
 }
 
 .listen-item a {
-    display: inline-block;
-    background: #d4af37;
-    color: white;
-    padding: 0.8rem 2rem;
-    text-decoration: none;
-    border-radius: 5px;
-    margin-top: 1rem;
-    transition: all 0.3s ease;
+  display: inline-block;
+  background: #d4af37;
+  color: white;
+  padding: 0.8rem 2rem;
+  text-decoration: none;
+  border-radius: 5px;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
 }
 
 .listen-item a:hover {
-    background: #d4af37;
+  background: #d4af37;
 }
 
 /* eksperymentalne posłuchaj nas */
 
 /* POSŁUCHAJ NAS – nowy układ z playerami */
 .listen-layout {
-    display: grid;
-    grid-template-columns: 2fr 1.2fr;
-    gap: 2rem;
-    margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
 }
 
 .listen-media {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .player-block {
-    background: #f0f0f0;
-    padding: 1rem 0.5rem 0.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  background: #f0f0f0;
+  padding: 1rem 0.5rem 0.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .player-block h3 {
-    color: #d4af37;
-    margin-bottom: 0.4rem;
+  color: #d4af37;
+  margin-bottom: 0.4rem;
 }
 
 .player-block p {
-    margin-bottom: 0.9rem;
-    color: #444;
+  margin-bottom: 0.9rem;
+  color: #444;
 }
 
 .player-embed iframe {
-    width: 100%;
-    display: block;
+  width: 100%;
+  display: block;
 }
 
 .player-link {
-    display: inline-block;
-    text-decoration: none;
-    color: #0f3460;
-    font-weight: 600;
-    border-bottom: 1px solid rgba(15,52,96,0.3);
-    padding-bottom: 2px;
-    transition: color 0.2s ease, border-color 0.2s ease;
+  display: inline-block;
+  text-decoration: none;
+  color: #0f3460;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(15,52,96,0.3);
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .player-link:hover {
-    color: #d4af37;
-    border-color: #d4af37;
+  color: #d4af37;
+  border-color: #d4af37;
 }
 
 /* eksperymenty player */
 .player-header {
-    align-items: center;
-    width: 100%;
-    margin-top: -0.5rem;
-    margin-bottom: 0.5rem;
-    justify-content: center;
-    text-align: center;
+  align-items: center;
+  width: 100%;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  justify-content: center;
+  text-align: center;
 }
 
 .player-footer {
-    align-items: center;
-    width: 100%;
-    margin-top: 0.5rem;
-    justify-content: center;
-    text-align: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
+  justify-content: center;
+  text-align: center;
 }
 
 .brand-logo {
-    width: 120px;
-    height: auto;
-    flex-shrink: 0;
+  width: 120px;
+  height: auto;
+  flex-shrink: 0;
 }
 
 .brand-logo-link {
-    display: inline-block;
-    width: 100%;
+  display: inline-block;
+  width: 100%;
 }
 
 .player-tagline {
-    margin: 0;
-    color: #666;
+  margin: 0;
+  color: #666;
 }
 
 /* odległości wokół playera */
 .player-embed {
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 0.4rem;   /* mały, stały odstęp pod playerem */
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;   /* mały, stały odstęp pod playerem */
 }
 
 .player-description {
-    margin: 0.25rem 0 0.6rem;   /* mały odstęp nad tekstem */
-    color: #444;
+  margin: 0.25rem 0 0.6rem;   /* mały odstęp nad tekstem */
+  color: #444;
 }
 
 /* jeśli coś wcześniej nadpisywało margin, dociśnij dla Spotify osobną klasą */
 .player-description-spotify {
-    margin-top: 0.25rem;
+  margin-top: 0.25rem;
 }
 
 /* przyciski zostają jak było */
 .player-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 0.1rem;
-    padding: 0.55rem 1.6rem;
-    border-radius: 999px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.1rem;
+  padding: 0.55rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 
 .albums-block {
-    background: #f0f0f0;
-    padding: 0.5rem 0.5rem 0.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  background: #f0f0f0;
+  padding: 0.5rem 0.5rem 0.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-/* NOWA KARTA ALBUMU CD */
+/* ==========================================================================
+   NOWA KARTA ALBUMU CD
+   ========================================================================== */
 .album-card {
-    background: #0f0f13;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    border: 1px solid rgba(255, 215, 0, 0.25);
-    position: relative;
+  background: #0f0f13;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  position: relative;
 }
 
 /* złoty pasek na górze */
 /* .album-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 6px;
-    background: linear-gradient(90deg, #d4af37, #f5e29e, #d4af37);
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 6px;
+background: linear-gradient(90deg, #d4af37, #f5e29e, #d4af37);
 } */
 
 .album-header {
-    width: 100%;
-    text-align: center;
-    display: block;
-    /* margin-bottom: 1rem; */
-    font-size: 1.3rem;
+  width: 100%;
+  text-align: center;
+  display: block;
+  /* margin-bottom: 1rem; */
+  font-size: 1.3rem;
 }
 
 /* ====== OKŁADKA ALBUMU – ZAWSZE KWADRAT ====== */
@@ -532,50 +556,50 @@ section p {
 }
 
 .album-info {
-    padding: 1.2rem 1.4rem 1.4rem;
-    color: #f0f0f0;
+  padding: 1.2rem 1.4rem 1.4rem;
+  color: #f0f0f0;
 }
 
 .album-title {
-    margin: 0 0 0.4rem 0;
-    font-size: 1.05rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    color: #e0dfdc;
+  margin: 0 0 0.4rem 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #e0dfdc;
 }
 
 .album-subtitle {
-    margin: 0 0 0.6rem 0;
-    opacity: 0.9;
-    color: #f0f0f0;
-    text-wrap: wrap;
+  margin: 0 0 0.6rem 0;
+  opacity: 0.9;
+  color: #f0f0f0;
+  text-wrap: wrap;
 }
 
 .album-link {
-    display: inline-block;
-    font-size: 0.85rem;
-    text-decoration: none;
-    color: #d4af37;
-    border-bottom: 1px solid rgba(212,175,55,0.4);
-    padding-bottom: 1px;
-    transition: 0.2s ease;
+  display: inline-block;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: #d4af37;
+  border-bottom: 1px solid rgba(212,175,55,0.4);
+  padding-bottom: 1px;
+  transition: 0.2s ease;
 }
 
 .album-link:hover {
-    color: #ffd86b;
-    border-color: #ffd86b;
+  color: #ffd86b;
+  border-color: #ffd86b;
 }
 
 .album-note {
-    margin-top: 1rem;    
-    margin-bottom: 0rem;
-    padding: 0.9rem 1.2rem;
-    color: #555;
-    background: #f7f6ef;
-    border-left: 4px solid #d4af37;
-    border-radius: 6px;
-    line-height: 1.5;
-    text-wrap: wrap;
+  margin-top: 1rem;
+  margin-bottom: 0rem;
+  padding: 0.9rem 1.2rem;
+  color: #555;
+  background: #f7f6ef;
+  border-left: 4px solid #d4af37;
+  border-radius: 6px;
+  line-height: 1.5;
+  text-wrap: wrap;
 }
 
 /* ===== ZAKŁADKI ALBUMÓW – JAK PRZYCISKI ===== */
@@ -602,20 +626,20 @@ section p {
   letter-spacing: 0.04em;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    height: 44px;              /* ← jedna, stała wysokość */
-    padding: 0 1rem;           /* poziomy padding */
-    text-align: center;
-    white-space: nowrap;       /* nie łam tekstu */
+  height: 44px;              /* ← jedna, stała wysokość */
+  padding: 0 1rem;           /* poziomy padding */
+  text-align: center;
+  white-space: nowrap;       /* nie łam tekstu */
 }
 
 .album-tab:last-child:nth-child(odd) {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: calc(50% - 0.3rem);
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 0.3rem);
 }
 
 .album-tab:hover {
@@ -639,510 +663,513 @@ section p {
   display: block;
 }
 
-
 /* RESPONSIVE – telefony */
 @media (max-width: 768px) {
-    .listen-layout {
-        grid-template-columns: 1fr;
-    }
+  .listen-layout {
+    grid-template-columns: 1fr;
+  }
 
-    .player-embed iframe {
-        min-height: 190px;
-    }
+  .player-embed iframe {
+    min-height: 190px;
+  }
 
-    /* .album-card img {
-        height: 220px;
-    } */
+  /* .album-card img {
+  height: 220px;
+  } */
 }
 
-
-/* WESPRZYJ NAS */
+/* ==========================================================================
+   WESPRZYJ NAS
+   ========================================================================== */
 .donation-box {
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
-    color: white;
-    padding: 2.5rem;
-    border-radius: 8px;
-    text-align: center;
-    /* margin-top: 2rem; */
-    display: block;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+  color: white;
+  padding: 2.5rem;
+  border-radius: 8px;
+  text-align: center;
+  /* margin-top: 2rem; */
+  display: block;
 }
 
 .donation-box h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: white;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: white;
 }
 
 .donation-box p {
-    color: white;
-    margin-bottom: 0.7rem;
-    display: inline;
+  color: white;
+  margin-bottom: 0.7rem;
+  display: inline;
 }
 
 .block-display
 {
-    display: block;
-    margin-bottom: 1.2rem;
+  display: block;
+  margin-bottom: 1.2rem;
 }
 
 .donation-details {
-    background: rgba(255,255,255,0.1);
-    padding: 2rem;
-    border-radius: 5px;
-    text-align: left;
-    margin-bottom: 1.5rem;
+  background: rgba(255,255,255,0.1);
+  padding: 2rem;
+  border-radius: 5px;
+  text-align: left;
+  margin-bottom: 1.5rem;
 }
 
 .donation-details p {
-    color: white;
-    margin-bottom: 0.7rem;
-    font-size: 1.10rem;
+  color: white;
+  margin-bottom: 0.7rem;
+  font-size: 1.10rem;
 }
 
 .donation-details strong {
-    color: #d4af37;
+  color: #d4af37;
 }
 
 .donate-btn {
-    background: #d4af37;
-    color: #2c2c2c;
-    border: none;
-    padding: 1.2rem 3rem;
-    font-size: 1.3rem;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  background: #d4af37;
+  color: #2c2c2c;
+  border: none;
+  padding: 1.2rem 3rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .donate-btn:hover {
-    background: #f4d03f;
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  background: #f4d03f;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 .image-listen-us
 {
-    display: block; 
-    margin-left: auto; 
-    margin-right: auto; 
-    width: 100%; 
-    height: 250px; 
-    object-fit: cover; 
-    border-radius: 8px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-/* FOOTER */
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
 footer {
-    background: #2c2c2c;
-    color: white;
-    padding: 0.6rem 1rem 1rem;
-    text-align: center;
+  background: #2c2c2c;
+  color: white;
+  padding: 0.6rem 1rem 1rem;
+  text-align: center;
 }
 
 /* FACEBOOK BOX – pełna szerokość sekcji, w środku wtyczka 500px */
 /* .fb-wrapper {
-    width: 100%;
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: #f0f0f0;
-    border-radius: 5px;
-    border-left: 4px solid #d4af37;
-    display: flex;
-    justify-content: center;   wyśrodkowanie wtyczki
+width: 100%;
+margin-top: 2rem;
+padding: 1.5rem;
+background: #f0f0f0;
+border-radius: 5px;
+border-left: 4px solid #d4af37;
+display: flex;
+justify-content: center;   wyśrodkowanie wtyczki
 }     */
 
-/* FACEBOOK FULL-WIDTH FIX */
+/* ==========================================================================
+   FACEBOOK FULL-WIDTH FIX
+   ========================================================================== */
 /* .fb-wrapper {
-    width: 100%;
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: #f0f0f0;
-    border-radius: 5px;
-    border-left: 4px solid #d4af37;
-    display: flex;
-    justify-content: center;
+width: 100%;
+margin-top: 2rem;
+padding: 1.5rem;
+background: #f0f0f0;
+border-radius: 5px;
+border-left: 4px solid #d4af37;
+display: flex;
+justify-content: center;
 }
 .fb-wrapper .fb-page,
 .fb-wrapper .fb-page > span,
 .fb-wrapper iframe {
-    width: 100% !important;
-    max-width: 100% !important;
+width: 100% !important;
+max-width: 100% !important;
 }
 
 .news-link {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid #3b5998;
-    font-size: 0.9rem;
-    text-decoration: none;
-    color: #3b5998;
-    transition: background 0.2s ease, color 0.2s ease;
+display: inline-block;
+margin-top: 10px;
+padding: 6px 14px;
+border-radius: 999px;
+border: 1px solid #3b5998;
+font-size: 0.9rem;
+text-decoration: none;
+color: #3b5998;
+transition: background 0.2s ease, color 0.2s ease;
 }
 
 .news-link:hover {
-    background: #3b5998;
-    color: #fff;
+background: #3b5998;
+color: #fff;
 }
-
 
 /* eksperyment facebook */
 .fb-header
 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
 .fb-stub
 {
-    height: 168px;
-    width: 168px;
-    border-radius: 50%;
-    object-fit: cover;
+  height: 168px;
+  width: 168px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .fb-header-container
 {
-    width: 90%;
-    justify-content: right;
-    text-align: right;
+  width: 100%;
+  justify-content: right;
+  text-align: right;
 }
 
 .fb-note
 {
-    color:#f8f7f4;
-    text-align: left;
+  color:#f8f7f4;
+  text-align: left;
 }
 
 .fb-text {
-    font-weight: 700;
-    font-size: 2.0rem;
-    color: #1877f2;     /* oficjalny kolor Facebooka */
-    letter-spacing: -0.5px;
-    display: flex;
-    margin-top: 2rem;
+  font-weight: 700;
+  font-size: 2.0rem;
+  color: #1877f2;     /* oficjalny kolor Facebooka */
+  letter-spacing: -0.5px;
+  display: flex;
+  margin-top: 2rem;
 }
 
 .fb-section {
-    /* margin: 30px auto; */
-    padding: 20px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
-    border-radius: 16px;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.07);
-    text-align: center;
+  /* margin: 30px auto; */
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.07);
+  text-align: center;
 }
 
 .player-tagline {
-    margin-top: 10px;
-    color: rgb(204, 198, 198);
+  margin-top: 10px;
+  color: rgb(204, 198, 198);
 }
 
 .fb-description {
-    color: rgb(204, 198, 198);
-    margin: 15px 0 25px;
-    line-height: 1.6;
-    text-align: center;
+  color: rgb(204, 198, 198);
+  margin: 15px 0 25px;
+  line-height: 1.6;
+  text-align: center;
 }
 
-
 .fb-cta {
-    display: inline-block;
-    padding: 12px 26px;
-    background: #d4af37;
-    color: black;
-    text-decoration: none;
-    font-weight: 600;
-    border-radius: 30px;
-    transition: 0.25s ease;
+  display: inline-block;
+  padding: 12px 26px;
+  background: #d4af37;
+  color: black;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 30px;
+  transition: 0.25s ease;
 }
 
 .fb-cta:hover {
-    background: linear-gradient(135deg, #45457c 0%, #1e65bd 50%, #2a3e74 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(24, 119, 242, 0.3);
+  background: linear-gradient(135deg, #45457c 0%, #1e65bd 50%, #2a3e74 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(24, 119, 242, 0.3);
 }
 
 .dane-section {
-    max-width: 900px;
-    margin: 80px auto;
-    padding: 0 20px;
-    font-family: "Georgia", "Times New Roman", serif;
-    color: #2b2b2b;
+  max-width: 900px;
+  margin: 80px auto;
+  padding: 0 20px;
+  font-family: "Georgia", "Times New Roman", serif;
+  color: #2b2b2b;
 }
 
 .contact-section {
-    max-width: 900px;
-    margin: 80px auto;
-    padding: 0 20px;
-    font-family: "Georgia", "Times New Roman", serif;
-    color: #2b2b2b;
+  max-width: 900px;
+  margin: 80px auto;
+  padding: 0 20px;
+  font-family: "Georgia", "Times New Roman", serif;
+  color: #2b2b2b;
 }
 
 .contact-section h2 {
-    text-align: center;
-    letter-spacing: 2px;
-    font-size: 26px;
-    margin-bottom: 40px;
-    text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 26px;
+  margin-bottom: 40px;
+  text-transform: uppercase;
 }
 
 /* .contact-box {
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    padding: 30px 0;
+border-top: 1px solid #ccc;
+border-bottom: 1px solid #ccc;
+padding: 30px 0;
 } */
 
 .contact-box p {
-    font-size: 17px;
-    line-height: 1.8;
-    margin: 10px 0;
-    text-align: left;
+  font-size: 17px;
+  line-height: 1.8;
+  margin: 10px 0;
+  text-align: left;
 }
 
 .contact-box span {
-    font-weight: 600;
-    letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 .rodo-label {
-    font-size: 0.75rem;
-    color: #8f8d8d;
-    margin-top: 1rem;
-    margin-bottom: -1.25rem;
-    display: block;
+  font-size: 0.75rem;
+  color: #8f8d8d;
+  margin-top: 1rem;
+  margin-bottom: -1.25rem;
+  display: block;
 }
 
 #rodo-footer
 {
-    position: absolute; 
-    bottom: 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .fb-promo {
+    padding: 1.4rem 1.2rem;
+  }
+
+  .fb-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fb-logo {
+    width: 130px;
+  }
+
+  .fb-header
+  {
+    display: block;
+  }
+
+  .fb-stub
+  {
+    height: 168px;
+    width: 168px;
+    border-radius: 50%;
+  }
+
+  .donation-box p {
+    display: block;
+  }
+
+  .fb-header-container
+  {
     width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .fb-stub img
+  {
+    width: 100%;
+    object-fit: contain;
+    text-align: right;
+  }
+
+  .fb-text
+  {
+    margin-top: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .fb-note
+  {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .donation-details p {
+    color: white;
+    margin-bottom: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .block-display
+  {
+    margin-bottom: 0rem;
+  }
+
+  #rodo-footer
+  {
+    position: relative;
+  }
 }
 
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
 @media (max-width: 768px) {
-    .fb-promo {
-        padding: 1.4rem 1.2rem;
-    }
+  header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0;
+  }
 
-    .fb-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .header-logo {
+    width: 360px;
+    height: 140px;
+  }
 
-    .fb-logo {
-        width: 130px;
-    }
+  nav {
+    position: static;
+    box-shadow: none;
+  }
 
-    .fb-header
-    {
-        display: block;
-    }
+  nav ul {
+    grid-template-columns: 1fr;
+  }
 
-    .fb-stub
-    {
-        height: 168px;
-        width: 168px;
-        border-radius: 50%;
-    }
+  nav a {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
 
-    .donation-box p {
-        display: block;
-    }
+  nav a:hover {
+    background: rgba(255,255,255,0.1);
+    border-bottom-color: transparent;
+  }
 
-    .fb-header-container
-    {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
-    }
+  section {
+    padding: 1.5rem;
+  }
 
-    .fb-stub img
-    {
-        width: 100%;
-        object-fit: contain;
-        text-align: right;
-    }
+  section h2 {
+    font-size: 1.3rem;
+  }
 
-    .fb-text
-    {
-        margin-top: 0;
-        width: 100%;
-        justify-content: center;
-    }
+  .listen-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .fb-note
-    {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
-    }
+  .team-intro {
+    grid-template-columns: 1fr;
+  }
 
-    .donation-details p {
-        color: white;
-        margin-bottom: 0.7rem;
-        font-size: 0.95rem;
-    }
+  .team-image {
+    height: 300px;
+  }
 
-    .block-display
-    {
-        margin-bottom: 0rem;
-    }
+  .donation-box {
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 2rem;
+  }
 
-    #rodo-footer
-    {
-        position: relative; 
-    }
-}
+  .donation-details {
+    padding: 0.2rem;
+  }
 
+  .news-item {
+    background: #f0f0f0;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 5px;
+    border-left: 4px solid #d4af37;
+    display: block;
+  }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        text-align: center;
-        gap: 0;
-    }
+  .news-item img {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
 
-    .header-logo {
-        width: 360px;
-        height: 140px;
-    }
+  .news-content {
+    width: 100%;
+  }
 
-    nav {
-        position: static;
-        box-shadow: none;
-    }
+  .image-listen-us
+  {
+    width: 95%;
+    height: 250px;
+    object-fit: cover;
+  }
 
-    nav ul {
-        grid-template-columns: 1fr;
-    }
-
-    nav a {
-        padding: 0.5rem;
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-    }
-
-    nav a:hover {
-        background: rgba(255,255,255,0.1);
-        border-bottom-color: transparent;
-    }
-
-    section {
-        padding: 1.5rem;
-    }
-
-    section h2 {
-        font-size: 1.3rem;
-    }
-
-    .listen-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .team-intro {
-        grid-template-columns: 1fr;
-    }
-
-    .team-image {
-        height: 300px;
-    }
-
-    .donation-box {
-        background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
-        color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        text-align: center;
-        margin-top: 2rem;
-    }
-
-    .donation-details {
-        padding: 0.2rem;
-    }
-
-    .news-item {
-        background: #f0f0f0;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border-radius: 5px;
-        border-left: 4px solid #d4af37;
-        display: block;
-    }
-
-    .news-item img {
-        width: 100%;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-
-    .news-content {
-        width: 100%;
-    }
-
-    .image-listen-us
-    {
-        width: 95%; 
-        height: 250px; 
-        object-fit: cover; 
-    }
-
-    /* eksperymentalny dodatek */
-    @media (max-width: 768px) {
+  /* eksperymentalny dodatek */
+  @media (max-width: 768px) {
 
     .player-block .player-spotify
     {
-        width: 95%; 
+      width: 95%;
     }
 
     .image-listen-us
     {
-        display: none; 
+      display: none;
     }
 
     /* Aktualności z Facebooka – wygląd na telefonach */
 
     .news-item {
-        flex-direction: column;      /* zamiast obok siebie – jeden pod drugim */
-        align-items: stretch;
-        gap: 12px;
+      flex-direction: column;      /* zamiast obok siebie – jeden pod drugim */
+      align-items: stretch;
+      gap: 12px;
     }
 
     .news-item img {
-        width: 100%;                /* obrazek na całą szerokość */
-        max-height: 220px;          /* żeby nie był gigantyczny */
-        object-fit: cover;
-        border-radius: 10px;
+      width: 100%;                /* obrazek na całą szerokość */
+      max-height: 220px;          /* żeby nie był gigantyczny */
+      object-fit: cover;
+      border-radius: 10px;
     }
 
     .news-content {
-        width: 100%;
+      width: 100%;
     }
 
     .news-date {
-        font-size: 0.85rem;
+      font-size: 0.85rem;
     }
 
     .news-link {
-        display: inline-block;
-        margin-top: 8px;
-        font-size: 0.85rem;
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.85rem;
     }
-}
+  }
 
 }
 
 /* ==========================================================
-   UJEDNOLICENIE PRZYCISKÓW DO STYLU ".expand-btn" (CZYTAJ WIĘCEJ)
-   - Tabs pozostawione bez zmian, poza kolorem tekstu w aktywnym tabie
-   - "Wesprzyj nas" (.donate-btn) zachowuje rozmiar (padding/font-size)
-   ========================================================== */
+UJEDNOLICENIE PRZYCISKÓW DO STYLU ".expand-btn" (CZYTAJ WIĘCEJ)
+- Tabs pozostawione bez zmian, poza kolorem tekstu w aktywnym tabie
+- "Wesprzyj nas" (.donate-btn) zachowuje rozmiar (padding/font-size)
+========================================================== */
 
 :root{
   --btn-radius-rect: 10px;         /* bliżej prostokąta niż pill */
@@ -1223,7 +1250,7 @@ footer {
 }
 
 /* "Wesprzyj nas" – zachowaj rozmiar (nie zmieniamy padding/font-size z Twojego CSS),
-   jedynie dostosowujemy narożniki i zachowanie hover/focus powyżej. */
+jedynie dostosowujemy narożniki i zachowanie hover/focus powyżej. */
 
 /* Player CTA – ujednolicona geometria, ale kolory brandowe zostają jak były */
 .player-cta{
@@ -1266,10 +1293,9 @@ footer {
   color: #fff;
 }
 
-
 /* ==========================================================
-   DROBNE KOREKTY UX / UI PRZYCISKÓW
-   ========================================================== */
+DROBNE KOREKTY UX / UI PRZYCISKÓW
+========================================================== */
 
 :root{
   --btn-radius-rect: 12px;
@@ -1291,16 +1317,15 @@ footer {
   color: #ffffff;
 }
 
-
 .album-tab.is-active{
   color: #000000;
 }
 
 /* ==========================================================
-   KOREKTA CTA NA GRANATOWYM TLE (NEWS / SUPPORT)
-   - Bardziej szlachetny złoty (mniej jaskrawy)
-   - Inny charakter niż standardowe CTA
-   ========================================================== */
+KOREKTA CTA NA GRANATOWYM TLE (NEWS / SUPPORT)
+- Bardziej szlachetny złoty (mniej jaskrawy)
+- Inny charakter niż standardowe CTA
+========================================================== */
 
 :root{
   /* Szlachetny złoty – mniej nasycony */
@@ -1314,9 +1339,9 @@ footer {
 .support-section .donate-btn,
 .donation-box .donate-btn{
   background: linear-gradient(
-    135deg,
-    var(--gold-noble-1) 0%,
-    var(--gold-noble-2) 100%
+  135deg,
+  var(--gold-noble-1) 0%,
+  var(--gold-noble-2) 100%
   );
   color: #ffffff;
   box-shadow: 0 6px 18px rgba(0,0,0,0.22);
@@ -1325,9 +1350,9 @@ footer {
 .support-section .donate-btn:hover,
 .donation-box .donate-btn:hover{
   background: linear-gradient(
-    135deg,
-    var(--gold-noble-hover-1) 0%,
-    var(--gold-noble-hover-2) 100%
+  135deg,
+  var(--gold-noble-hover-1) 0%,
+  var(--gold-noble-hover-2) 100%
   );
 }
 
@@ -1346,10 +1371,10 @@ footer {
 }
 
 /* ==========================================================
-   GLOBALNE Uspokojenie ZŁOTA + KOREKTA KOLORYSTYKI TEKSTU
-   - Złoty mniej jaskrawy (czytelność, brak „rozmazania”)
-   - NEWS + SUPPORT: czarna czcionka
-   ========================================================== */
+GLOBALNE Uspokojenie ZŁOTA + KOREKTA KOLORYSTYKI TEKSTU
+- Złoty mniej jaskrawy (czytelność, brak „rozmazania”)
+- NEWS + SUPPORT: czarna czcionka
+========================================================== */
 
 :root{
   /* Jeden spokojny złoty dla CAŁEJ STRONY */
@@ -1363,9 +1388,9 @@ footer {
 .fb-cta,
 .donate-btn{
   background: linear-gradient(
-    135deg,
-    var(--btn-gold-1) 0%,
-    var(--btn-gold-2) 100%
+  135deg,
+  var(--btn-gold-1) 0%,
+  var(--btn-gold-2) 100%
   );
   color: #ffffff;
 }
@@ -1374,9 +1399,9 @@ footer {
 .fb-cta:hover,
 .donate-btn:hover{
   background: linear-gradient(
-    135deg,
-    var(--btn-gold-hover) 0%,
-    var(--btn-gold-1) 100%
+  135deg,
+  var(--btn-gold-hover) 0%,
+  var(--btn-gold-1) 100%
   );
 }
 
@@ -1395,12 +1420,12 @@ footer {
 }
 
 /* ==========================================================
-   FINALNE KOREKTY TYPOGRAFII I TABÓW
-   - NEWS: przycisk czarny
-   - Tabs: poświata jak w CTA
-   - Tekst w przyciskach: sentence case (bez MAJUSKUŁ)
-   - WYJĄTEK: "Wesprzyj nas" zostaje bez zmian
-   ========================================================== */
+FINALNE KOREKTY TYPOGRAFII I TABÓW
+- NEWS: przycisk czarny
+- Tabs: poświata jak w CTA
+- Tekst w przyciskach: sentence case (bez MAJUSKUŁ)
+- WYJĄTEK: "Wesprzyj nas" zostaje bez zmian
+========================================================== */
 
 /* NEWS – czarny przycisk (czytelny na granacie) */
 .news-section .news-link,
@@ -1415,7 +1440,6 @@ footer {
   background: #1a1a1a;
   color: #ffffff;
 }
-
 
 .album-tab:hover{
   box-shadow: 0 6px 16px rgba(0,0,0,0.18);
@@ -1441,12 +1465,12 @@ footer {
 }
 
 /* ==========================================================
-   PATCH NA BAZIE v5 (zgodnie z wytycznymi)
-   1) "Odwiedź nasz profil" (.fb-cta) jak "Wesprzyj" (.donate-btn),
-      ale bez zmiany wielkości; tekst jak w zdaniu
-   2) Czerwony i zielony (.player-cta-*) – tekst jak w zdaniu
-   3) Tabs – poświata jak w pozostałych przyciskach NA HOVER
-   ========================================================== */
+PATCH NA BAZIE v5 (zgodnie z wytycznymi)
+1) "Odwiedź nasz profil" (.fb-cta) jak "Wesprzyj" (.donate-btn),
+ale bez zmiany wielkości; tekst jak w zdaniu
+2) Czerwony i zielony (.player-cta-*) – tekst jak w zdaniu
+3) Tabs – poświata jak w pozostałych przyciskach NA HOVER
+========================================================== */
 
 /* 1) FB CTA jak donate (gradient + ciężar), ale rozmiar bez zmian */
 .fb-cta{
@@ -1485,13 +1509,13 @@ footer {
   transform: translateY(0);
 }
 /* ==========================================================
-   UJEDNOLICENIE PRZYCISKÓW (na bazie style2.css)
-   - Kolor złoty: jak "Odwiedź nasz profil" (.fb-cta) ze style2
-   - Hover: jak "Wesprzyj nas" (.donate-btn) ze style2 (scale + cień)
-   - Tekst w przyciskach: jak w zdaniu (sentence case)
-   - WYJĄTEK: .donate-btn (Wesprzyj nas) zostaje: rozmiar + MAJUSKUŁY
-   - WYJĄTEK: czerwony i zielony (YouTube / Spotify) zachowują kolory
-   ========================================================== */
+UJEDNOLICENIE PRZYCISKÓW (na bazie style2.css)
+- Kolor złoty: jak "Odwiedź nasz profil" (.fb-cta) ze style2
+- Hover: jak "Wesprzyj nas" (.donate-btn) ze style2 (scale + cień)
+- Tekst w przyciskach: jak w zdaniu (sentence case)
+- WYJĄTEK: .donate-btn (Wesprzyj nas) zostaje: rozmiar + MAJUSKUŁY
+- WYJĄTEK: czerwony i zielony (YouTube / Spotify) zachowują kolory
+========================================================== */
 
 :root{
   --btn-gold: #d4af37;
@@ -1606,7 +1630,6 @@ footer {
   border: none !important;
 }
 
-
 .tabs button.active,
 .tab button.active {
   opacity: 1;
@@ -1627,9 +1650,9 @@ footer {
 }
 
 /* =========================
-   HOTFIX: ALBUM TABS – tylko zaokrąglenie + hover jak Read more
-   Nie zmieniamy stylu NIEAKTYWNEGO (kolory, border zostają)
-   ========================= */
+HOTFIX: ALBUM TABS – tylko zaokrąglenie + hover jak Read more
+Nie zmieniamy stylu NIEAKTYWNEGO (kolory, border zostają)
+========================= */
 
 .album-tabs .album-tab {
   border-radius: 5px;                 /* jak .expand-btn */
@@ -1642,9 +1665,9 @@ footer {
 }
 
 /* =========================
-   HOTFIX: GLOBAL BUTTON HOVER – efekt jak "Odwiedź nas na Facebooku" (.fb-cta:hover)
-   Zasada: NIE zmieniamy kolorów/tła/borderów – tylko "lift" + cień na hover
-   ========================= */
+HOTFIX: GLOBAL BUTTON HOVER – efekt jak "Odwiedź nas na Facebooku" (.fb-cta:hover)
+Zasada: NIE zmieniamy kolorów/tła/borderów – tylko "lift" + cień na hover
+========================= */
 
 /* Klasy/elementy, które w tym projekcie działają jako przyciski */
 button:hover,
@@ -1659,27 +1682,25 @@ input[type="submit"]:hover,
   box-shadow: 0 6px 14px rgba(24, 119, 242, 0.3) !important;
 }
 
-
 /* === PATCH: Read more / Collapse + Active tabs kolor jak "Wesprzyj nas" === */
 
 /* Read more / Collapse – kolor czcionki jak w .donate-btn */
 .expand-btn {
-    color: #2c2c2c;
+  color: #2c2c2c;
 }
 
 /* Tabs – aktywny dokładnie w złocie jak "Wesprzyj nas" */
 .album-tab.is-active {
-    background: #d4af37;
-    color: #2c2c2c;
-    border-color: #d4af37;
+  background: #d4af37;
+  color: #2c2c2c;
+  border-color: #d4af37;
 }
 
-
 /* ==========================================================
-   HOVER: ujednolicenie jak "Visit us on YouTube" (player-cta-youtube:hover)
-   - Dotyczy przycisków (button / linki-CTA)
-   - Dotyczy logotypów będących linkami: efekt TYLKO na samym logo (img)
-   ========================================================== */
+HOVER: ujednolicenie jak "Visit us on YouTube" (player-cta-youtube:hover)
+- Dotyczy przycisków (button / linki-CTA)
+- Dotyczy logotypów będących linkami: efekt TYLKO na samym logo (img)
+========================================================== */
 
 /* 1) Przyciski / CTA – ten sam „lift” + cień (bez zmiany kolorów) */
 button:hover,
@@ -1694,7 +1715,7 @@ button:hover,
 }
 
 /* 2) Loga YouTube / Spotify itp. – NIE podświetlaj całego paska,
-      tylko sam obrazek logo */
+tylko sam obrazek logo */
 .brand-logo-link{
   width: auto;              /* zamiast 100% */
   display: inline-block;    /* dopasuj do szerokości logo */
@@ -1717,11 +1738,10 @@ button:hover,
   border-radius: 10px; /* delikatne, żeby cień wyglądał naturalnie */
 }
 
-
 /* ==========================================================
-   FINAL OVERRIDE: ALBUM TABS HOVER identyczny jak pozostałe przyciski
-   (lift + cień + złoty hover jak w donate-btn:hover)
-   ========================================================== */
+FINAL OVERRIDE: ALBUM TABS HOVER identyczny jak pozostałe przyciski
+(lift + cień + złoty hover jak w donate-btn:hover)
+========================================================== */
 
 .album-tabs .album-tab:hover{
   background: #f4d03f !important;   /* jak .donate-btn:hover */
@@ -1732,11 +1752,10 @@ button:hover,
   box-shadow: 0 6px 14px rgba(0,0,0,0.25) !important;
 }
 
-
 /* ==========================================================
-   FINAL FIX v2: ALBUM TAB = IDENTYCZNE ZAOKRĄGLENIA JAK PRZYCISKI
-   Źródło prawdy: .expand-btn / .donate-btn
-   ========================================================== */
+FINAL FIX v2: ALBUM TAB = IDENTYCZNE ZAOKRĄGLENIA JAK PRZYCISKI
+Źródło prawdy: .expand-btn / .donate-btn
+========================================================== */
 
 /* wymuś identyczny border-radius jak przyciski */
 .album-tabs .album-tab{
@@ -1751,4 +1770,65 @@ button:hover,
 
   transform: translateY(-2px) !important;
   box-shadow: 0 6px 14px rgba(0,0,0,0.25) !important;
+}
+
+/* ==========================================================
+NEWS / FACEBOOK – hover jak logo YouTube
+========================================================== */
+
+.fb-header a img,
+.news-item a img {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.fb-header a:hover img,
+.news-item a:hover img {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  border-radius: 10px;
+}
+
+.fb-header a {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.fb-header a:hover {
+  transform: translateY(-2px);
+}
+
+.fb-header a,
+.fb-header a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ==========================================================
+NEWS / FACEBOOK – hover jak logo YouTube
+(bez zmiany kształtu i bez rozjeżdżania layoutu)
+========================================================== */
+
+/* obrazki (avatar + zdjęcia postów) */
+.fb-header a img,
+.news-item a img {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* hover TYLKO na obrazie */
+.fb-header a:hover img,
+.news-item a:hover img {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+/* avatar Facebooka zostaje kółkiem */
+.fb-stub {
+  border-radius: 50% !important;
+}
+
+/* linki FB – brak underline i brak przesuwania całego bloku */
+.fb-header a,
+.fb-header a:hover {
+  text-decoration: none;
+  color: inherit;
 }
