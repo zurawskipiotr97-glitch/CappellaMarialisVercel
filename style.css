@@ -224,6 +224,16 @@ section p {
   text-wrap: wrap;
 }
 
+.text-unified {
+  text-align: justify;
+  text-wrap: pretty;
+  hyphens: auto;
+  overflow-wrap: break-word;
+  widows: 2;
+  orphans: 2;
+  line-height: 1.6;
+}
+
 /* ZESPÓŁ SECTION */
 .team-intro {
   display: grid;
