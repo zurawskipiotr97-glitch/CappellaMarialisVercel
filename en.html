@@ -446,6 +446,25 @@
 
 
 <script>
+    function applyHardSpaces(text) {
+        if (!text) return text;
+
+        // Jednoliterowe przyimki/spójniki (PL) + podstawowe (EN)
+        text = text.replace(/(^|\s)([aiouwzAIUOWZ])(\s+)/g, '$1$2&nbsp;');
+        text = text.replace(/(^|\s)(to|of|in|on|at)(\s+)/gi, '$1$2&nbsp;');
+
+        // Skróty
+        text = text.replace(/\b(dr|hab|prof|św|m\.in)\.\s+/gi, '$1.&nbsp;');
+
+        // Liczby + wybrane jednostki/słowa
+        text = text.replace(/(\d)\s+(rok(u|ach)?|lat(a|ach)?|years?|pm|am)/gi, '$1&nbsp;$2');
+
+        // Myślnik opisowy
+        text = text.replace(/\s–\s/g, ' –&nbsp;');
+
+        return text;
+    }
+    
     async function loadFacebookNews() {
         const container = document.getElementById('fb-news');
         if (!container) return;
@@ -473,7 +492,9 @@
                 const imgHtml = post.image ? `<img src="${post.image}" alt="">` : '';
 
                 // Ucinanie tekstu (żeby wyglądało jak dawniej)
-                const rawBody = (post.body || '').replace(/\s+/g, ' ').trim();
+                const rawBody = applyHardSpaces(
+                    (post.body || '').replace(/\s+/g, ' ').trim()
+                );
                 const maxLength = 260; 
                 const shortBody = rawBody.length > maxLength
                     ? rawBody.slice(0, maxLength).trim() + '…'
@@ -486,7 +507,7 @@
                 item.innerHTML = `
                     ${imgHtml}
                     <div class="news-content">
-                        <h3>${post.title || 'Aktualność'}</h3>
+                        <h3>${applyHardSpaces(post.title || 'Aktualność')}</h3>
                         <p class="news-date">${dateText}</p>
                         <p class="news-body text-unified">${shortBody}</p>
                         ${linkButton}
