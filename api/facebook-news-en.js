@@ -175,6 +175,19 @@ export default async function handler(req, res) {
         cached_at: new Date().toISOString()
       });
 
+if (upsertErr) {
+  console.error('EN cache upsert error:', upsertErr);
+  res.statusCode = 500;
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.end(JSON.stringify({
+    error: 'Nie udało się zapisać EN cache do Supabase.',
+    details: upsertErr.message
+  }));
+  return;
+}
+
+
+
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.end(JSON.stringify(enPayload));
