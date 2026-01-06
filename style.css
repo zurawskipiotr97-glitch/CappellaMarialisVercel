@@ -906,19 +906,28 @@ color: #fff;
 
 .fb-header-container
 {
-  width: 100%;
-  justify-content: right;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
   text-align: right;
+  width: 100%;
+  height: 100%; 
 }
 
-.fb-header-facebook{
-    text-align: left;
-  }
+.fb-header-facebook {
+  display: flex;
+  flex-direction: column;      /* tekst jeden pod drugim */
+  justify-content: center;     /* środek w pionie */
+  /* align-items: center;         /* środek w poziomie */
+  text-align: center;          /* centrowanie linii tekstu */
+  height: 100%;                /* ważne – musi znać wysokość */
+}
 
 .fb-note
 {
   color:#f8f7f4;
   text-align: left;
+  margin-bottom: 0;
 }
 
 .fb-text {
@@ -927,7 +936,7 @@ color: #fff;
   color: #1877f2;     /* oficjalny kolor Facebooka */
   letter-spacing: -0.5px;
   display: flex;
-  margin-top: 2rem;
+   /* margin-top: 2rem; */
 }
 
 .fb-section {
