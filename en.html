@@ -23,7 +23,7 @@
                 <img src="images/CM_logo.png" alt="Cappella Marialis Logo">
             </a>
         </div>
-
+        
         <div class="lang-switcher">
             <a href="index.html" class="lang">PL</a>
             <span class="separator">|</span>
@@ -474,7 +474,7 @@
         if (!container) return;
 
         try {
-            const response = await fetch('/api/facebook-news-en');
+            const response = await fetch('/api/facebook-news');
             const data = await response.json();
 
             // Backend zwraca albo tablicę, albo obiekt { posts: [...] }
@@ -505,7 +505,7 @@
                     : rawBody;
 
                 const linkButton = post.link
-                    ? `<a href="${post.link}" target="_blank" class="fb-cta">View on Facebook</a>`
+                    ? `<a href="${post.link}" target="_blank" class="fb-cta">Zobacz na Facebooku</a>`
                     : '';
 
                 item.innerHTML = `
