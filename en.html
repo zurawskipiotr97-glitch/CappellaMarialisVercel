@@ -56,7 +56,7 @@
 
 <body>
         
-<a href="#main-content" class="skip-link">Przejdź do treści</a>
+<a href="#main-content" class="skip-link">Skip to content</a>
 
    <h1 class="visually-hidden">Cappella Marialis</h1>
 
@@ -101,13 +101,13 @@
             <h2>ABOUT US</h2>
             
             <div class="team-intro">
-                <img src="images/CM_zdjecie.jpg" alt="Zespół Cappella Marialis" class="team-image">
+                <img src="images/CM_zdjecie.jpg" alt="Cappella Marialis ensemble" class="team-image">
                 
                 <div class="team-short text-unified">
                     <p> <strong>CAPPELLA MARIALIS</strong> - Vocal ensemble, composed of professional singers, 
                         was revived in 2017 after an absence of over 150 years. Its activities draw on the centuries-old musical tradition of St. Mary's Church in Krakow.
                          The ensemble can be heard in St. Mary's Basilica on Sundays during the 12:00&nbsp;PM Mass, as well as during other liturgical celebrations.</p>
-                <button class="expand-btn" onclick="toggleTeam()">Read more</button>
+                <button class="expand-btn" onclick="toggleTeam(this)" aria-controls="teamFull" aria-expanded="false" data-team-toggle="teamFull">Read more</button>
                 </div>
             </div>
             
@@ -169,7 +169,7 @@
                 <h3>Contact</h3>
                 <p>Email: <strong>cappellamarialis@gmail.com</strong></p>
                 
-                <button class="expand-btn" onclick="toggleTeam()">Collapse</button>
+                <button class="expand-btn" onclick="toggleTeam(this)" aria-controls="teamFull" aria-expanded="false" data-team-toggle="teamFull">Collapse</button>
             </div>
         </section>
 
@@ -209,12 +209,12 @@
                 <button class="donate-btn" onclick="alert('Dziękujemy za zainteresowanie! Wykonaj przelew na podany numer konta lub skontaktuj się z nami przez email.')">Support Us</button>
             
                 </br>
-                <label class="rodo-label">
-                <input type="checkbox" required checked>
+                <label class="rodo-label" for="consent-info">
+                <input id="consent-info" type="checkbox" required>
                 I declare that I have read the information clause
-                <a href="rodo.html" class="album-link" target="_blank">GDPR</a>  
+                <a href="rodo.html" class="album-link" target="_blank" rel="noopener noreferrer">GDPR</a>  
                 and
-                <a href="privacy.html" class="album-link" target="_blank">Privacy Policy</a>.
+                <a href="privacy.html" class="album-link" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
                 </label>
             
             </div>
@@ -237,7 +237,7 @@
                     rel="noopener noreferrer">
                       <img class="fb-stub" src="images/mariacki_short_id2.jpg"
                         src="images/mariacki_short_id2.jpg"
-                        alt="Profil Cappella Marialis na Facebooku">           
+                        alt="Cappella Marialis profile on Facebook">           
                 </a>
             </div>
 
@@ -260,7 +260,7 @@
         </p>
 
         <a href="https://www.facebook.com/CappellaMarialis"
-        target="_blank"
+        target="_blank" rel="noopener noreferrer"
         class="fb-cta">
             Visit us on Facebook
         </a>
@@ -273,7 +273,7 @@
     <h2>LISTEN US</h2>
     
     <div>
-        <img class="image-listen-us" src="images/CM_news.jpg" alt="Koncert Cappella Marialis">
+        <img class="image-listen-us" src="images/CM_news.jpg" alt="Cappella Marialis concert">
     </div>
 
     <div class="listen-layout">
@@ -282,7 +282,7 @@
         <div class="player-block player-youtube">
             <div class="player-header">
                 <a href="https://www.youtube.com/@cappellamarialis8791"
-                target="_blank"
+                target="_blank" rel="noopener noreferrer"
                 class="brand-logo-link"
                 aria-label="Kanał Cappella Marialis na YouTube">
                     <img src="images/youtube-logo-icon.svg"
@@ -306,7 +306,7 @@
 
         <div class="player-footer">
             <a href="https://www.youtube.com/@cappellamarialis8791"
-            target="_blank"
+            target="_blank" rel="noopener noreferrer"
             class="player-cta player-cta-youtube">
                 Visit us on YouTube
             </a>
@@ -318,7 +318,7 @@
 <div class="player-block player-spotify">
     <div class="player-header">
         <a href="https://open.spotify.com/album/0jaKaj1nfsDEEikiDxb3Qk"
-           target="_blank"
+           target="_blank" rel="noopener noreferrer"
            class="brand-logo-link"
            aria-label="Przykładowy album chóralny w Spotify">
             <img src="images/spotify-logo.png"
@@ -341,7 +341,7 @@
 
     <div class="player-footer">
         <a href="https://open.spotify.com/album/0jaKaj1nfsDEEikiDxb3Qk"
-        target="_blank"
+        target="_blank" rel="noopener noreferrer"
         class="player-cta player-cta-spotify">
             Play on Spotify
         </a>
@@ -386,7 +386,7 @@
           </p>
 
           <!-- optional back cover -->
-          <!-- <a href="images/CM_Mirecki_backcover.png" target="_blank" class="album-link">
+          <!-- <a href="images/CM_Mirecki_backcover.png" target="_blank" rel="noopener noreferrer" class="album-link">
             See back cover and tracklist
           </a> -->
         </div>
@@ -407,7 +407,7 @@
           <p class="album-subtitle">
             The vocal ensemble of St.&nbsp;Mary's Basilica in Krakow
           </p>
-          <a href="images/CM_CM_backcover.png" target="_blank" class="album-link">
+          <a href="images/CM_CM_backcover.png" target="_blank" rel="noopener noreferrer" class="album-link">
             See back cover and tracklist
           </a>
         </div>
@@ -440,21 +440,38 @@
     <!-- FOOTER -->
     <footer>
         <p style="color: #d4af37"><strong>Cappella Marialis</strong></p>
-        <a href="regulamin.html" class="album-link" style="margin-right: 5px;"> Sale Rules (PL)</a>
+            <a href="accessibility.html" class="album-link" style="margin-right: 5px;">Accessibility statement</a>
+<a href="regulamin.html" class="album-link" style="margin-right: 5px;"> Sale Rules (PL)</a>
         <a href="rodo.html" class="album-link" style="margin-right: 5px;"> GDPR Clause </a>
         <a href="privacy.html" class="album-link"> Privacy Policy </a>
         <p class="copyright" >© 2025 Cappella Marialis. All rights reserved.</p>
     </footer>
 
     <script>
-        function toggleTeam() {
-            const teamFull = document.getElementById('teamFull');
-            teamFull.classList.toggle('active');
-            
-            // Smooth scroll do sekcji
-            if (teamFull.classList.contains('active')) {
+        function toggleTeam(btn) {
+            const panelId = (btn && btn.getAttribute && btn.getAttribute('aria-controls')) || 'teamFull';
+            const teamFull = document.getElementById(panelId);
+            if (!teamFull) return;
+
+            const willExpand = !teamFull.classList.contains('active');
+            teamFull.classList.toggle('active', willExpand);
+
+            // aria-expanded on all related toggles
+            document.querySelectorAll('[data-team-toggle="' + panelId + '"]').forEach(b => {
+                b.setAttribute('aria-expanded', String(willExpand));
+            });
+
+            // Smooth scroll when expanding
+            if (willExpand) {
                 setTimeout(() => {
                     teamFull.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } else if (btn && typeof btn.focus === 'function') {
+                // return focus to the trigger if collapsing from inside the panel
+                btn.focus();
+            }
+        }
+);
                 }, 100);
             }
         }
@@ -562,7 +579,7 @@
                     : rawBody;
 
                 const linkButton = post.link
-                    ? `<a href="${post.link}" target="_blank" class="fb-cta">View on Facebook</a>`
+                    ? `<a href="${post.link}" target="_blank" rel="noopener noreferrer" class="fb-cta">View on Facebook</a>`
                     : '';
 
                 item.innerHTML = `
