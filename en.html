@@ -505,13 +505,13 @@
                     : rawBody;
 
                 const linkButton = post.link
-                    ? `<a href="${post.link}" target="_blank" class="fb-cta">Zobacz na Facebooku</a>`
+                    ? `<a href="${post.link}" target="_blank" class="fb-cta">View on Facebook</a>`
                     : '';
 
                 item.innerHTML = `
                     ${imgHtml}
                     <div class="news-content">
-                        <h3>${applyHardSpaces(post.title || 'Aktualność')}</h3>
+                        <h3>${applyHardSpaces(post.title || 'News')}</h3>
                         <p class="news-date">${dateText}</p>
                         <p class="news-body text-unified">${shortBody}</p>
                         ${linkButton}
