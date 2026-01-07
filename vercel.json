@@ -1,8 +1,25 @@
 {
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Accept-Ranges",
+          "value": "none"
+        }
+      ]
+    }
+  ],
   "redirects": [
     {
       "source": "/index.html",
       "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "cappellamarialis.pl" }],
+      "destination": "https://www.cappellamarialis.pl/$1",
       "permanent": true
     }
   ]
