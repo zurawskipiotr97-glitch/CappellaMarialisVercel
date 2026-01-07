@@ -92,5 +92,39 @@
     <a href="accessibility.html" class="album-link">Accessibility statement</a>
     <p class="copyright">© 2025 Cappella Marialis. All rights reserved.</p>
   </footer>
+
+<button id="scrollToTop" aria-label="Back to top">↑</button>
+
+<script>
+  (function() {
+    const scrollBtn = document.getElementById('scrollToTop');
+    if (!scrollBtn) return;
+
+    function shouldReduceMotion() {
+      return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    function updateVisibility() {
+      scrollBtn.style.display = (window.scrollY > 400) ? 'block' : 'none';
+    }
+
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    updateVisibility();
+
+    function goTopNow(e) {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: shouldReduceMotion() ? 'auto' : 'smooth'
+      });
+    }
+
+    // Key: react before click to avoid "first tap stops momentum scroll"
+    scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
+    scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
+    scrollBtn.addEventListener('click', goTopNow);
+  })();
+</script>
+
 </body>
 </html>

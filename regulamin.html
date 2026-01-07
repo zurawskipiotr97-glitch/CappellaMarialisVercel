@@ -187,26 +187,53 @@
         <p class="copyright">© 2025 Cappella Marialis. Wszelkie prawa zastrzeżone.</p>
     </footer>
 
-    <!-- <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
+    <!-- <button id="scrollToTop" type="button" aria-label="Wróć na górę">↑</button>
 
-    <script>
-    const scrollBtn = document.getElementById('scrollToTop');
+<script>
+(() => {
+  const scrollBtn = document.getElementById('scrollToTop');
+  if (!scrollBtn) return;
 
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 400) {
-        scrollBtn.style.display = 'block';
-        } else {
-        scrollBtn.style.display = 'none';
-        }
+  const SHOW_AT = 400;
+
+  const prefersReducedMotion = () =>
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function updateVisibility() {
+    scrollBtn.style.display = (window.scrollY > SHOW_AT) ? 'block' : 'none';
+  }
+
+  function goTop(e) {
+    // "pointerdown"/"touchstart" fires even during inertial scrolling; preventDefault avoids the
+    // first tap being "consumed" only to stop the current scroll.
+    if (e) {
+      if (e.type === 'keydown') {
+        const k = e.key;
+        if (k !== 'Enter' && k !== ' ' && k !== 'Spacebar') return;
+      }
+      e.preventDefault();
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth'
     });
+  }
 
-    scrollBtn.addEventListener('click', () => {
-        window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-        });
-    });
-    </script> -->
+  updateVisibility();
+  window.addEventListener('scroll', updateVisibility, { passive: true });
+
+  // Trigger immediately, even while the page is still "gliding"
+  scrollBtn.addEventListener('pointerdown', goTop, { passive: false });
+  scrollBtn.addEventListener('touchstart', goTop, { passive: false });
+  scrollBtn.addEventListener('mousedown', goTop, { passive: false });
+  scrollBtn.addEventListener('keydown', goTop);
+
+  // Prevent delayed click from double-triggering
+  scrollBtn.addEventListener('click', (e) => e.preventDefault());
+})();
+</script>
+-->
 
     <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
 

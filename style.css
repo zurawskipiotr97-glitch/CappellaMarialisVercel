@@ -1964,11 +1964,7 @@ NEWS / FACEBOOK – hover jak logo YouTube
 } */
 
 /* Pokazuj tylko na mobile */
-/* @media (min-width: 769px) {
-  #scrollToTop {
-    display: none !important;
-  }
-} */
+/* */
 
 
 #scrollToTop {
@@ -1987,13 +1983,6 @@ NEWS / FACEBOOK – hover jak logo YouTube
   display: none;
   z-index: 999;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-/* ❌ TABLETY + DESKTOP – NIGDY */
-@media (min-width: 769px) {
-  #scrollToTop {
-    display: none !important;
-  }
 }
 
 .skip-link {
@@ -2093,3 +2082,6 @@ NEWS / FACEBOOK – hover jak logo YouTube
 @media (prefers-reduced-motion: reduce) {
   .toast { transition: none; }
 }
+
+
+#scrollToTop{ touch-action: manipulation; }
