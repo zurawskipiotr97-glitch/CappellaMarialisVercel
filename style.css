@@ -2093,3 +2093,37 @@ NEWS / FACEBOOK – hover jak logo YouTube
     transition: none;
   }
 }
+
+
+/* =========================================================
+   Toast – wariant zgodny stylistycznie (brand: granat + złoto)
+   Nadpisuje bazowy toast WCAG.
+   ========================================================= */
+.toast{
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+  color: #ffffff;
+  border: 2px solid rgba(212, 175, 55, 0.95);
+  box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+  border-radius: 16px;
+}
+.toast::before{
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 8px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d4af37, #f5e29e, #d4af37);
+  opacity: 0.95;
+}
+.toast__content{
+  padding-top: 8px;
+}
+.toast__close{
+  background: rgba(255,255,255,0.10);
+  border: 2px solid rgba(212,175,55,0.9);
+}
+.toast__close:hover{
+  background: rgba(212,175,55,0.18);
+}
