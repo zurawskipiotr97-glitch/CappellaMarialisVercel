@@ -9,7 +9,7 @@
           "value": "(facebookexternalhit|Facebot|meta-externalagent|whatsapp)"
         }
       ],
-      "destination": "/api/_meta?p=$1"
+      "destination": "/api/meta?p=$1"
     }
   ],
   "redirects": [

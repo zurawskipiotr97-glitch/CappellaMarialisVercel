@@ -2,7 +2,7 @@
 // This endpoint always returns 200 OK (no Range/206) and includes OG/Twitter tags.
 // It is invoked transparently for Meta bots via vercel.json rewrite.
 //
-// /api/_meta?p=<path>
+// /api/meta?p=<path>
 const OG_IMAGE = "https://www.cappellamarialis.pl/images/og-cover-1200x630.jpg";
 const FB_APP_ID = "1519385729118488";
 
