@@ -179,25 +179,31 @@ export default async function handler(req, res) {
 
         if (diffHours < cacheHrs) {
           const plPayload = cacheRow.data;
-          const posts = plPayload?.posts || [];
-          const sourceHash = plPayload?.source_hash || stablePostsFingerprint(posts);
 
+          // Model B: gdy prosisz o EN, nigdy nie generujemy tłumaczeń na tym wywołaniu.
+          // Zwracamy tylko to, co jest już w cache EN.
           if (lang === 'en') {
-            const enPayload = await ensureEnglishCache({ sourceHash, posts });
-            res.statusCode = 200;
+            const { data: enRow } = await supabase
+              .from('facebook_cache')
+              .select('data')
+              .eq('cache_key', cacheKeyEN)
+              .maybeSingle();
+
+            if (enRow?.data?.posts) {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json; charset=utf-8');
+              res.end(JSON.stringify(enRow.data));
+              return;
+            }
+
+            // EN nie jest jeszcze przygotowane — trzeba najpierw odświeżyć PL z prefetch_en=1
+            res.statusCode = 503;
             res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.end(JSON.stringify(enPayload));
+            res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane. Odśwież wersję PL (index.html), aby wygenerować tłumaczenie.' }));
             return;
           }
 
-          if (prefetchEn) {
-            try {
-              await ensureEnglishCache({ sourceHash, posts });
-            } catch (e) {
-              console.error('Prefetch EN error:', e);
-            }
-          }
-
+          // Dla PL zwracamy cache bez zmian.
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json; charset=utf-8');
           res.end(JSON.stringify(plPayload));
@@ -293,6 +299,11 @@ export default async function handler(req, res) {
 
     const sourceHash = stablePostsFingerprint(posts);
 
+    // Model B: tłumaczymy EN tylko wtedy, gdy ZMIENIŁ SIĘ stan postów PL.
+    const previousHash = fallbackCache?.source_hash || null;
+    const plChanged = !previousHash || previousHash !== sourceHash;
+
+
     const payload = {
       cached_at: Math.floor(nowMs / 1000),
       source_hash: sourceHash,
@@ -314,14 +325,27 @@ export default async function handler(req, res) {
       }
 
       if (lang === 'en') {
-        const enPayload = await ensureEnglishCache({ sourceHash, posts });
-        res.statusCode = 200;
+        // Model B: nie generujemy tłumaczeń przy wywołaniu EN.
+        const { data: enRow } = await supabase
+          .from('facebook_cache')
+          .select('data')
+          .eq('cache_key', cacheKeyEN)
+          .maybeSingle();
+
+        if (enRow?.data?.posts) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.end(JSON.stringify(enRow.data));
+          return;
+        }
+
+        res.statusCode = 503;
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.end(JSON.stringify(enPayload));
+        res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane. Odśwież wersję PL (index.html), aby wygenerować tłumaczenie.' }));
         return;
       }
 
-      if (prefetchEn) {
+      if (prefetchEn && plChanged) {
         try {
           await ensureEnglishCache({ sourceHash, posts });
         } catch (e) {
@@ -338,12 +362,22 @@ export default async function handler(req, res) {
     // Brak nowych postów → stary cache
     if (fallbackCache) {
       if (lang === 'en') {
-        const postsFallback = fallbackCache?.posts || [];
-        const hashFallback = fallbackCache?.source_hash || stablePostsFingerprint(postsFallback);
-        const enPayload = await ensureEnglishCache({ sourceHash: hashFallback, posts: postsFallback });
-        res.statusCode = 200;
+        const { data: enRow } = await supabase
+          .from('facebook_cache')
+          .select('data')
+          .eq('cache_key', cacheKeyEN)
+          .maybeSingle();
+
+        if (enRow?.data?.posts) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json; charset=utf-8');
+          res.end(JSON.stringify(enRow.data));
+          return;
+        }
+
+        res.statusCode = 503;
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.end(JSON.stringify(enPayload));
+        res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane. Odśwież wersję PL (index.html), aby wygenerować tłumaczenie.' }));
         return;
       }
 
