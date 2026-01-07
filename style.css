@@ -1996,3 +1996,18 @@ NEWS / FACEBOOK – hover jak logo YouTube
   }
 }
 
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 12px;
+  background: #000;
+  color: #fff;
+  padding: 8px 12px;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
