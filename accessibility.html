@@ -93,38 +93,38 @@
     <p class="copyright">© 2025 Cappella Marialis. All rights reserved.</p>
   </footer>
 
-<button id="scrollToTop" aria-label="Back to top">↑</button>
+    <button id="scrollToTop" aria-label="Back to top">↑</button>
 
-<script>
-  (function() {
-    const scrollBtn = document.getElementById('scrollToTop');
-    if (!scrollBtn) return;
+    <script>
+      (function() {
+        const scrollBtn = document.getElementById('scrollToTop');
+        if (!scrollBtn) return;
 
-    function shouldReduceMotion() {
-      return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
+        function reduceMotion() {
+          return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
 
-    function updateVisibility() {
-      scrollBtn.style.display = (window.scrollY > 400) ? 'block' : 'none';
-    }
+        function updateVisibility() {
+          scrollBtn.style.display = (window.scrollY > 400) ? 'block' : 'none';
+        }
 
-    window.addEventListener('scroll', updateVisibility, { passive: true });
-    updateVisibility();
+        window.addEventListener('scroll', updateVisibility, { passive: true });
+        updateVisibility();
 
-    function goTopNow(e) {
-      if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      window.scrollTo({
-        top: 0,
-        behavior: shouldReduceMotion() ? 'auto' : 'smooth'
-      });
-    }
+        function goTopNow(e) {
+          if (e && typeof e.preventDefault === 'function') e.preventDefault();
+          window.scrollTo({
+            top: 0,
+            behavior: reduceMotion() ? 'auto' : 'smooth'
+          });
+        }
 
-    // Key: react before click to avoid "first tap stops momentum scroll"
-    scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
-    scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
-    scrollBtn.addEventListener('click', goTopNow);
-  })();
-</script>
+        // Key: handle before click so first tap during momentum scroll triggers action
+        scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
+        scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
+        scrollBtn.addEventListener('click', goTopNow);
+      })();
+    </script>
 
 </body>
 </html>

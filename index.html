@@ -589,80 +589,9 @@
         window.addEventListener('DOMContentLoaded', loadFacebookNews);
     </script>
 
-    <!-- <button id="scrollToTop" type="button" aria-label="Wróć na górę">↑</button>
-
-<script>
-(() => {
-  const scrollBtn = document.getElementById('scrollToTop');
-  if (!scrollBtn) return;
-
-  const SHOW_AT = 400;
-
-  const prefersReducedMotion = () =>
-    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function updateVisibility() {
-    scrollBtn.style.display = (window.scrollY > SHOW_AT) ? 'block' : 'none';
-  }
-
-  function goTop(e) {
-    // "pointerdown"/"touchstart" fires even during inertial scrolling; preventDefault avoids the
-    // first tap being "consumed" only to stop the current scroll.
-    if (e) {
-      if (e.type === 'keydown') {
-        const k = e.key;
-        if (k !== 'Enter' && k !== ' ' && k !== 'Spacebar') return;
-      }
-      e.preventDefault();
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: prefersReducedMotion() ? 'auto' : 'smooth'
-    });
-  }
-
-  updateVisibility();
-  window.addEventListener('scroll', updateVisibility, { passive: true });
-
-  // Trigger immediately, even while the page is still "gliding"
-  scrollBtn.addEventListener('pointerdown', goTop, { passive: false });
-  scrollBtn.addEventListener('touchstart', goTop, { passive: false });
-  scrollBtn.addEventListener('mousedown', goTop, { passive: false });
-  scrollBtn.addEventListener('keydown', goTop);
-
-  // Prevent delayed click from double-triggering
-  scrollBtn.addEventListener('click', (e) => e.preventDefault());
-})();
-</script>
--->
-
-    <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
+    <!-- -->
 
     <script>
-        const scrollBtn = document.getElementById('scrollToTop');
-
-        function isMobile() {
-            return window.matchMedia("(max-width: 768px)").matches;
-        }
-
-        window.addEventListener('scroll', () => {
-            if (!isMobile()) return;
-
-            if (window.scrollY > 400) {
-            scrollBtn.style.display = 'block';
-            } else {
-            scrollBtn.style.display = 'none';
-            }
-        });
-
-        scrollBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') });
-        });
-    </script>
-
-
-<script>
   function showDonationInfo() {
     const status = document.getElementById('donationStatus');
     if (!status) return;
@@ -716,6 +645,40 @@
     toastTimer = null;
   }
 </script>
+
+
+    <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
+
+    <script>
+      (function() {
+        const scrollBtn = document.getElementById('scrollToTop');
+        if (!scrollBtn) return;
+
+        function reduceMotion() {
+          return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
+
+        function updateVisibility() {
+          scrollBtn.style.display = (window.scrollY > 400) ? 'block' : 'none';
+        }
+
+        window.addEventListener('scroll', updateVisibility, { passive: true });
+        updateVisibility();
+
+        function goTopNow(e) {
+          if (e && typeof e.preventDefault === 'function') e.preventDefault();
+          window.scrollTo({
+            top: 0,
+            behavior: reduceMotion() ? 'auto' : 'smooth'
+          });
+        }
+
+        // Key: handle before click so first tap during momentum scroll triggers action
+        scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
+        scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
+        scrollBtn.addEventListener('click', goTopNow);
+      })();
+    </script>
 
 </body>
 </html>
