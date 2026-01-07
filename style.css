@@ -2082,5 +2082,17 @@ NEWS / FACEBOOK – hover jak logo YouTube
 @media (prefers-reduced-motion: reduce) {
   .toast { transition: none; }
 }
+    
+/* Scroll to top – SVG icon centering + mobile tap */
+#scrollToTop{
+  display: none; /* JS controls visibility */
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
 
-#scrollToTop{ touch-action: manipulation; }
+#scrollToTop .to-top-icon{
+  width: 22px;
+  height: 22px;
+  display: block;
+}

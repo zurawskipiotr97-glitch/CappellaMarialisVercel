@@ -586,9 +586,9 @@
     window.addEventListener('DOMContentLoaded', loadFacebookNews);
     </script>
 
-    <!-- -->
-
-    <script>
+    <!--
+-->
+<script>
   function showDonationInfo() {
     const status = document.getElementById('donationStatus');
     if (!status) return;
@@ -644,7 +644,11 @@
 </script>
 
 
-    <button id="scrollToTop" aria-label="Back to top">↑</button>
+    <button id="scrollToTop" aria-label="Back to top" type="button">
+      <svg class="to-top-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
 
     <script>
       (function() {
@@ -662,15 +666,29 @@
         window.addEventListener('scroll', updateVisibility, { passive: true });
         updateVisibility();
 
+        let pending = false;
+
         function goTopNow(e) {
+          if (pending) return;
+          pending = true;
+
           if (e && typeof e.preventDefault === 'function') e.preventDefault();
-          window.scrollTo({
-            top: 0,
-            behavior: reduceMotion() ? 'auto' : 'smooth'
+
+          const behavior = reduceMotion() ? 'auto' : 'smooth';
+
+          // Help cancel momentum scrolling first
+          window.scrollTo({ top: window.scrollY, behavior: 'auto' });
+
+          // Start new scroll on next frames (works better on iOS/Android during momentum)
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              window.scrollTo({ top: 0, behavior });
+              setTimeout(() => { pending = false; }, 250);
+            });
           });
         }
 
-        // Key: handle before click so first tap during momentum scroll triggers action
+        // Trigger before click so first tap works during momentum
         scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
         scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
         scrollBtn.addEventListener('click', goTopNow);
