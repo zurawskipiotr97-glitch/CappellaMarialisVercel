@@ -2024,3 +2024,11 @@ NEWS / FACEBOOK – hover jak logo YouTube
     scroll-behavior: auto !important;
   }
 }
+
+.team-full h3,
+.listen-item h3,
+.player-block h3{
+  border-left: 4px solid #d4af37;
+  padding-left: 0.6rem;
+}
+
