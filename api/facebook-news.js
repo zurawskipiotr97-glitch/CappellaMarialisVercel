@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -16,11 +17,58 @@ async function loadConfig(keys) {
     throw new Error('Błąd czytania konfiguracji z Supabase: ' + error.message);
   }
 
-  const map = {};
+  const cfg = {};
   for (const row of data || []) {
-    map[row.key] = row.value;
+    cfg[row.key] = row.value;
   }
-  return map;
+
+  // Walidacja minimalna
+  for (const k of keys) {
+    // deepl_api_key jest opcjonalny (bo endpoint PL może działać bez niego)
+    if (k === 'deepl_api_key') continue;
+    if (!cfg[k]) {
+      throw new Error(`Brak konfiguracji w Supabase (secret_config): ${k}`);
+    }
+  }
+
+  return cfg;
+}
+
+function stablePostsFingerprint(posts) {
+  const minimal = (posts || []).map(p => ({
+    title: p.title || '',
+    body: p.body || '',
+    date: p.date || '',
+    link: p.link || '',
+    image: p.image || ''
+  }));
+  const json = JSON.stringify(minimal);
+  return crypto.createHash('sha256').update(json).digest('hex');
+}
+
+async function translateWithDeepL(text, apiKey) {
+  if (!text) return '';
+  const params = new URLSearchParams();
+  params.set('text', text);
+  params.set('target_lang', 'EN');
+
+  // DeepL API Free endpoint:
+  // https://api-free.deepl.com/v2/translate
+  const resp = await fetch('https://api-free.deepl.com/v2/translate', {
+    method: 'POST',
+    headers: {
+      'Authorization': `DeepL-Auth-Key ${apiKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: params.toString()
+  });
+
+  if (!resp.ok) {
+    throw new Error(`DeepL HTTP ${resp.status}`);
+  }
+
+  const json = await resp.json();
+  return json?.translations?.[0]?.text || text;
 }
 
 export default async function handler(req, res) {
@@ -36,7 +84,8 @@ export default async function handler(req, res) {
       'facebook_page_id',
       'posts_limit',
       'cache_refresh_hours',
-      'page_access_token'
+      'page_access_token',
+      'deepl_api_key'
     ]);
 
     const pageId = cfg['facebook_page_id'];
@@ -44,25 +93,82 @@ export default async function handler(req, res) {
     const cacheHrs = Number(cfg['cache_refresh_hours'] ?? '0.25');
     const accessToken = cfg['page_access_token'];
 
-    if (!pageId || !accessToken) {
-      res.statusCode = 500;
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({
-        error: 'Brak page_id lub page_access_token. Najpierw uruchom logowanie administratora.'
-      }));
-      return;
+    const nowMs = Date.now();
+
+    // Parametry endpointu:
+    // - /api/facebook-news?lang=en -> zwraca EN (z cache, a jeśli PL się zmieniło to aktualizuje EN)
+    // - /api/facebook-news?prefetch_en=1 -> przy wywołaniu PL próbuje odświeżyć EN (tylko jeśli zmiana)
+    const urlObj = new URL(req.url, 'http://localhost');
+    const lang = (urlObj.searchParams.get('lang') || 'pl').toLowerCase();
+    const prefetchEn = urlObj.searchParams.get('prefetch_en') === '1';
+
+    const cacheKeyPL = 'facebook_news';
+    const cacheKeyEN = 'facebook_news_en';
+
+    async function ensureEnglishCache({ sourceHash, posts }) {
+      const deeplKey = cfg['deepl_api_key'];
+      if (!deeplKey) {
+        throw new Error('Brak deepl_api_key w secret_config.');
+      }
+
+      // 1) Sprawdź czy EN cache już jest aktualne
+      const { data: enRow, error: enReadErr } = await supabase
+        .from('facebook_cache')
+        .select('data')
+        .eq('cache_key', cacheKeyEN)
+        .maybeSingle();
+
+      if (enReadErr) {
+        console.error('Supabase EN cache read error:', enReadErr);
+      }
+
+      const existingHash = enRow?.data?.source_hash;
+      if (existingHash && existingHash === sourceHash) {
+        return enRow.data;
+      }
+
+      // 2) Tłumaczenie tylko gdy hash się różni
+      const translatedPosts = [];
+      for (const p of posts || []) {
+        const titleEn = await translateWithDeepL(p.title || '', deeplKey);
+        const bodyEn = await translateWithDeepL(p.body || '', deeplKey);
+
+        translatedPosts.push({
+          ...p,
+          title: titleEn,
+          body: bodyEn
+        });
+      }
+
+      const enPayload = {
+        cached_at: Math.floor(Date.now() / 1000),
+        source_hash: sourceHash,
+        posts: translatedPosts
+      };
+
+      // 3) Zapis EN cache
+      const { error: enWriteErr } = await supabase
+        .from('facebook_cache')
+        .upsert({
+          cache_key: cacheKeyEN,
+          data: enPayload,
+          cached_at: new Date().toISOString()
+        });
+
+      if (enWriteErr) {
+        throw new Error(`Supabase EN cache write error: ${enWriteErr.message}`);
+      }
+
+      return enPayload;
     }
 
-    const nowMs = Date.now();
-    const cacheKey = 'facebook_news';
-
-    // 1. Cache z Supabase
+    // 1. Cache z Supabase (PL)
     let fallbackCache = null;
     if (cacheHrs > 0) {
       const { data: cacheRow, error: cacheError } = await supabase
         .from('facebook_cache')
         .select('data, cached_at')
-        .eq('cache_key', cacheKey)
+        .eq('cache_key', cacheKeyPL)
         .maybeSingle();
 
       if (cacheError) {
@@ -70,10 +176,31 @@ export default async function handler(req, res) {
       } else if (cacheRow && cacheRow.data && cacheRow.cached_at) {
         const cachedTime = new Date(cacheRow.cached_at).getTime();
         const diffHours = (nowMs - cachedTime) / 1000 / 3600;
+
         if (diffHours < cacheHrs) {
+          const plPayload = cacheRow.data;
+          const posts = plPayload?.posts || [];
+          const sourceHash = plPayload?.source_hash || stablePostsFingerprint(posts);
+
+          if (lang === 'en') {
+            const enPayload = await ensureEnglishCache({ sourceHash, posts });
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.end(JSON.stringify(enPayload));
+            return;
+          }
+
+          if (prefetchEn) {
+            try {
+              await ensureEnglishCache({ sourceHash, posts });
+            } catch (e) {
+              console.error('Prefetch EN error:', e);
+            }
+          }
+
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json; charset=utf-8');
-          res.end(JSON.stringify(cacheRow.data));
+          res.end(JSON.stringify(plPayload));
           return;
         } else {
           fallbackCache = cacheRow.data;
@@ -88,21 +215,17 @@ export default async function handler(req, res) {
       'created_time',
       'permalink_url',
       'full_picture'
-    ];
+    ].join(',');
 
-    const params = new URLSearchParams({
-      fields: fields.join(','),
-      limit: String(limit),
-      access_token: accessToken
-    });
-
-    const url = `https://graph.facebook.com/v21.0/${encodeURIComponent(pageId)}/posts?` + params.toString();
+    const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
     let fbJson;
     try {
-      const fbRes = await fetch(url);
+      const fbRes = await fetch(fbUrl);
       if (!fbRes.ok) {
-        throw new Error(`Facebook HTTP ${fbRes.status}`);
+        const text = await fbRes.text();
+        console.error('Facebook API error:', fbRes.status, text);
+        throw new Error('Facebook API error');
       }
       fbJson = await fbRes.json();
     } catch (err) {
@@ -159,7 +282,6 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-
       posts.push({
         title,
         body: message,
@@ -169,23 +291,42 @@ export default async function handler(req, res) {
       });
     }
 
+    const sourceHash = stablePostsFingerprint(posts);
+
     const payload = {
       cached_at: Math.floor(nowMs / 1000),
+      source_hash: sourceHash,
       posts
     };
 
-    // 4. Zapis cache
+    // 4. Zapis cache PL
     if (posts.length > 0) {
       const { error: upsertError } = await supabase
         .from('facebook_cache')
         .upsert({
-          cache_key: cacheKey,
+          cache_key: cacheKeyPL,
           data: payload,
           cached_at: new Date().toISOString()
         });
 
       if (upsertError) {
         console.error('Błąd zapisu cache do Supabase:', upsertError);
+      }
+
+      if (lang === 'en') {
+        const enPayload = await ensureEnglishCache({ sourceHash, posts });
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.end(JSON.stringify(enPayload));
+        return;
+      }
+
+      if (prefetchEn) {
+        try {
+          await ensureEnglishCache({ sourceHash, posts });
+        } catch (e) {
+          console.error('Prefetch EN error:', e);
+        }
       }
 
       res.statusCode = 200;
@@ -196,6 +337,16 @@ export default async function handler(req, res) {
 
     // Brak nowych postów → stary cache
     if (fallbackCache) {
+      if (lang === 'en') {
+        const postsFallback = fallbackCache?.posts || [];
+        const hashFallback = fallbackCache?.source_hash || stablePostsFingerprint(postsFallback);
+        const enPayload = await ensureEnglishCache({ sourceHash: hashFallback, posts: postsFallback });
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.end(JSON.stringify(enPayload));
+        return;
+      }
+
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.end(JSON.stringify(fallbackCache));
@@ -204,7 +355,7 @@ export default async function handler(req, res) {
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify({ cached_at: Math.floor(nowMs / 1000), posts: [] }));
+    res.end(JSON.stringify({ cached_at: Math.floor(nowMs / 1000), source_hash: stablePostsFingerprint([]), posts: [] }));
   } catch (err) {
     console.error(err);
     res.statusCode = 500;

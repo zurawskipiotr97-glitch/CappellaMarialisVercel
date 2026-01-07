@@ -474,7 +474,7 @@
         if (!container) return;
 
         try {
-            const response = await fetch('/api/facebook-news');
+            const response = await fetch('/api/facebook-news?lang=en');
             const data = await response.json();
 
             // Backend zwraca albo tablicę, albo obiekt { posts: [...] }
