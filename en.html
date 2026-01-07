@@ -83,7 +83,7 @@
     </header>
 
     <!-- NAVIGATION -->
-    <nav>
+    <nav aria-label="Main navigation">
         <ul>
             <li><a href="#zespol">ABOUT US</a></li>
             <li><a href="#wesprzyj">SUPPORT US</a></li>
@@ -206,7 +206,9 @@
                     </div>
                 </div>
                 
-                <button class="donate-btn" onclick="alert('Dziękujemy za zainteresowanie! Wykonaj przelew na podany numer konta lub skontaktuj się z nami przez email.')">Support Us</button>
+                <button class="donate-btn" type="button" onclick="showDonationInfo()">Support Us</button>
+                <p id="donationStatus" class="visually-hidden" role="status" aria-live="polite">Thank you for your interest. Please make a bank transfer to the account number provided, or contact us by email.</p>
+
             
                 </br>
                 <label class="rodo-label" for="consent-info">
@@ -479,7 +481,7 @@
                 const targetId = this.getAttribute('href').substring(1);
                 const targetElement = document.getElementById(targetId);
                 if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    targetElement.scrollIntoView({ behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'), block: 'start' });
                 }
             });
         });
@@ -598,7 +600,7 @@
     window.addEventListener('DOMContentLoaded', loadFacebookNews);
     </script>
 
-    <!-- <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
+    <!-- <button id="scrollToTop" aria-label="Back to top">↑</button>
 
     <script>
     const scrollBtn = document.getElementById('scrollToTop');
@@ -612,14 +614,11 @@
     });
 
     scrollBtn.addEventListener('click', () => {
-        window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') });
     });
     </script> -->
 
-    <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
+    <button id="scrollToTop" aria-label="Back to top">↑</button>
 
     <script>
         const scrollBtn = document.getElementById('scrollToTop');
@@ -639,12 +638,22 @@
         });
 
         scrollBtn.addEventListener('click', () => {
-            window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') });
         });
     </script>
+
+
+<script>
+  function showDonationInfo() {
+    const status = document.getElementById('donationStatus');
+    if (!status) return;
+    // Re-announce message for screen readers
+    status.textContent = status.textContent;
+    status.classList.remove('visually-hidden');
+    // Hide again after a moment for visual users (message is not needed visually)
+    window.setTimeout(() => status.classList.add('visually-hidden'), 3000);
+  }
+</script>
 
 </body>
 </html>
