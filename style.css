@@ -2033,3 +2033,63 @@ NEWS / FACEBOOK – hover jak logo YouTube
 }
 
 
+
+
+/* =========================================================
+   WCAG 2.1 AA – Toast / banner informacyjny
+   ========================================================= */
+.toast {
+  position: fixed;
+  top: calc(120px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4000;
+
+  width: min(760px, calc(100% - 24px));
+  padding: 14px 16px;
+  border-radius: 14px;
+
+  background: #111827;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.toast__content {
+  font-size: 1rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.toast__close {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.toast__close:focus-visible {
+  outline: 3px solid #FBBF24;
+  outline-offset: 2px;
+}
+
+.toast.is-hidden {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    transition: none;
+  }
+}

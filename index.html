@@ -644,5 +644,48 @@
   }
 </script>
 
+
+<div id="donationToast"
+     class="toast is-hidden"
+     role="status"
+     aria-live="polite"
+     aria-atomic="true">
+  <div class="toast__content" id="donationToastText"></div>
+  <button type="button"
+          class="toast__close"
+          aria-label="Close message"
+          onclick="hideDonationToast()">×</button>
+</div>
+
+<script>
+  let toastTimer = null;
+
+  function showDonationInfo() {
+    const status = document.getElementById('donationStatus');
+    const toast = document.getElementById('donationToast');
+    const text  = document.getElementById('donationToastText');
+    if (!status || !toast || !text) return;
+
+    const msg = status.textContent.trim();
+
+    text.textContent = msg;
+    toast.classList.remove('is-hidden');
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideDonationToast, 8000);
+
+    status.textContent = '';
+    setTimeout(() => status.textContent = msg, 20);
+  }
+
+  function hideDonationToast() {
+    const toast = document.getElementById('donationToast');
+    if (!toast) return;
+    toast.classList.add('is-hidden');
+    clearTimeout(toastTimer);
+    toastTimer = null;
+  }
+</script>
+
 </body>
 </html>
