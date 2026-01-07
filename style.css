@@ -1937,3 +1937,62 @@ NEWS / FACEBOOK – hover jak logo YouTube
   border: 0;
 }
 
+/* === Scroll to top button === */
+/* #scrollToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
+  color: #111;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: none;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}*/
+
+/* Hover tylko na desktopach */
+/* @media (hover: hover) {
+  #scrollToTop:hover {
+    transform: translateY(-3px);
+  }
+} */
+
+/* Pokazuj tylko na mobile */
+/* @media (min-width: 769px) {
+  #scrollToTop {
+    display: none !important;
+  }
+} */
+
+
+#scrollToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
+  color: #111;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: none;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* ❌ TABLETY + DESKTOP – NIGDY */
+@media (min-width: 769px) {
+  #scrollToTop {
+    display: none !important;
+  }
+}
+

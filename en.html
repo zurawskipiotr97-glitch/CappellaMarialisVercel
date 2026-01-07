@@ -576,5 +576,53 @@
     window.addEventListener('DOMContentLoaded', loadFacebookNews);
     </script>
 
+    <!-- <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
+
+    <script>
+    const scrollBtn = document.getElementById('scrollToTop');
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+        scrollBtn.style.display = 'block';
+        } else {
+        scrollBtn.style.display = 'none';
+        }
+    });
+
+    scrollBtn.addEventListener('click', () => {
+        window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+        });
+    });
+    </script> -->
+
+    <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
+
+    <script>
+        const scrollBtn = document.getElementById('scrollToTop');
+
+        function isMobile() {
+            return window.matchMedia("(max-width: 768px)").matches;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!isMobile()) return;
+
+            if (window.scrollY > 400) {
+            scrollBtn.style.display = 'block';
+            } else {
+            scrollBtn.style.display = 'none';
+            }
+        });
+
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+            });
+        });
+    </script>
+
 </body>
 </html>
