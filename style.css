@@ -2025,10 +2025,11 @@ NEWS / FACEBOOK – hover jak logo YouTube
   }
 }
 
+/* WCAG AA – poprawa kontrastu nagłówków h3 na jasnym tle */
 .team-full h3,
 .listen-item h3,
 .player-block h3{
-  border-left: 4px solid #d4af37;
-  padding-left: 0.6rem;
+  color: #5a4a12; /* ciemny „złoty”, przechodzi AA na białym/jasnym */
 }
+
 
