@@ -34,22 +34,39 @@ async function loadConfig(keys) {
   return cfg;
 }
 
-function stablePostsFingerprint(posts) {
-  const minimal = (posts || []).map(p => ({
-    title: p.title || '',
-    body: p.body || '',
-    date: p.date || '',
-    link: p.link || '',
-    image: p.image || ''
-  }));
-  const json = JSON.stringify(minimal);
-  return crypto.createHash('sha256').update(json).digest('hex');
+function normalizeText(s) {
+  return String(s || '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
-async function translateWithDeepL(text, apiKey) {
-  if (!text) return '';
+function postContentHash(p) {
+  const payload = {
+    title: normalizeText(p?.title),
+    body: normalizeText(p?.body)
+  };
+  return crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+}
+
+// UWAGA: fingerprint liczymy WYŁĄCZNIE z treści (title+body).
+// Dzięki temu zmiany typu: data/link/obrazek nie powodują ponownego tłumaczenia w DeepL.
+function stablePostsFingerprint(posts) {
+  const hashes = (posts || []).map(postContentHash);
+  return crypto.createHash('sha256').update(JSON.stringify(hashes)).digest('hex');
+}
+
+
+async function translateManyWithDeepL(texts, apiKey) {
+  const clean = (texts || []).map(t => String(t ?? ''));
+  if (!clean.length) return [];
+
+  // Jeśli wszystkie puste – oszczędzamy request
+  if (clean.every(t => !t)) return clean.map(() => '');
+
   const params = new URLSearchParams();
-  params.set('text', text);
+  for (const t of clean) {
+    params.append('text', t);
+  }
   params.set('target_lang', 'EN');
 
   // DeepL API Free endpoint:
@@ -68,8 +85,18 @@ async function translateWithDeepL(text, apiKey) {
   }
 
   const json = await resp.json();
-  return json?.translations?.[0]?.text || text;
+  const out = (json?.translations || []).map(x => x?.text || '');
+  // Bezpiecznik: DeepL powinien zwrócić tyle samo elementów co wysłaliśmy
+  while (out.length < clean.length) out.push('');
+  return out.slice(0, clean.length);
 }
+
+async function translateWithDeepL(text, apiKey) {
+  if (!text) return '';
+  const [t] = await translateManyWithDeepL([text], apiKey);
+  return t || text;
+}
+
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -111,7 +138,11 @@ export default async function handler(req, res) {
         throw new Error('Brak deepl_api_key w secret_config.');
       }
 
-      // 1) Sprawdź czy EN cache już jest aktualne
+      // Liczymy hash WYŁĄCZNIE z treści (title+body), żeby uniknąć fałszywych zmian.
+      // sourceHash jest przekazywany z zewnątrz, ale dla pewności przeliczamy go stabilnie.
+      const localSourceHash = stablePostsFingerprint(posts || []);
+
+      // 1) Odczyt aktualnego EN cache
       const { data: enRow, error: enReadErr } = await supabase
         .from('facebook_cache')
         .select('data')
@@ -122,31 +153,85 @@ export default async function handler(req, res) {
         console.error('Supabase EN cache read error:', enReadErr);
       }
 
+      // Jeśli EN cache już ma ten sam hash treści — nic nie robimy
       const existingHash = enRow?.data?.source_hash;
-      if (existingHash && existingHash === sourceHash) {
+      if (existingHash && existingHash === localSourceHash) {
         return enRow.data;
       }
 
-      // 2) Tłumaczenie tylko gdy hash się różni
-      const translatedPosts = [];
-      for (const p of posts || []) {
-        const titleEn = await translateWithDeepL(p.title || '', deeplKey);
-        const bodyEn = await translateWithDeepL(p.body || '', deeplKey);
+      const existingPosts = Array.isArray(enRow?.data?.posts) ? enRow.data.posts : [];
 
-        translatedPosts.push({
+      // 2) Indeksujemy istniejące EN posty po content_hash (jeśli jest)
+      const enByContentHash = new Map();
+      for (const p of existingPosts) {
+        if (p && p.content_hash) {
+          enByContentHash.set(p.content_hash, p);
+        }
+      }
+
+      // 3) Budujemy nową listę EN postów:
+      //    - jeśli post o tym samym content_hash już jest w EN cache -> reuse tłumaczeń
+      //    - jeśli nie -> tłumaczymy tylko ten post
+      const nextEnPosts = [];
+      const toTranslate = []; // { idx, field, text }
+
+      for (const p of posts || []) {
+        const contentHash = postContentHash(p);
+        const existing = enByContentHash.get(contentHash);
+
+        if (existing && (existing.title != null || existing.body != null)) {
+          nextEnPosts.push({
+            ...existing,
+            // świeże pola z FB (mogą się zmieniać niezależnie od treści)
+            date: p.date || null,
+            link: p.link || null,
+            image: p.image || '',
+            content_hash: contentHash
+          });
+          continue;
+        }
+
+        // Brak w cache — dodaj placeholder i przetłumacz tylko tę pozycję
+        const idx = nextEnPosts.push({
           ...p,
-          title: titleEn,
-          body: bodyEn
-        });
+          content_hash: contentHash,
+          title: null,
+          body: null
+        }) - 1;
+
+        toTranslate.push({ idx, field: 'title', text: p.title || '' });
+        toTranslate.push({ idx, field: 'body', text: p.body || '' });
+      }
+
+      // 4) Batch translate (1 request na wiele tekstów). Pomijamy puste.
+      const texts = [];
+      const slots = []; // mapowanie na toTranslate
+      for (let i = 0; i < toTranslate.length; i++) {
+        const t = toTranslate[i];
+        if (!t.text) {
+          nextEnPosts[t.idx][t.field] = '';
+          continue;
+        }
+        slots.push(i);
+        texts.push(t.text);
+      }
+
+      if (texts.length) {
+        const translated = await translateManyWithDeepL(texts, deeplKey);
+        for (let j = 0; j < translated.length; j++) {
+          const originalIndex = slots[j];
+          const t = toTranslate[originalIndex];
+          nextEnPosts[t.idx][t.field] = translated[j] || '';
+        }
       }
 
       const enPayload = {
         cached_at: Math.floor(Date.now() / 1000),
-        source_hash: sourceHash,
-        posts: translatedPosts
+        source_hash: localSourceHash,
+        posts: nextEnPosts
       };
 
-      // 3) Zapis EN cache
+      // 5) Zapis EN cache
       const { error: enWriteErr } = await supabase
         .from('facebook_cache')
         .upsert({
@@ -161,6 +246,7 @@ export default async function handler(req, res) {
 
       return enPayload;
     }
+
 
     // 1. Cache z Supabase (PL)
     let fallbackCache = null;
@@ -297,7 +383,12 @@ export default async function handler(req, res) {
       });
     }
 
-    const sourceHash = stablePostsFingerprint(posts);
+// content_hash pomaga w re-use tłumaczeń (EN cache) per post
+for (const p of posts) {
+  p.content_hash = postContentHash(p);
+}
+
+const sourceHash = stablePostsFingerprint(posts);
 
     // Model B: tłumaczymy EN tylko wtedy, gdy ZMIENIŁ SIĘ stan postów PL.
     const previousHash = fallbackCache?.source_hash || null;
