@@ -1,13 +1,15 @@
 {
-  "headers": [
+  "rewrites": [
     {
-      "source": "/(.*)",
-      "headers": [
+      "source": "/:path*",
+      "has": [
         {
-          "key": "Accept-Ranges",
-          "value": "none"
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Facebot|meta-externalagent|whatsapp).*"
         }
-      ]
+      ],
+      "destination": "/api/_meta?p=:path*"
     }
   ],
   "redirects": [
@@ -18,7 +20,12 @@
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "cappellamarialis.pl" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "cappellamarialis.pl"
+        }
+      ],
       "destination": "https://www.cappellamarialis.pl/$1",
       "permanent": true
     }
