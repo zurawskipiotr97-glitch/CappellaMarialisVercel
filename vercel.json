@@ -1,15 +1,15 @@
 {
   "rewrites": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [
         {
           "type": "header",
           "key": "user-agent",
-          "value": ".*(facebookexternalhit|Facebot|meta-externalagent|whatsapp).*"
+          "value": "(facebookexternalhit|Facebot|meta-externalagent|whatsapp)"
         }
       ],
-      "destination": "/api/_meta?p=:path*"
+      "destination": "/api/_meta?p=$1"
     }
   ],
   "redirects": [
