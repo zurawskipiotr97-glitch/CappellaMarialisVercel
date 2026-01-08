@@ -2207,3 +2207,54 @@ NEWS / FACEBOOK – hover jak logo YouTube
   line-height: 1.1;
   font-size: 0.9rem;
 }
+
+/* ==========================================================================
+   Recording modal – mobile hardening
+   Fix: prevent any layout "frame" under footer on small screens by forcing
+   the modal to be truly overlay-only (display:none unless .is-open).
+   ========================================================================== */
+
+.recording-modal{
+  display: none !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10000 !important;
+
+  /* safe padding on iOS/Android */
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left)) !important;
+}
+
+.recording-modal.is-open{
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.recording-modal__content{
+  margin: 0 !important;
+  width: min(920px, 100%) !important;
+  height: min(86vh, 720px) !important;
+}
+
+@media (max-width: 768px){
+  .recording-modal{
+    padding:
+      max(10px, env(safe-area-inset-top))
+      10px
+      max(10px, env(safe-area-inset-bottom))
+      10px !important;
+  }
+  .recording-modal__content{
+    width: 100% !important;
+    height: min(88vh, 640px) !important;
+    border-radius: 12px !important;
+  }
+  .recording-modal__close{
+    top: 8px !important;
+    right: 8px !important;
+  }
+}

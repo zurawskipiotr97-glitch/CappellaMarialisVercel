@@ -37,6 +37,7 @@
 
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#0f3460" />
+  <script src="modal.js" defer></script>
 </head>
 
 
@@ -281,14 +282,15 @@
 
         <div class="player-embed">
             <iframe
-                            src="https://www.youtube.com/embed/videoseries?list=PLURFuN4b77fupcE-qOdmAHdOC54uKiF3t"
-                            title="Cappella Marialis – YouTube playlist"
-                            frameborder="0"
-                            height="360"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen
-                            loading="lazy">
-                        </iframe>
+                src="https://www.youtube.com/embed/ASVfTZTPCUo?start=17"
+                title="Cappella Marialis – nagranie z YouTube"
+                frameborder="0"
+                height=250
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy"
+                title="Video recording Cappella Marialis – YouTube">
+            </iframe>
         </div>
 
         <div class="player-footer">
@@ -713,65 +715,6 @@
       <iframe id="recording-modal-iframe" title="Recording player" loading="lazy" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
     </div>
   </div>
-
-
-<script>
-/* Recording modal for ffm.to (static HTML on Vercel) */
-(function () {
-  const modal = document.getElementById("recording-modal");
-  const iframe = document.getElementById("recording-modal-iframe");
-  if (!modal || !iframe) return;
-
-  const overlayBtn = modal.querySelector(".recording-modal__overlay");
-  const closeBtn = modal.querySelector(".recording-modal__close");
-
-  let lastActiveEl = null;
-  let prevBodyOverflow = "";
-
-  function openModal(url) {
-    if (!url) return;
-
-    lastActiveEl = document.activeElement;
-    prevBodyOverflow = document.body.style.overflow;
-
-    modal.classList.add("is-open");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-
-    iframe.src = url;
-
-    if (closeBtn && typeof closeBtn.focus === "function") closeBtn.focus();
-  }
-
-  function closeModal() {
-    modal.classList.remove("is-open");
-    modal.setAttribute("aria-hidden", "true");
-
-    iframe.src = "about:blank";
-    document.body.style.overflow = prevBodyOverflow || "";
-
-    if (lastActiveEl && typeof lastActiveEl.focus === "function") lastActiveEl.focus();
-  }
-
-  document.addEventListener("click", (e) => {
-    const target = e.target && e.target.closest ? e.target.closest(".open-recording-modal") : null;
-    if (!target) return;
-
-    const url = target.getAttribute("data-modal-url") || target.getAttribute("href");
-    if (!url) return;
-
-    e.preventDefault();
-    openModal(url);
-  });
-
-  if (overlayBtn) overlayBtn.addEventListener("click", closeModal);
-  if (closeBtn) closeBtn.addEventListener("click", closeModal);
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
-  });
-})();
-</script>
 
 </body>
 </html>
