@@ -2207,3 +2207,51 @@ NEWS / FACEBOOK – hover jak logo YouTube
   line-height: 1.1;
   font-size: 0.9rem;
 }
+
+
+
+/* --- Album cover hover overlay (Msza Es-dur) — WCAG 2.1 AA + stylistyka --- */
+.album-cover-link{
+  position: relative;
+  display: block;
+  text-decoration: none;
+}
+
+.album-cover-overlay{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(15,52,96,0.75), rgba(0,0,0,0.55));
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.album-cover-overlay > span{
+  border: 2px solid rgba(212,175,55,0.95);
+  background: rgba(0,0,0,0.25);
+  padding: 0.55rem 1.05rem;
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine){
+  .album-cover-link:hover .album-cover-overlay{ opacity: 1; }
+}
+
+.album-cover-link:focus-visible .album-cover-overlay,
+.album-cover-link:focus-within .album-cover-overlay{
+  opacity: 1;
+}
+
+.album-cover-link:focus-visible{
+  outline: 3px solid #FBBF24;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .album-cover-overlay{ transition: none; }
+}
