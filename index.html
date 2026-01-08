@@ -336,12 +336,12 @@
                 </div>
             </div>
 
-            <!-- BLOK ALBUMÓW CD -->
+            <!-- BLOK NAGRAŃ -->
             <div class="albums-block">
             <h3 class="album-header">NAGRANIA</h3>
 
             <!-- Zakładki -->
-            <div class="album-tabs" role="tablist" aria-label="Albumy CD">
+            <div class="album-tabs" role="tablist" aria-label="Nagrania">
                 <!-- Najnowszy album daj jako pierwszy -->
                 <button class="album-tab is-active" type="button" role="tab"
                         aria-selected="true" aria-controls="album-msza-esdur" id="tab-msza-esdur"
@@ -363,25 +363,29 @@
                 <div class="album-panel is-active" role="tabpanel"
                     id="album-msza-esdur" aria-labelledby="tab-msza-esdur">
                 <div class="album-card">
-                    
-<div class="album-cover">
-  <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
-     target="_blank"
-     rel="noopener noreferrer"
-     class="recording-cover">
-    <img src="images/CM_Mirecki_frontcover.png"
-         onerror="this.src='images/CM_news.jpg';"
-         alt="Msza Es-dur – Franciszek Mirecki (nagranie audiowizualne)">
-    <span class="recording-hover">Nagranie dostępne online</span>
-  </a>
-</div>
-
+                    <div class="album-cover">
+                    <a class="album-cover-link"
+                       href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
+                       target="_blank" rel="noopener noreferrer"
+                       aria-label="Posłuchaj nagrania online – Msza Es-dur">
+                      <img src="images/CM_Mirecki_frontcover.png"
+                           onerror="this.src='images/CM_news.jpg';"
+                           alt="Okładka: Msza Es-dur – Franciszek Mirecki">
+                      <span class="album-cover-overlay">Posłuchaj nas</span>
+                    </a>
+                    </div>
 
                     <div class="album-info">
                     <p class="album-title">Msza Es-dur</p>
                     <p class="album-subtitle">
                         Franciszek Mirecki (1791–1862) –&nbsp;nagranie audiowizualne (2025)
                     </p>
+
+                    <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
+                       target="_blank" rel="noopener noreferrer"
+                       class="album-link">
+                        Odsłuchaj nagranie online
+                    </a>
 
                     <!-- Jeśli masz tył okładki/tracklist, podmień href -->
                     <!-- <a href="images/CM_Mirecki_backcover.png" target="_blank" rel="noopener noreferrer" class="album-link">
@@ -395,19 +399,11 @@
                 <div class="album-panel" role="tabpanel"
                     id="album-cm-2019" aria-labelledby="tab-cm-2019">
                 <div class="album-card">
-                    
-<div class="album-cover">
-  <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
-     target="_blank"
-     rel="noopener noreferrer"
-     class="recording-cover">
-    <img src="images/CM_Mirecki_frontcover.png"
-         onerror="this.src='images/CM_news.jpg';"
-         alt="Msza Es-dur – Franciszek Mirecki (nagranie audiowizualne)">
-    <span class="recording-hover">Nagranie dostępne online</span>
-  </a>
-</div>
-
+                    <div class="album-cover">
+                    <img src="images/CM_CM_frontcover.png"
+                        onerror="this.src='images/CM_news.jpg';"
+                        alt="Okładka płyty Cappella Marialis">
+                    </div>
 
                     <div class="album-info">
                     <p class="album-title">Cappella Marialis</p>
@@ -605,49 +601,8 @@
         window.addEventListener('DOMContentLoaded', loadFacebookNews);
     </script>
 
-    <!-- <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
-
-    <script>
-    const scrollBtn = document.getElementById('scrollToTop');
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 400) {
-        scrollBtn.style.display = 'block';
-        } else {
-        scrollBtn.style.display = 'none';
-        }
-    });
-
-    scrollBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') });
-    });
-    </script> -->
-
-    <button id="scrollToTop" aria-label="Wróć na górę">↑</button>
-
-    <script>
-        const scrollBtn = document.getElementById('scrollToTop');
-
-        function isMobile() {
-            return window.matchMedia("(max-width: 768px)").matches;
-        }
-
-        window.addEventListener('scroll', () => {
-            if (!isMobile()) return;
-
-            if (window.scrollY > 400) {
-            scrollBtn.style.display = 'block';
-            } else {
-            scrollBtn.style.display = 'none';
-            }
-        });
-
-        scrollBtn.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') });
-        });
-    </script>
-
-
+    <!--
+-->
 <script>
   function showDonationInfo() {
     const status = document.getElementById('donationStatus');
@@ -702,6 +657,58 @@
     toastTimer = null;
   }
 </script>
+
+
+    <button id="scrollToTop" aria-label="Wróć na górę" type="button">
+      <svg class="to-top-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <script>
+      (function() {
+        const scrollBtn = document.getElementById('scrollToTop');
+        if (!scrollBtn) return;
+
+        function reduceMotion() {
+          return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
+
+        function updateVisibility() {
+          scrollBtn.classList.toggle('is-visible', window.scrollY > 400);
+        }
+
+        window.addEventListener('scroll', updateVisibility, { passive: true });
+        updateVisibility();
+
+        let pending = false;
+
+        function goTopNow(e) {
+          if (pending) return;
+          pending = true;
+
+          if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+          const behavior = reduceMotion() ? 'auto' : 'smooth';
+
+          // Help cancel momentum scrolling first
+          window.scrollTo({ top: window.scrollY, behavior: 'auto' });
+
+          // Start new scroll on next frames (works better on iOS/Android during momentum)
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              window.scrollTo({ top: 0, behavior });
+              setTimeout(() => { pending = false; }, 250);
+            });
+          });
+        }
+
+        // Trigger before click so first tap works during momentum
+        scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
+        scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
+        scrollBtn.addEventListener('click', goTopNow);
+      })();
+    </script>
 
 </body>
 </html>

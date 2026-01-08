@@ -610,6 +610,45 @@ background: linear-gradient(90deg, #d4af37, #f5e29e, #d4af37);
   background: #0f0f13;
 }
 
+/* OKŁADKA – link z overlay (hover) */
+.album-cover-link {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+.album-cover-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  background: rgba(15, 52, 96, 0.72);
+  color: #f8f7f4;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.album-cover-link:hover .album-cover-overlay,
+.album-cover-link:focus-visible .album-cover-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.album-cover-link:focus-visible {
+  outline: 3px solid rgba(212, 175, 55, 0.9);
+  outline-offset: 4px;
+}
+
 .album-cover img {
   width: 100%;
   height: 100%;
@@ -1964,11 +2003,7 @@ NEWS / FACEBOOK – hover jak logo YouTube
 } */
 
 /* Pokazuj tylko na mobile */
-/* @media (min-width: 769px) {
-  #scrollToTop {
-    display: none !important;
-  }
-} */
+/* */
 
 
 #scrollToTop {
@@ -1987,13 +2022,6 @@ NEWS / FACEBOOK – hover jak logo YouTube
   display: none;
   z-index: 999;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-/* ❌ TABLETY + DESKTOP – NIGDY */
-@media (min-width: 769px) {
-  #scrollToTop {
-    display: none !important;
-  }
 }
 
 .skip-link {
@@ -2093,34 +2121,35 @@ NEWS / FACEBOOK – hover jak logo YouTube
 @media (prefers-reduced-motion: reduce) {
   .toast { transition: none; }
 }
-
-
-/* Nagrania – hover jak Facebook */
-.recording-cover{
-  position: relative;
-  display: block;
-}
-
-.recording-cover img{
-  display: block;
-  width: 100%;
-}
-
-.recording-hover{
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  display: flex;
+    
+/* Scroll to top – SVG icon centering + mobile tap */
+#scrollToTop{
+  display: none; /* JS controls visibility */
   align-items: center;
   justify-content: center;
-  text-align: center;
-  font-weight: 600;
-  opacity: 0;
-  transition: opacity 0.25s ease;
+  touch-action: manipulation;
 }
 
-.recording-cover:hover .recording-hover,
-.recording-cover:focus-visible .recording-hover{
-  opacity: 1;
+#scrollToTop .to-top-icon{
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+/* Scroll to top – visibility + perfect centering for SVG */
+#scrollToTop{
+  display: none;            /* hidden by default */
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+#scrollToTop.is-visible{
+  display: flex;            /* flex centers icon */
+}
+
+#scrollToTop .to-top-icon{
+  width: 22px;
+  height: 22px;
+  display: block;
 }
