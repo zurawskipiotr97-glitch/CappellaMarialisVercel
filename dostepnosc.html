@@ -110,7 +110,7 @@
         }
 
         function updateVisibility() {
-          scrollBtn.style.display = (window.scrollY > 400) ? 'block' : 'none';
+          scrollBtn.classList.toggle('is-visible', window.scrollY > 400);
         }
 
         window.addEventListener('scroll', updateVisibility, { passive: true });

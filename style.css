@@ -2096,3 +2096,21 @@ NEWS / FACEBOOK – hover jak logo YouTube
   height: 22px;
   display: block;
 }
+
+/* Scroll to top – visibility + perfect centering for SVG */
+#scrollToTop{
+  display: none;            /* hidden by default */
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+#scrollToTop.is-visible{
+  display: flex;            /* flex centers icon */
+}
+
+#scrollToTop .to-top-icon{
+  width: 22px;
+  height: 22px;
+  display: block;
+}
