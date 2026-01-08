@@ -37,6 +37,7 @@
 
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#0f3460" />
+  <script src="modal.js" defer></script>
 </head>
 
 <body>
@@ -336,12 +337,12 @@
                 </div>
             </div>
 
-            <!-- BLOK NAGRAŃ -->
+            <!-- BLOK ALBUMÓW CD -->
             <div class="albums-block">
             <h3 class="album-header">NAGRANIA</h3>
 
             <!-- Zakładki -->
-            <div class="album-tabs" role="tablist" aria-label="Nagrania">
+            <div class="album-tabs" role="tablist" aria-label="Albumy CD">
                 <!-- Najnowszy album daj jako pierwszy -->
                 <button class="album-tab is-active" type="button" role="tab"
                         aria-selected="true" aria-controls="album-msza-esdur" id="tab-msza-esdur"
@@ -364,27 +365,23 @@
                     id="album-msza-esdur" aria-labelledby="tab-msza-esdur">
                 <div class="album-card">
                     <div class="album-cover">
-                    <a class="album-cover-link"
-                       href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
-                       target="_blank" rel="noopener noreferrer"
-                       aria-label="Posłuchaj nagrania online – Msza Es-dur">
+                    <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur" class="album-cover-link open-recording-modal" data-modal-url="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur" aria-label="Posłuchaj nas">
                       <img src="images/CM_Mirecki_frontcover.png"
-                           onerror="this.src='images/CM_news.jpg';"
-                           alt="Okładka: Msza Es-dur – Franciszek Mirecki">
-                      <span class="album-cover-overlay">Posłuchaj nas</span>
+                        onerror="this.src='images/CM_news.jpg';"
+                        alt="Okładka płyty Msza Es-dur – Franciszek Mirecki">
+                      <span class="album-cover-overlay"><span>Posłuchaj nas</span></span>
                     </a>
                     </div>
 
                     <div class="album-info">
                     <p class="album-title">Msza Es-dur</p>
-                    <p class="album-subtitle">
-                        Franciszek Mirecki (1791–1862) –&nbsp;nagranie audiowizualne (2025)
+                    
                     </p>
-
-                    <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
-                       target="_blank" rel="noopener noreferrer"
-                       class="album-link">
-                        Odsłuchaj nagranie online
+                    <p class="album-subtitle">
+                        Franciszek Mirecki (1791–1862) –<br>nagranie audiowizualne (2025)
+                    </p>
+                    <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur" class="album-link open-recording-modal" data-modal-url="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur">
+                      Odsłuchaj nagranie online
                     </a>
 
                     <!-- Jeśli masz tył okładki/tracklist, podmień href -->
@@ -709,6 +706,16 @@
         scrollBtn.addEventListener('click', goTopNow);
       })();
     </script>
+
+
+  <!-- Recording modal -->
+  <div class="recording-modal" id="recording-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <button class="recording-modal__overlay" type="button" aria-label="Close"></button>
+    <div class="recording-modal__content" role="document">
+      <button class="recording-modal__close" type="button" aria-label="Close">×</button>
+      <iframe id="recording-modal-iframe" title="Recording player" loading="lazy" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    </div>
+  </div>
 
 </body>
 </html>

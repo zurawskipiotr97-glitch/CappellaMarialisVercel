@@ -610,45 +610,6 @@ background: linear-gradient(90deg, #d4af37, #f5e29e, #d4af37);
   background: #0f0f13;
 }
 
-/* OKŁADKA – link z overlay (hover) */
-.album-cover-link {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-}
-
-.album-cover-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-
-  background: rgba(15, 52, 96, 0.72);
-  color: #f8f7f4;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.album-cover-link:hover .album-cover-overlay,
-.album-cover-link:focus-visible .album-cover-overlay {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.album-cover-link:focus-visible {
-  outline: 3px solid rgba(212, 175, 55, 0.9);
-  outline-offset: 4px;
-}
-
 .album-cover img {
   width: 100%;
   height: 100%;
@@ -2152,4 +2113,97 @@ NEWS / FACEBOOK – hover jak logo YouTube
   width: 22px;
   height: 22px;
   display: block;
+}
+
+
+/* --- Recording modal --- */
+.recording-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  padding: 24px;
+}
+.recording-modal.is-open { display: grid; place-items: center; }
+
+.recording-modal__overlay {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0,0,0,0.62);
+  cursor: pointer;
+}
+
+.recording-modal__content {
+  position: relative;
+  width: min(920px, 100%);
+  height: min(80vh, 720px);
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.recording-modal__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.92);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#recording-modal-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* --- Album cover hover overlay (Msza Es-dur) --- */
+.album-cover-link {
+  position: relative;
+  display: block;
+}
+.album-cover-link img { display: block; width: 100%; height: auto; }
+
+.album-cover-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.album-cover-overlay > span {
+  border: 2px solid rgba(212,175,55,0.85);
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.album-cover-link:hover .album-cover-overlay,
+.album-cover-link:focus-visible .album-cover-overlay {
+  opacity: 1;
+}
+
+/* Long label tab (EN) */
+.album-tab--long {
+  white-space: normal;
+  height: auto;
+  min-height: 44px;
+  padding: 0.45rem 0.9rem;
+  line-height: 1.1;
+  font-size: 0.9rem;
 }
