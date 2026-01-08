@@ -37,7 +37,6 @@
 
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="theme-color" content="#0f3460" />
-  <script src="modal.js" defer></script>
 </head>
 
 
@@ -282,10 +281,10 @@
 
         <div class="player-embed">
             <iframe
-                src="https://www.youtube.com/embed/ASVfTZTPCUo?start=17"
+                src="https://www.youtube.com/embed/videoseries?list=PLURFuN4b77fupcE-qOdmAHdOC54uKiF3t"
                 title="Cappella Marialis – nagranie z YouTube"
                 frameborder="0"
-                height=250
+               
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen
                 loading="lazy"
@@ -340,22 +339,20 @@
 
 </div>
 
-     <!-- RECORDINGS -->
+     <!-- CD ALBUMS -->
 <div class="albums-block">
-  <h3 class="album-header">RECORDINGS</h3>
+  <h3 class="album-header">CD ALBUMS</h3>
 
   <div class="album-tabs" role="tablist" aria-label="CD albums">
     <button class="album-tab is-active" type="button" role="tab"
             aria-selected="true" aria-controls="album-msza-esdur-en" id="tab-msza-esdur-en"
-            data-target="album-msza-esdur-en"
-            style="font-size: 80%;">
-      Mass in E flat major
+            data-target="album-msza-esdur-en">
+      Msza Es-dur
     </button>
 
     <button class="album-tab" type="button" role="tab"
             aria-selected="false" aria-controls="album-cm-2019-en" id="tab-cm-2019-en"
-            data-target="album-cm-2019-en"
-            style="font-size: 80%;">
+            data-target="album-cm-2019-en">
       Cappella Marialis
     </button>
   </div>
@@ -364,25 +361,25 @@
     <div class="album-panel is-active" role="tabpanel"
          id="album-msza-esdur-en" aria-labelledby="tab-msza-esdur-en">
       <div class="album-card">
-        <div class="album-cover">
-          <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur" class="album-cover-link open-recording-modal" data-modal-url="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur" aria-label="Listen to us">
-                      <img src="images/CM_Mirecki_frontcover.png"
-               onerror="this.src='images/CM_news.jpg';"
-               alt="Album cover: Mass in E flat major – Franciszek Mirecki">
-                      <span class="album-cover-overlay"><span>Listen to us</span></span>
-                    </a>
-                    </div>
+        
+<div class="album-cover">
+  <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="recording-cover">
+    <img src="images/CM_Mirecki_frontcover.png"
+         onerror="this.src='images/CM_news.jpg';"
+         alt="Msza Es-dur – Franciszek Mirecki (nagranie audiowizualne)">
+    <span class="recording-hover">Nagranie dostępne online</span>
+  </a>
+</div>
+
 
         <div class="album-info">
-          <p class="album-title">Mass in E flat major</p>
-                    
-                    </p>
+          <p class="album-title">Msza Es-dur</p>
           <p class="album-subtitle">
-            Franciszek Mirecki (1791–1862) –<br>audiovisual recording (2025)
+            Franciszek Mirecki (1791–1862) –&nbsp;audiovisual recording (2025)
           </p>
-          <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur" class="album-link open-recording-modal" data-modal-url="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur">
-                      Listen online
-                    </a>
 
           <!-- optional back cover -->
           <!-- <a href="images/CM_Mirecki_backcover.png" target="_blank" rel="noopener noreferrer" class="album-link">
@@ -395,11 +392,19 @@
     <div class="album-panel" role="tabpanel"
          id="album-cm-2019-en" aria-labelledby="tab-cm-2019-en">
       <div class="album-card">
-        <div class="album-cover">
-          <img src="images/CM_CM_frontcover.png"
-               onerror="this.src='images/CM_news.jpg';"
-               alt="Album cover: Cappella Marialis">
-        </div>
+        
+<div class="album-cover">
+  <a href="https://id.ffm.to/penderdcki_academy_press_-_msza_es-dur"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="recording-cover">
+    <img src="images/CM_Mirecki_frontcover.png"
+         onerror="this.src='images/CM_news.jpg';"
+         alt="Msza Es-dur – Franciszek Mirecki (nagranie audiowizualne)">
+    <span class="recording-hover">Nagranie dostępne online</span>
+  </a>
+</div>
+
 
         <div class="album-info">
           <p class="album-title">Cappella Marialis</p>
@@ -597,8 +602,49 @@
     window.addEventListener('DOMContentLoaded', loadFacebookNews);
     </script>
 
-    <!--
--->
+    <!-- <button id="scrollToTop" aria-label="Back to top">↑</button>
+
+    <script>
+    const scrollBtn = document.getElementById('scrollToTop');
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+        scrollBtn.style.display = 'block';
+        } else {
+        scrollBtn.style.display = 'none';
+        }
+    });
+
+    scrollBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') });
+    });
+    </script> -->
+
+    <button id="scrollToTop" aria-label="Back to top">↑</button>
+
+    <script>
+        const scrollBtn = document.getElementById('scrollToTop');
+
+        function isMobile() {
+            return window.matchMedia("(max-width: 768px)").matches;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!isMobile()) return;
+
+            if (window.scrollY > 400) {
+            scrollBtn.style.display = 'block';
+            } else {
+            scrollBtn.style.display = 'none';
+            }
+        });
+
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') });
+        });
+    </script>
+
+
 <script>
   function showDonationInfo() {
     const status = document.getElementById('donationStatus');
@@ -653,68 +699,6 @@
     toastTimer = null;
   }
 </script>
-
-
-    <button id="scrollToTop" aria-label="Back to top" type="button">
-      <svg class="to-top-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-
-    <script>
-      (function() {
-        const scrollBtn = document.getElementById('scrollToTop');
-        if (!scrollBtn) return;
-
-        function reduceMotion() {
-          return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        }
-
-        function updateVisibility() {
-          scrollBtn.classList.toggle('is-visible', window.scrollY > 400);
-        }
-
-        window.addEventListener('scroll', updateVisibility, { passive: true });
-        updateVisibility();
-
-        let pending = false;
-
-        function goTopNow(e) {
-          if (pending) return;
-          pending = true;
-
-          if (e && typeof e.preventDefault === 'function') e.preventDefault();
-
-          const behavior = reduceMotion() ? 'auto' : 'smooth';
-
-          // Help cancel momentum scrolling first
-          window.scrollTo({ top: window.scrollY, behavior: 'auto' });
-
-          // Start new scroll on next frames (works better on iOS/Android during momentum)
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              window.scrollTo({ top: 0, behavior });
-              setTimeout(() => { pending = false; }, 250);
-            });
-          });
-        }
-
-        // Trigger before click so first tap works during momentum
-        scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
-        scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
-        scrollBtn.addEventListener('click', goTopNow);
-      })();
-    </script>
-
-
-  <!-- Recording modal -->
-  <div class="recording-modal" id="recording-modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <button class="recording-modal__overlay" type="button" aria-label="Close"></button>
-    <div class="recording-modal__content" role="document">
-      <button class="recording-modal__close" type="button" aria-label="Close">×</button>
-      <iframe id="recording-modal-iframe" title="Recording player" loading="lazy" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
-    </div>
-  </div>
 
 </body>
 </html>
