@@ -154,27 +154,12 @@ export default async function handler(req, res) {
       }
 
       // Jeśli EN cache już ma ten sam hash treści — nic nie robimy
-      
-      // const existingHash = enRow?.data?.source_hash;
-      // if (existingHash && existingHash === localSourceHash) {
-      //   return enRow.data;
-      // }
-
-      // const existingPosts = Array.isArray(enRow?.data?.posts) ? enRow.data.posts : [];
-      
-      // 1. Najpierw wyciągamy posty z cache (będą potrzebne do porównania zdjęć)
-      const existingPosts = Array.isArray(enRow?.data?.posts) ? enRow.data.posts : [];
       const existingHash = enRow?.data?.source_hash;
-
-      // 2. Przygotowujemy listy obrazków do porównania
-      const currentImages = (posts || []).map(p => p.image).join('|');
-      const cachedImages = existingPosts.map(p => p.image).join('|');
-
-      // 3. Nowa blokada: kończymy tylko jeśli tekst ORAZ zdjęcia są identyczne
-      if (existingHash && existingHash === localSourceHash && currentImages === cachedImages) {
+      if (existingHash && existingHash === localSourceHash) {
         return enRow.data;
       }
 
+      const existingPosts = Array.isArray(enRow?.data?.posts) ? enRow.data.posts : [];
 
       // 2) Indeksujemy istniejące EN posty po content_hash (jeśli jest)
       const enByContentHash = new Map();
