@@ -16,10 +16,10 @@
   ],
   "rewrites": [
     { "source": "/pl/regulamin", "destination": "/regulamin.html" },
-    { "source": "/pl/prywatnosc", "destination": "/privacy.html" },
+    { "source": "/pl/prywatnosc", "destination": "/prywatnosc.html" },
     { "source": "/pl/rodo", "destination": "/rodo.html" },
     { "source": "/pl/dostepnosc", "destination": "/dostepnosc.html" },
-    { "source": "/pl/kontakt", "destination": "/dane-kontaktowe.html" },
+    { "source": "/pl/kontakt", "destination": "/kontakt.html" },
     { "source": "/en/terms", "destination": "/en/terms.html" },
     { "source": "/en/privacy_en", "destination": "/en/privacy_en.html" },
     { "source": "/en/GDPR", "destination": "/en/GDPR.html" },
