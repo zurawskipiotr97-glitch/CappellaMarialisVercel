@@ -4,6 +4,16 @@
       "source": "/index.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/en.html",
+      "destination": "/en",
+      "permanent": true
+    },
+    {
+      "source": "/en/contact.html", 
+      "destination": "/en/contact",
+      "permanent": true
     }
   ]
 }
