@@ -542,62 +542,77 @@
     }
     
     async function loadFacebookNews() {
-        const container = document.getElementById('fb-news');
-        if (!container) return;
+    const container = document.getElementById('fb-news');
+    if (!container) return;
 
-        try {
-            const response = await fetch('/api/facebook-news?lang=en');
-            const data = await response.json();
+    try {
+        // 1. Pobieramy obie wersje jednocześnie (PL daje nam świeże linki do zdjęć)
+        const [resEn, resPl] = await Promise.all([
+            fetch('/api/facebook-news?lang=en'),
+            fetch('/api/facebook-news?lang=pl')
+        ]);
 
-            // Backend zwraca albo tablicę, albo obiekt { posts: [...] }
-            const posts = Array.isArray(data) ? data : (data.posts || []);
+        const dataEn = await resEn.json();
+        const dataPl = await resPl.json();
 
-            // NIC nie ograniczamy — liczba postów jest w config.php
-            posts.forEach(post => {
-                const item = document.createElement('div');
-                item.className = 'news-item';
+        // Backend zwraca albo tablicę, albo obiekt { posts: [...] }
+        const postsEn = Array.isArray(dataEn) ? dataEn : (dataEn.posts || []);
+        const postsPl = Array.isArray(dataPl) ? dataPl : (dataPl.posts || []);
 
-                // Format daty
-                let dateText = '';
-                if (post.date) {
-                    const d = new Date(post.date);
-                    dateText = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
-                }
+        // Czyścimy kontener na wypadek przeładowania
+        container.innerHTML = '';
 
-                // Obrazek, jeśli jest
-                const imgHtml = post.image ? `<img src="${post.image}" alt="">` : '';
+        // 2. Renderujemy posty korzystając z tekstów EN i obrazków PL
+        postsEn.forEach((post, index) => {
+            const item = document.createElement('div');
+            item.className = 'news-item';
 
-                // Ucinanie tekstu (żeby wyglądało jak dawniej)
-                const rawBody = applyHardSpaces(
-                    (post.body || '').replace(/\s+/g, ' ').trim()
-                );
-                const maxLength = 260; 
-                const shortBody = rawBody.length > maxLength
-                    ? rawBody.slice(0, maxLength).trim() + '…'
-                    : rawBody;
+            // Format daty
+            let dateText = '';
+            if (post.date) {
+                const d = new Date(post.date);
+                dateText = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+            }
 
-                const linkButton = post.link
-                    ? `<a href="${post.link}" target="_blank" rel="noopener noreferrer" class="fb-cta">View on Facebook</a>`
-                    : '';
+            // --- KLUCZOWA ZMIANA: OBRAZEK ---
+            // Szukamy odpowiadającego posta w wersji PL (po indeksie), aby wziąć jego działający obrazek
+            const correspondingPlPost = postsPl[index];
+            const activeImage = (correspondingPlPost && correspondingPlPost.image) ? correspondingPlPost.image : post.image;
+            const imgHtml = activeImage ? `<img src="${activeImage}" alt="">` : '';
+            // --------------------------------
 
-                item.innerHTML = `
-                    ${imgHtml}
-                    <div class="news-content">
-                        <h3>${applyHardSpaces(post.title || 'News')}</h3>
-                        <p class="news-date">${dateText}</p>
-                        <p class="news-body text-unified">${shortBody}</p>
-                        ${linkButton}
-                    </div>
-                `;
+            // Ucinanie tekstu
+            const rawBody = applyHardSpaces(
+                (post.body || '').replace(/\s+/g, ' ').trim()
+            );
+            const maxLength = 260; 
+            const shortBody = rawBody.length > maxLength
+                ? rawBody.slice(0, maxLength).trim() + '…'
+                : rawBody;
 
-                container.appendChild(item);
-            });
-        } catch (e) {
-            console.error('Błąd pobierania z Facebooka:', e);
-        }
+            const linkButton = post.link
+                ? `<a href="${post.link}" target="_blank" rel="noopener noreferrer" class="fb-cta">View on Facebook</a>`
+                : '';
+
+            item.innerHTML = `
+                ${imgHtml}
+                <div class="news-content">
+                    <h3>${applyHardSpaces(post.title || 'News')}</h3>
+                    <p class="news-date">${dateText}</p>
+                    <p class="news-body text-unified">${shortBody}</p>
+                    ${linkButton}
+                </div>
+            `;
+
+            container.appendChild(item);
+        });
+    } catch (e) {
+        console.error('Błąd pobierania z Facebooka (EN/PL):', e);
     }
+}
 
-    window.addEventListener('DOMContentLoaded', loadFacebookNews);
+window.addEventListener('DOMContentLoaded', loadFacebookNews);
+
     </script>
 
     <!--
