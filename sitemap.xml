@@ -14,31 +14,31 @@
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/regulamin</loc>
+    <loc>https://www.cappellamarialis.pl/pl/regulamin</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/privacy</loc>
+    <loc>https://www.cappellamarialis.pl/pl/prywatnosc</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/rodo</loc>
+    <loc>https://www.cappellamarialis.pl/pl/rodo</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
    <url>
-    <loc>https://www.cappellamarialis.pl/dostepnosc</loc>
+    <loc>https://www.cappellamarialis.pl/pl/dostepnosc</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/dane-kontaktowe</loc>
+    <loc>https://www.cappellamarialis.pl/pl/kontakt</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

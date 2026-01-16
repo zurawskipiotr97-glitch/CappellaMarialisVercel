@@ -3,22 +3,27 @@
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/en.html", "destination": "/en", "permanent": true },
-    { "source": "/regulamin.html", "destination": "/regulamin", "permanent": true },
-    { "source": "/privacy.html", "destination": "/privacy", "permanent": true },
-    { "source": "/rodo.html", "destination": "/rodo", "permanent": true },
-    { "source": "/dostepnosc.html", "destination": "/dostepnosc", "permanent": true },
-    { "source": "/dane-kontaktowe.html", "destination": "/dane-kontaktowe", "permanent": true },
-    { "source": "/en/terms", "destination": "/terms", "permanent": true },
-    { "source": "/en/privacy_en", "destination": "/privacy-en", "permanent": true },
-    { "source": "/en/GDPR", "destination": "/GDPR", "permanent": true },
-    { "source": "/en/accessibility", "destination": "/accessibility-en", "permanent": true },
-    { "source": "/en/contact", "destination": "/contact", "permanent": true }
+    { "source": "/regulamin.html", "destination": "/pl/regulamin", "permanent": true },
+    { "source": "/privacy.html", "destination": "/pl/prywatnosc", "permanent": true },
+    { "source": "/rodo.html", "destination": "/pl/rodo", "permanent": true },
+    { "source": "/dostepnosc.html", "destination": "/pl/dostepnosc", "permanent": true },
+    { "source": "/dane-kontaktowe.html", "destination": "/pl/kontakt", "permanent": true },
+    { "source": "/en/terms.html", "destination": "/en/terms", "permanent": true },
+    { "source": "/en/privacy_en.html", "destination": "/en/privacy_en", "permanent": true },
+    { "source": "/en/GDPR.html", "destination": "/en/GDPR", "permanent": true },
+    { "source": "/en/accessibility.html", "destination": "/en/accessibility", "permanent": true },
+    { "source": "/en/contact.html", "destination": "/en/contact", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/terms", "destination": "/en/terms" },
-    { "source": "/privacy-en", "destination": "/en/privacy_en" },
-    { "source": "/GDPR", "destination": "/en/GDPR" },
-    { "source": "/accessibility-en", "destination": "/en/accessibility" },
-    { "source": "/contact", "destination": "/en/contact" }
+    { "source": "/pl/regulamin", "destination": "/regulamin.html" },
+    { "source": "/pl/prywatnosc", "destination": "/privacy.html" },
+    { "source": "/pl/rodo", "destination": "/rodo.html" },
+    { "source": "/pl/dostepnosc", "destination": "/dostepnosc.html" },
+    { "source": "/pl/kontakt", "destination": "/dane-kontaktowe.html" },
+    { "source": "/en/terms", "destination": "/en/terms.html" },
+    { "source": "/en/privacy_en", "destination": "/en/privacy_en.html" },
+    { "source": "/en/GDPR", "destination": "/en/GDPR.html" },
+    { "source": "/en/accessibility", "destination": "/en/accessibility.html" },
+    { "source": "/en/contact", "destination": "/en/contact.html" }
   ]
 }
