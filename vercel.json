@@ -8,10 +8,17 @@
     { "source": "/rodo.html", "destination": "/rodo", "permanent": true },
     { "source": "/dostepnosc.html", "destination": "/dostepnosc", "permanent": true },
     { "source": "/dane-kontaktowe.html", "destination": "/dane-kontaktowe", "permanent": true },
-    { "source": "/en/terms.html", "destination": "/en/terms", "permanent": true },
-    { "source": "/en/privacy_en.html", "destination": "/en/privacy_en", "permanent": true },
-    { "source": "/en/GDPR.html", "destination": "/en/GDPR", "permanent": true },
-    { "source": "/en/accessibility.html", "destination": "/en/accessibility", "permanent": true },
-    { "source": "/en/contact.html", "destination": "/en/contact", "permanent": true }
+    { "source": "/en/terms", "destination": "/terms", "permanent": true },
+    { "source": "/en/privacy_en", "destination": "/privacy-en", "permanent": true },
+    { "source": "/en/GDPR", "destination": "/GDPR", "permanent": true },
+    { "source": "/en/accessibility", "destination": "/accessibility-en", "permanent": true },
+    { "source": "/en/contact", "destination": "/contact", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/terms", "destination": "/en/terms" },
+    { "source": "/privacy-en", "destination": "/en/privacy_en" },
+    { "source": "/GDPR", "destination": "/en/GDPR" },
+    { "source": "/accessibility-en", "destination": "/en/accessibility" },
+    { "source": "/contact", "destination": "/en/contact" }
   ]
 }
