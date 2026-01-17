@@ -88,77 +88,50 @@ async function translateWithDeepL(text, apiKey) {
   return t || text;
 }
 
-// NOWA FUNKCJA: Wyciąga obrazek z posta (w tym z udostępnień)
+// NOWA FUNKCJA: Wyciąga obrazek z posta (w tym z udostępnień) 
 async function extractImageFromPost(item, accessToken = null) {
-  // Najpierw sprawdź attachments (tu są obrazki z udostępnień i mediów)
-  if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
-    const attachment = item.attachments.data[0];
-    
-    // Sprawdź czy to media (zdjęcie/wideo)
-    if (attachment.media) {
-      // Dla zdjęć
-      if (attachment.media.image && attachment.media.image.src) {
-        return attachment.media.image.src;
-      }
-    }
-    
-    // Sprawdź subattachments (galerie zdjęć)
-    if (attachment.subattachments && attachment.subattachments.data && 
-        attachment.subattachments.data.length > 0) {
-      const firstSub = attachment.subattachments.data[0];
-      if (firstSub.media && firstSub.media.image && firstSub.media.image.src) {
-        return firstSub.media.image.src;
-      }
-      // Czasem URL jest bezpośrednio
-      if (firstSub.url) {
-        return firstSub.url;
-      }
-    }
-    
-    // Dla linków udostępnionych (np. artykuły)
-    if (attachment.type === 'share' || attachment.type === 'link') {
-      if (attachment.media && attachment.media.image && attachment.media.image.src) {
-        return attachment.media.image.src;
-      }
-      // Czasem obrazek jest bezpośrednio w attachmencie
-      if (attachment.image && attachment.image.src) {
-        return attachment.image.src;
-      }
-      // Lub w URL
-      if (attachment.url && (attachment.url.includes('.jpg') || 
-          attachment.url.includes('.png'))) {
-        return attachment.url;
-      }
-    }
-    
-    // Dla udostępnień z targetem (udostępnienia innych postów)
-    if (attachment.type === 'share' && attachment.target && attachment.target.id && accessToken) {
-      try {
-        // Zapytaj o oryginalny post
-        const targetUrl = `https://graph.facebook.com/v18.0/${attachment.target.id}?fields=full_picture,attachments{media}&access_token=${accessToken}`;
-        const targetRes = await fetch(targetUrl);
-        if (targetRes.ok) {
-          const targetData = await targetRes.json();
-          if (targetData.full_picture) {
-            return targetData.full_picture;
-          }
-          if (targetData.attachments?.data?.[0]?.media?.image?.src) {
-            return targetData.attachments.data[0].media.image.src;
-          }
+  // Jeśli jest full_picture, użyj tego
+  if (item.full_picture) {
+    return item.full_picture;
+  }
+  
+  // Jeśli post ma object_id, to jest to ID zdjęcia - możemy pobrać jego URL
+  if (item.object_id && accessToken) {
+    try {
+      const photoUrl = `https://graph.facebook.com/v18.0/${item.object_id}?fields=images&access_token=${accessToken}`;
+      const photoRes = await fetch(photoUrl);
+      
+      if (photoRes.ok) {
+        const photoData = await photoRes.json();
+        // Zwróć największy dostępny obrazek
+        if (photoData.images && photoData.images.length > 0) {
+          return photoData.images[0].source;
         }
-      } catch (e) {
-        console.error('Błąd pobierania target posta:', e);
       }
-    }
-    
-    // Dodatkowe sprawdzenie dla unshimmed_url
-    if (attachment.unshimmed_url) {
-      return attachment.unshimmed_url;
+    } catch (e) {
+      console.error('Błąd pobierania obrazka z object_id:', e);
     }
   }
   
-  // Fallback na full_picture (starsze posty lub posty bez attachments)
-  return item.full_picture || '';
+  // Ostatnia szansa - spróbuj oEmbed API (publiczne, bez tokena)
+  if (item.permalink_url) {
+    try {
+      const embedUrl = `https://graph.facebook.com/v18.0/oembed_post?url=${encodeURIComponent(item.permalink_url)}&access_token=${accessToken}`;
+      const embedRes = await fetch(embedUrl);
+      
+      if (embedRes.ok) {
+        const embedData = await embedRes.json();
+        // oEmbed często zwraca thumbnail_url dla obrazków
+        if (embedData.thumbnail_url) {
+          return embedData.thumbnail_url;
+        }
+      }
+    } catch (e) {
+      console.error('Błąd pobierania z oEmbed:', e);
+    }
+  }
+  
+  return '';
 }
 
 export default async function handler(req, res) {
@@ -342,17 +315,17 @@ export default async function handler(req, res) {
       }
     }
 
-    // ZMIENIONE: Dodano attachments z maksymalnymi szczegółami
+    // POPRAWIONE: Zmieniona składnia dla v18.0 (bez zagnieżdżonych nawiasów w attachments)
     const fields = [
       'message',
       'story',
       'created_time',
       'permalink_url',
       'full_picture',
-      'object_id',
-      'attachments{title,description,media,media_type,type,url,unshimmed_url,target{id},subattachments{media,type,url}}'
+      'object_id'
     ].join(',');
-
+    
+    // Attachments pobieramy osobno w pętli dla każdego posta lub używamy prostszego zapytania
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
     let fbJson;
@@ -417,15 +390,14 @@ export default async function handler(req, res) {
       // ZMIENIONE: Użyj nowej funkcji do ekstrakcji obrazka (teraz async)
       const imageUrl = await extractImageFromPost(item, accessToken);
       
-      // DEBUG: Loguj strukturę dla postów bez obrazka
-      if (!imageUrl && title.includes('koncert')) {
-        console.log('=== POST BEZ OBRAZKA ===');
-        console.log('Title:', title);
-        console.log('Full picture:', item.full_picture);
-        console.log('Attachments:', JSON.stringify(item.attachments, null, 2));
-        console.log('Story:', item.story);
-        console.log('========================');
-      }
+      // DEBUG: Loguj strukturę dla WSZYSTKICH postów
+      console.log('=== POST ===');
+      console.log('ID:', item.id);
+      console.log('Title:', title.substring(0, 50));
+      console.log('Full picture:', item.full_picture || 'BRAK');
+      console.log('Object ID:', item.object_id || 'BRAK');
+      console.log('Final image URL:', imageUrl || 'BRAK');
+      console.log('============');
 
       posts.push({
         title,
