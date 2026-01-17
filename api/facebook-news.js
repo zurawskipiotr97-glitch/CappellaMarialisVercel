@@ -122,18 +122,6 @@ export default async function handler(req, res) {
 
     const nowMs = Date.now();
 
-   function extractImage(item) {
-    if (item.full_picture) return item.full_picture;
-
-    const att = item.attachments?.data?.[0];
-    if (att?.media?.image?.src) return att.media.image.src;
-
-    const sub = att?.subattachments?.data?.[0];
-    if (sub?.media?.image?.src) return sub.media.image.src;
-
-    return '';
-}
-
     // Parametry endpointu:
     // - /api/facebook-news?lang=en -> zwraca EN (z cache, a jeśli PL się zmieniło to aktualizuje EN)
     // - /api/facebook-news?prefetch_en=1 -> przy wywołaniu PL próbuje odświeżyć EN (tylko jeśli zmiana)
@@ -319,9 +307,8 @@ export default async function handler(req, res) {
       'created_time',
       'permalink_url',
       'full_picture',
-      'attachments{media{image{src}},subattachments{media{image{src}}}}'
+      'attachments{media,type,subattachments}' // Dodaj to pole
     ].join(',');
-
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
@@ -364,38 +351,30 @@ export default async function handler(req, res) {
     // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
     for (const item of fbJson.data) {
-
-      console.log(JSON.stringify(item.attachments, null, 2));
-
       const message = item.message || item.story || '';
       if (!message) continue;
 
-      let titleRaw = message || item.story || '';
-      let title = titleRaw.trim();
+      // 1. Logika wyciągania tytułu
+      let title = message.split(/[.!?\n]/)[0].trim();
+      if (title.length > 60) title = title.slice(0, 59) + '…';
 
-      // 1. Tytuł do pierwszego znaku kończącego zdanie (. ! ?)
-      const stopIndex = title.search(/[.!?]/);
-      if (stopIndex !== -1) {
-        title = title.slice(0, stopIndex + 1).trim();
-      } else {
-        // 2. Jeśli nie ma kropki/!/?, bierzemy pierwszą linię
-        const newlineIndex = title.indexOf('\n');
-        if (newlineIndex !== -1) {
-          title = title.slice(0, newlineIndex).trim();
-        }
+      // 2. Logika wyciągania obrazka (najpierw zmienna, potem push)
+      let image = item.full_picture || '';
+
+      if (!image && item.attachments?.data?.[0]) {
+        const attachment = item.attachments.data[0];
+        // Sprawdzamy media bezpośrednie lub w sub-załącznikach (np. albumy)
+        image = attachment.media?.image?.src || 
+                attachment.subattachments?.data?.[0]?.media?.image?.src || 
+                '';
       }
 
-      // 3. Ostateczne skrócenie, jeśli bardzo długie (np. > 60 znaków)
-      const maxTitle = 60;
-      if (title.length > maxTitle) {
-        title = title.slice(0, maxTitle - 1) + '…';
-      }
-
+      // 3. Dodanie gotowego obiektu do tablicy
       posts.push({
         title,
         body: message,
         date: item.created_time || null,
-        image: extractImage(item),
+        image: image,
         link: item.permalink_url || null
       });
     }
