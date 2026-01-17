@@ -378,25 +378,25 @@ export default async function handler(req, res) {
       }
 
       // --- PANCERNA LOGIKA OBRAZKÓW ---
-      // 1. Najpierw próbujemy wysokiej jakości full_picture
+      // 1. Próba pobrania dużego zdjęcia głównego
       let imageSrc = item.full_picture || '';
 
-      // 2. Jeśli brak, a mamy załączniki (np. galerie, udostępnienia)
+      // 2. Jeśli brak, szukamy w załącznikach (galerie, udostępnienia)
       if (!imageSrc && item.attachments && item.attachments.data && item.attachments.data.length > 0) {
         const att = item.attachments.data[0];
         
-        // Sprawdzamy subattachments (galerie)
+        // Sprawdzamy pod-załączniki (częste w udostępnieniach)
         if (att.subattachments && att.subattachments.data && att.subattachments.data[0].media) {
           imageSrc = att.subattachments.data[0].media.image.src;
         } 
-        // Sprawdzamy media (standardowe foto/link)
+        // Sprawdzamy bezpośrednie media
         else if (att.media && att.media.image) {
           imageSrc = att.media.image.src;
         }
       }
 
-      // 3. OSTATECZNY RATUNEK (dla native_templates / Wydarzeń)
-      // Jeśli nadal pusto, bierzemy miniaturę z pola 'picture'
+      // 3. OSTATECZNY RATUNEK (dla native_templates i udostępnień bez mediów)
+      // Jeśli po wszystkim nadal pusto, bierzemy miniaturę z pola 'picture'
       if (!imageSrc && item.picture) {
         imageSrc = item.picture;
       }
