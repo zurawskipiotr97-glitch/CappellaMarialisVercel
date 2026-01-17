@@ -306,7 +306,8 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture'
+      'full_picture',
+      'attachments{media}'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -374,11 +375,23 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
+      // --- NOWA LOGIKA OBRAZKÓW ---
+      let imageSrc = item.full_picture || '';
+      
+      // Jeśli nie ma full_picture, sprawdź załączniki (dla udostępnień)
+      if (!imageSrc && item.attachments && item.attachments.data && item.attachments.data.length > 0) {
+          const attachment = item.attachments.data[0];
+          if (attachment.media && attachment.media.image && attachment.media.image.src) {
+              imageSrc = attachment.media.image.src;
+          }
+      }
+      // ----------------------------
+
       posts.push({
         title,
         body: message,
         date: item.created_time || null,
-        image: item.full_picture || '',
+        image: imageSrc, // <--- Używamy zmiennej ze znalezionym obrazkiem
         link: item.permalink_url || null
       });
     }
