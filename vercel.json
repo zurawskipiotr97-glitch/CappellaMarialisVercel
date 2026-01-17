@@ -4,8 +4,7 @@
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/en.html", "destination": "/en", "permanent": true },
-    { "source": "/pl/(.*).html", "destination": "/$1", "permanent": true },
-    { "source": "/en/(.*).html", "destination": "/$1", "permanent": true }
+
   ],
   "rewrites": [
     { "source": "/regulamin", "destination": "/pl/regulamin.html" },
@@ -13,6 +12,7 @@
     { "source": "/rodo", "destination": "/pl/rodo.html" },
     { "source": "/dostepnosc", "destination": "/pl/dostepnosc.html" },
     { "source": "/kontakt", "destination": "/pl/kontakt.html" },
+
     { "source": "/terms", "destination": "/en/terms.html" },
     { "source": "/privacy", "destination": "/en/privacy.html" },
     { "source": "/GDPR", "destination": "/en/GDPR.html" },
