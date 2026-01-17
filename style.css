@@ -23,8 +23,8 @@
 
 @font-face {
   font-family: 'opensans';
-  src: url('fonts/OpenSans-Italic-VariableFont_wdth,wght.tff') format('truetype'),
-  url('fonts/OpenSans-VariableFont_wdth,wght.tff') format('truetype');
+  src: url('fonts/OpenSans-Italic-VariableFont_wdth,wght.ttf') format('truetype'),
+  url('fonts/OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
 }
 
 body {
