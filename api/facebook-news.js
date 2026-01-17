@@ -375,15 +375,26 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-      // --- NOWA LOGIKA OBRAZKÓW ---
+      // --- ROZSZERZONA LOGIKA OBRAZKÓW ---
       let imageSrc = item.full_picture || '';
-      
-      // Jeśli nie ma full_picture, sprawdź załączniki (dla udostępnień)
-      if (!imageSrc && item.attachments && item.attachments.data && item.attachments.data.length > 0) {
-          const attachment = item.attachments.data[0];
-          if (attachment.media && attachment.media.image && attachment.media.image.src) {
-              imageSrc = attachment.media.image.src;
+
+      // Jeśli brak głównego zdjęcia, przeszukujemy załączniki
+      if (!imageSrc && item.attachments && item.attachments.data) {
+        for (const att of item.attachments.data) {
+          // 1. Sprawdź bezpośrednie media
+          if (att.media && att.media.image && att.media.image.src) {
+            imageSrc = att.media.image.src;
+            break;
           }
+          // 2. Jeśli to udostępnienie albumu lub postu z wieloma zdjęciami (subattachments)
+          if (att.subattachments && att.subattachments.data) {
+            const firstSub = att.subattachments.data[0];
+            if (firstSub.media && firstSub.media.image && firstSub.media.image.src) {
+              imageSrc = firstSub.media.image.src;
+              break;
+            }
+          }
+        }
       }
       // ----------------------------
 
