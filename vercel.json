@@ -1,23 +1,29 @@
 {
-  "hosting": {
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "redirects": [
-      { "source": "/pl/:path*", "destination": "/:path*", "permanent": true },
-      { "source": "/en/:path*", "destination": "/:path*", "permanent": true }
-    ],
-    "rewrites": [
-      { "source": "/regulamin", "destination": "/pl/regulamin" },
-      { "source": "/prywatnosc", "destination": "/pl/prywatnosc" },
-      { "source": "/rodo", "destination": "/pl/rodo" },
-      { "source": "/dostepnosc", "destination": "/pl/dostepnosc" },
-      { "source": "/kontakt", "destination": "/pl/kontakt" },
-      { "source": "/terms", "destination": "/en/terms" },
-      { "source": "/privacy", "destination": "/en/privacy" },
-      { "source": "/GDPR", "destination": "/en/GDPR" },
-      { "source": "/accessibility", "destination": "/en/accessibility" },
-      { "source": "/contact", "destination": "/en/contact" }
-      
-    ]
-  }
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/en.html", "destination": "/en", "permanent": true },
+    { "source": "/pl/regulamin.html", "destination": "/regulamin", "permanent": true },
+    { "source": "/pl/prywatnosc.html", "destination": "/prywatnosc", "permanent": true },
+    { "source": "/pl/rodo.html", "destination": "/rodo", "permanent": true },
+    { "source": "/pl/dostepnosc.html", "destination": "/dostepnosc", "permanent": true },
+    { "source": "/pl/kontakt.html", "destination": "/kontakt", "permanent": true },
+    { "source": "/en/terms.html", "destination": "/terms", "permanent": true },
+    { "source": "/en/privacy.html", "destination": "/privacy", "permanent": true },
+    { "source": "/en/GDPR.html", "destination": "/GDPR", "permanent": true },
+    { "source": "/en/accessibility.html", "destination": "/accessibility", "permanent": true },
+    { "source": "/en/contact.html", "destination": "/contact", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/regulamin", "destination": "/pl/regulamin.html" },
+    { "source": "/prywatnosc", "destination": "/pl/prywatnosc.html" },
+    { "source": "/rodo", "destination": "/pl/rodo.html" },
+    { "source": "/dostepnosc", "destination": "/pl/dostepnosc.html" },
+    { "source": "/kontakt", "destination": "/pl/kontakt.html" },
+    { "source": "/terms", "destination": "/en/terms.html" },
+    { "source": "/privacy", "destination": "/en/privacy.html" },
+    { "source": "/GDPR", "destination": "/en/GDPR.html" },
+    { "source": "/accessibility", "destination": "/en/accessibility.html" },
+    { "source": "/contact", "destination": "/en/contact.html" }
+  ]
 }
