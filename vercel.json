@@ -1,36 +1,22 @@
 {
-  "hosting": {
-    "public": "public",
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "redirects": [
-      {
-        "source": "/(index|index.html)",
-        "destination": "/",
-        "permanent": true
-      },
-      {
-        "source": "/en.html",
-        "destination": "/en",
-        "permanent": true
-      },
-      {
-        "source": "/(pl|en)/:file.html",
-        "destination": "/:file",
-        "permanent": true
-      }
-    ],
-    "rewrites": [
-      { "source": "/regulamin", "destination": "/pl/regulamin.html" },
-      { "source": "/prywatnosc", "destination": "/pl/prywatnosc.html" },
-      { "source": "/rodo", "destination": "/pl/rodo.html" },
-      { "source": "/dostepnosc", "destination": "/pl/dostepnosc.html" },
-      { "source": "/kontakt", "destination": "/pl/kontakt.html" },
-      { "source": "/terms", "destination": "/en/terms.html" },
-      { "source": "/privacy", "destination": "/en/privacy.html" },
-      { "source": "/GDPR", "destination": "/en/GDPR.html" },
-      { "source": "/accessibility", "destination": "/en/accessibility.html" },
-      { "source": "/contact", "destination": "/en/contact.html" }
-    ]
-  }
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/en.html", "destination": "/en", "permanent": true },
+    { "source": "/pl/(.*).html", "destination": "/$1", "permanent": true },
+    { "source": "/en/(.*).html", "destination": "/$1", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/regulamin", "destination": "/pl/regulamin.html" },
+    { "source": "/prywatnosc", "destination": "/pl/prywatnosc.html" },
+    { "source": "/rodo", "destination": "/pl/rodo.html" },
+    { "source": "/dostepnosc", "destination": "/pl/dostepnosc.html" },
+    { "source": "/kontakt", "destination": "/pl/kontakt.html" },
+    { "source": "/terms", "destination": "/en/terms.html" },
+    { "source": "/privacy", "destination": "/en/privacy.html" },
+    { "source": "/GDPR", "destination": "/en/GDPR.html" },
+    { "source": "/accessibility", "destination": "/en/accessibility.html" },
+    { "source": "/contact", "destination": "/en/contact.html" }
+  ]
 }
