@@ -306,8 +306,7 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture',
-      'attachments{media,type,subattachments}' // Dodaj to pole
+      'full_picture'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -348,35 +347,38 @@ export default async function handler(req, res) {
       return;
     }
 
-    // 3. Zbudowanie tablicy postów
+    // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
     for (const item of fbJson.data) {
       const message = item.message || item.story || '';
       if (!message) continue;
 
-      // Najpierw przygotowujemy dane:
-      
-      // 1. Tytuł
-      let title = message.split(/[.!?\n]/)[0].trim();
-      if (title.length > 60) title = title.slice(0, 59) + '…';
+      let titleRaw = message || item.story || '';
+      let title = titleRaw.trim();
 
-      // 2. Obrazek (logika dla postów własnych i udostępnionych)
-      let image = item.full_picture || '';
-
-      // Jeśli Facebook nie dał full_picture, szukamy w załącznikach (np. dla shares)
-      if (!image && item.attachments?.data?.[0]) {
-        const attachment = item.attachments.data[0];
-        image = attachment.media?.image?.src || 
-                attachment.subattachments?.data?.[0]?.media?.image?.src || 
-                '';
+      // 1. Tytuł do pierwszego znaku kończącego zdanie (. ! ?)
+      const stopIndex = title.search(/[.!?]/);
+      if (stopIndex !== -1) {
+        title = title.slice(0, stopIndex + 1).trim();
+      } else {
+        // 2. Jeśli nie ma kropki/!/?, bierzemy pierwszą linię
+        const newlineIndex = title.indexOf('\n');
+        if (newlineIndex !== -1) {
+          title = title.slice(0, newlineIndex).trim();
+        }
       }
 
-      // 3. Dopiero teraz robimy PUSH gotowych danych do tablicy
+      // 3. Ostateczne skrócenie, jeśli bardzo długie (np. > 60 znaków)
+      const maxTitle = 60;
+      if (title.length > maxTitle) {
+        title = title.slice(0, maxTitle - 1) + '…';
+      }
+
       posts.push({
         title,
         body: message,
         date: item.created_time || null,
-        image: image,
+        image: item.full_picture || '',
         link: item.permalink_url || null
       });
     }
