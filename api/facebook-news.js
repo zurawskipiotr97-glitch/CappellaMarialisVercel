@@ -92,7 +92,7 @@ async function extractImageFromPost(item, accessToken = null) {
   // Jeśli post ma object_id, to jest to ID zdjęcia - możemy pobrać jego URL
   if (item.object_id && accessToken) {
     try {
-      const photoUrl = `https://graph.facebook.com/v18.0/${item.object_id}?fields=images&access_token=${accessToken}`;
+      const photoUrl = `https://graph.facebook.com/v21.0/${item.object_id}?fields=images&access_token=${accessToken}`;
       console.log('[extractImage] Trying object_id:', item.object_id);
       
       const photoRes = await fetch(photoUrl);
@@ -115,7 +115,7 @@ async function extractImageFromPost(item, accessToken = null) {
   // Ostatnia szansa - spróbuj oEmbed API
   if (item.permalink_url && accessToken) {
     try {
-      const embedUrl = `https://graph.facebook.com/v18.0/oembed_post?url=${encodeURIComponent(item.permalink_url)}&access_token=${accessToken}`;
+      const embedUrl = `https://graph.facebook.com/v21.0/oembed_post?url=${encodeURIComponent(item.permalink_url)}&access_token=${accessToken}`;
       console.log('[extractImage] Trying oEmbed for:', item.permalink_url);
       
       const embedRes = await fetch(embedUrl);
@@ -329,7 +329,7 @@ export default async function handler(req, res) {
       'object_id'
     ].join(',');
 
-    const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
+    const fbUrl = `https://graph.facebook.com/v21.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
     console.log('=== MAIN FB REQUEST ===');
     console.log('URL:', fbUrl.replace(accessToken, 'TOKEN_HIDDEN'));
