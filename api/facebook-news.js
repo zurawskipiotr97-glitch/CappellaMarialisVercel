@@ -82,13 +82,7 @@ async function translateManyWithDeepL(texts, apiKey) {
   return out.slice(0, clean.length);
 }
 
-async function translateWithDeepL(text, apiKey) {
-  if (!text) return '';
-  const [t] = await translateManyWithDeepL([text], apiKey);
-  return t || text;
-}
-
-// NOWA FUNKCJA: Wyciąga obrazek z posta (w tym z udostępnień) 
+// FUNKCJA: Wyciąga obrazek z posta (w tym z udostępnień) 
 async function extractImageFromPost(item, accessToken = null) {
   // Jeśli jest full_picture, użyj tego
   if (item.full_picture) {
@@ -103,7 +97,6 @@ async function extractImageFromPost(item, accessToken = null) {
       
       if (photoRes.ok) {
         const photoData = await photoRes.json();
-        // Zwróć największy dostępny obrazek
         if (photoData.images && photoData.images.length > 0) {
           return photoData.images[0].source;
         }
@@ -113,15 +106,14 @@ async function extractImageFromPost(item, accessToken = null) {
     }
   }
   
-  // Ostatnia szansa - spróbuj oEmbed API (publiczne, bez tokena)
-  if (item.permalink_url) {
+  // Ostatnia szansa - spróbuj oEmbed API
+  if (item.permalink_url && accessToken) {
     try {
       const embedUrl = `https://graph.facebook.com/v18.0/oembed_post?url=${encodeURIComponent(item.permalink_url)}&access_token=${accessToken}`;
       const embedRes = await fetch(embedUrl);
       
       if (embedRes.ok) {
         const embedData = await embedRes.json();
-        // oEmbed często zwraca thumbnail_url dla obrazków
         if (embedData.thumbnail_url) {
           return embedData.thumbnail_url;
         }
@@ -315,7 +307,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // POPRAWIONE: Zmieniona składnia dla v18.0 (bez zagnieżdżonych nawiasów w attachments)
+    // WAŻNE: Proste pola bez zagnieżdżonych attachments
     const fields = [
       'message',
       'story',
@@ -324,8 +316,7 @@ export default async function handler(req, res) {
       'full_picture',
       'object_id'
     ].join(',');
-    
-    // Attachments pobieramy osobno w pętli dla każdego posta lub używamy prostszego zapytania
+
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
     let fbJson;
@@ -387,10 +378,9 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-      // ZMIENIONE: Użyj nowej funkcji do ekstrakcji obrazka (teraz async)
       const imageUrl = await extractImageFromPost(item, accessToken);
       
-      // DEBUG: Loguj strukturę dla WSZYSTKICH postów
+      // DEBUG
       console.log('=== POST ===');
       console.log('ID:', item.id);
       console.log('Title:', title.substring(0, 50));
