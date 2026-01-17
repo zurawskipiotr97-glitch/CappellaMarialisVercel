@@ -89,7 +89,7 @@ async function translateWithDeepL(text, apiKey) {
 }
 
 // NOWA FUNKCJA: Wyciąga obrazek z posta (w tym z udostępnień)
-function extractImageFromPost(item) {
+async function extractImageFromPost(item, accessToken = null) {
   // Najpierw sprawdź attachments (tu są obrazki z udostępnień i mediów)
   if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
     const attachment = item.attachments.data[0];
@@ -109,6 +109,10 @@ function extractImageFromPost(item) {
       if (firstSub.media && firstSub.media.image && firstSub.media.image.src) {
         return firstSub.media.image.src;
       }
+      // Czasem URL jest bezpośrednio
+      if (firstSub.url) {
+        return firstSub.url;
+      }
     }
     
     // Dla linków udostępnionych (np. artykuły)
@@ -120,6 +124,36 @@ function extractImageFromPost(item) {
       if (attachment.image && attachment.image.src) {
         return attachment.image.src;
       }
+      // Lub w URL
+      if (attachment.url && (attachment.url.includes('.jpg') || 
+          attachment.url.includes('.png'))) {
+        return attachment.url;
+      }
+    }
+    
+    // Dla udostępnień z targetem (udostępnienia innych postów)
+    if (attachment.type === 'share' && attachment.target && attachment.target.id && accessToken) {
+      try {
+        // Zapytaj o oryginalny post
+        const targetUrl = `https://graph.facebook.com/v18.0/${attachment.target.id}?fields=full_picture,attachments{media}&access_token=${accessToken}`;
+        const targetRes = await fetch(targetUrl);
+        if (targetRes.ok) {
+          const targetData = await targetRes.json();
+          if (targetData.full_picture) {
+            return targetData.full_picture;
+          }
+          if (targetData.attachments?.data?.[0]?.media?.image?.src) {
+            return targetData.attachments.data[0].media.image.src;
+          }
+        }
+      } catch (e) {
+        console.error('Błąd pobierania target posta:', e);
+      }
+    }
+    
+    // Dodatkowe sprawdzenie dla unshimmed_url
+    if (attachment.unshimmed_url) {
+      return attachment.unshimmed_url;
     }
   }
   
@@ -308,14 +342,15 @@ export default async function handler(req, res) {
       }
     }
 
-    // ZMIENIONE: Dodano attachments{media,subattachments,type} do fields
+    // ZMIENIONE: Dodano attachments z maksymalnymi szczegółami
     const fields = [
       'message',
       'story',
       'created_time',
       'permalink_url',
       'full_picture',
-      'attachments{media,subattachments,type,media_type,unshimmed_url,image}'
+      'object_id',
+      'attachments{title,description,media,media_type,type,url,unshimmed_url,target{id},subattachments{media,type,url}}'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -379,8 +414,18 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-      // ZMIENIONE: Użyj nowej funkcji do ekstrakcji obrazka
-      const imageUrl = extractImageFromPost(item);
+      // ZMIENIONE: Użyj nowej funkcji do ekstrakcji obrazka (teraz async)
+      const imageUrl = await extractImageFromPost(item, accessToken);
+      
+      // DEBUG: Loguj strukturę dla postów bez obrazka
+      if (!imageUrl && title.includes('koncert')) {
+        console.log('=== POST BEZ OBRAZKA ===');
+        console.log('Title:', title);
+        console.log('Full picture:', item.full_picture);
+        console.log('Attachments:', JSON.stringify(item.attachments, null, 2));
+        console.log('Story:', item.story);
+        console.log('========================');
+      }
 
       posts.push({
         title,
