@@ -3,9 +3,9 @@
   "trailingSlash": false,
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/en.html", "destination": "/en", "permanent": true },
-
+    { "source": "/en.html", "destination": "/en", "permanent": true }
   ],
+  
   "rewrites": [
     { "source": "/regulamin", "destination": "/pl/regulamin.html" },
     { "source": "/prywatnosc", "destination": "/pl/prywatnosc.html" },
