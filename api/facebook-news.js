@@ -307,7 +307,8 @@ export default async function handler(req, res) {
       'created_time',
       'permalink_url',
       'full_picture',
-      'attachments{media,subattachments,type}'
+      'picture', // Dodaj to pole jako fallback
+      'attachments{media,subattachments,type,target}'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -376,26 +377,30 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-      // --- ULEPSZONA LOGIKA OBRAZKÓW ---
+      // --- PANCERNA LOGIKA OBRAZKÓW ---
+      // 1. Najpierw próbujemy wysokiej jakości full_picture
       let imageSrc = item.full_picture || '';
 
-      // Jeśli post jest udostępnieniem (np. wydarzenia), obrazek często siedzi w attachments
-      if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
-        const firstAttachment = item.attachments.data[0];
-
-        // 1. Sprawdź czy są subattachments (częste przy udostępnieniach galerii/wydarzeń)
-        if (firstAttachment.subattachments && firstAttachment.subattachments.data) {
-          const sub = firstAttachment.subattachments.data[0];
-          if (sub.media && sub.media.image) {
-            imageSrc = sub.media.image.src;
-          }
+      // 2. Jeśli brak, a mamy załączniki (np. galerie, udostępnienia)
+      if (!imageSrc && item.attachments && item.attachments.data && item.attachments.data.length > 0) {
+        const att = item.attachments.data[0];
+        
+        // Sprawdzamy subattachments (galerie)
+        if (att.subattachments && att.subattachments.data && att.subattachments.data[0].media) {
+          imageSrc = att.subattachments.data[0].media.image.src;
         } 
-        // 2. Jeśli nie ma subattachments, weź obrazek z głównego załącznika
-        else if (firstAttachment.media && firstAttachment.media.image) {
-          imageSrc = firstAttachment.media.image.src;
+        // Sprawdzamy media (standardowe foto/link)
+        else if (att.media && att.media.image) {
+          imageSrc = att.media.image.src;
         }
       }
-      // -------------------------------------------------------
+
+      // 3. OSTATECZNY RATUNEK (dla native_templates / Wydarzeń)
+      // Jeśli nadal pusto, bierzemy miniaturę z pola 'picture'
+      if (!imageSrc && item.picture) {
+        imageSrc = item.picture;
+      }
+      // -------------------------------
 
       posts.push({
         title,
