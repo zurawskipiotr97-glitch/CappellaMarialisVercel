@@ -307,7 +307,7 @@ export default async function handler(req, res) {
       'created_time',
       'permalink_url',
       'full_picture',
-      'attachments{media}'
+      'attachments{media,subattachments,type}'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -375,28 +375,25 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-      // --- ROZSZERZONA LOGIKA OBRAZKÓW ---
+      // --- ULEPSZONA LOGIKA OBRAZKÓW (W TYM UDOSTĘPNIENIA) ---
       let imageSrc = item.full_picture || '';
 
-      // Jeśli brak głównego zdjęcia, przeszukujemy załączniki
-      if (!imageSrc && item.attachments && item.attachments.data) {
-        for (const att of item.attachments.data) {
-          // 1. Sprawdź bezpośrednie media
-          if (att.media && att.media.image && att.media.image.src) {
-            imageSrc = att.media.image.src;
-            break;
+      if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
+        const primaryAtt = item.attachments.data[0];
+
+        // 1. Sprawdź subattachments (częste przy udostępnionych galeriach lub postach)
+        if (primaryAtt.subattachments && primaryAtt.subattachments.data && primaryAtt.subattachments.data.length > 0) {
+          const firstSub = primaryAtt.subattachments.data[0];
+          if (firstSub.media && firstSub.media.image) {
+            imageSrc = firstSub.media.image.src;
           }
-          // 2. Jeśli to udostępnienie albumu lub postu z wieloma zdjęciami (subattachments)
-          if (att.subattachments && att.subattachments.data) {
-            const firstSub = att.subattachments.data[0];
-            if (firstSub.media && firstSub.media.image && firstSub.media.image.src) {
-              imageSrc = firstSub.media.image.src;
-              break;
-            }
-          }
+        } 
+        // 2. Sprawdź bezpośrednie media w załączniku (dla udostępnionych linków/filmów/zdjęć)
+        else if (primaryAtt.media && primaryAtt.media.image) {
+          imageSrc = primaryAtt.media.image.src;
         }
       }
-      // ----------------------------
+      // -------------------------------------------------------
 
       posts.push({
         title,
