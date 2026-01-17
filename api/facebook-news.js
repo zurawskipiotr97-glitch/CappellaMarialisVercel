@@ -93,13 +93,19 @@ async function extractImageFromPost(item, accessToken = null) {
   if (item.object_id && accessToken) {
     try {
       const photoUrl = `https://graph.facebook.com/v18.0/${item.object_id}?fields=images&access_token=${accessToken}`;
+      console.log('[extractImage] Trying object_id:', item.object_id);
+      
       const photoRes = await fetch(photoUrl);
       
       if (photoRes.ok) {
         const photoData = await photoRes.json();
         if (photoData.images && photoData.images.length > 0) {
+          console.log('[extractImage] Got image from object_id');
           return photoData.images[0].source;
         }
+      } else {
+        const errorText = await photoRes.text();
+        console.error('[extractImage] object_id request failed:', photoRes.status, errorText);
       }
     } catch (e) {
       console.error('Błąd pobierania obrazka z object_id:', e);
@@ -110,13 +116,19 @@ async function extractImageFromPost(item, accessToken = null) {
   if (item.permalink_url && accessToken) {
     try {
       const embedUrl = `https://graph.facebook.com/v18.0/oembed_post?url=${encodeURIComponent(item.permalink_url)}&access_token=${accessToken}`;
+      console.log('[extractImage] Trying oEmbed for:', item.permalink_url);
+      
       const embedRes = await fetch(embedUrl);
       
       if (embedRes.ok) {
         const embedData = await embedRes.json();
         if (embedData.thumbnail_url) {
+          console.log('[extractImage] Got image from oEmbed');
           return embedData.thumbnail_url;
         }
+      } else {
+        const errorText = await embedRes.text();
+        console.error('[extractImage] oEmbed request failed:', embedRes.status, errorText);
       }
     } catch (e) {
       console.error('Błąd pobierania z oEmbed:', e);
@@ -318,6 +330,10 @@ export default async function handler(req, res) {
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
+
+    console.log('=== MAIN FB REQUEST ===');
+    console.log('URL:', fbUrl.replace(accessToken, 'TOKEN_HIDDEN'));
+    console.log('=======================');
 
     let fbJson;
     try {
