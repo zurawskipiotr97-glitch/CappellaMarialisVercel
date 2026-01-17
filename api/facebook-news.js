@@ -306,9 +306,7 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture',
-      'picture', // Dodaj to pole jako fallback
-      'attachments{media,subattachments,type,target}'
+      'full_picture'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -352,7 +350,6 @@ export default async function handler(req, res) {
     // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
     for (const item of fbJson.data) {
-      console.log('DEBUG POST:', item.id, JSON.stringify(item.attachments));
       const message = item.message || item.story || '';
       if (!message) continue;
 
@@ -377,36 +374,11 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-      // --- PANCERNA LOGIKA OBRAZKÓW ---
-      // 1. Próba pobrania dużego zdjęcia głównego
-      let imageSrc = item.full_picture || '';
-
-      // 2. Jeśli brak, szukamy w załącznikach (galerie, udostępnienia)
-      if (!imageSrc && item.attachments && item.attachments.data && item.attachments.data.length > 0) {
-        const att = item.attachments.data[0];
-        
-        // Sprawdzamy pod-załączniki (częste w udostępnieniach)
-        if (att.subattachments && att.subattachments.data && att.subattachments.data[0].media) {
-          imageSrc = att.subattachments.data[0].media.image.src;
-        } 
-        // Sprawdzamy bezpośrednie media
-        else if (att.media && att.media.image) {
-          imageSrc = att.media.image.src;
-        }
-      }
-
-      // 3. OSTATECZNY RATUNEK (dla native_templates i udostępnień bez mediów)
-      // Jeśli po wszystkim nadal pusto, bierzemy miniaturę z pola 'picture'
-      if (!imageSrc && item.picture) {
-        imageSrc = item.picture;
-      }
-      // -------------------------------
-
       posts.push({
         title,
         body: message,
         date: item.created_time || null,
-        image: imageSrc, // <--- Używamy zmiennej ze znalezionym obrazkiem
+        image: item.full_picture || '',
         link: item.permalink_url || null
       });
     }
