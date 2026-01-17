@@ -375,22 +375,23 @@ export default async function handler(req, res) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
-      // --- ULEPSZONA LOGIKA OBRAZKÓW (W TYM UDOSTĘPNIENIA) ---
+      // --- ULEPSZONA LOGIKA OBRAZKÓW ---
       let imageSrc = item.full_picture || '';
 
+      // Jeśli post jest udostępnieniem (np. wydarzenia), obrazek często siedzi w attachments
       if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
-        const primaryAtt = item.attachments.data[0];
+        const firstAttachment = item.attachments.data[0];
 
-        // 1. Sprawdź subattachments (częste przy udostępnionych galeriach lub postach)
-        if (primaryAtt.subattachments && primaryAtt.subattachments.data && primaryAtt.subattachments.data.length > 0) {
-          const firstSub = primaryAtt.subattachments.data[0];
-          if (firstSub.media && firstSub.media.image) {
-            imageSrc = firstSub.media.image.src;
+        // 1. Sprawdź czy są subattachments (częste przy udostępnieniach galerii/wydarzeń)
+        if (firstAttachment.subattachments && firstAttachment.subattachments.data) {
+          const sub = firstAttachment.subattachments.data[0];
+          if (sub.media && sub.media.image) {
+            imageSrc = sub.media.image.src;
           }
         } 
-        // 2. Sprawdź bezpośrednie media w załączniku (dla udostępnionych linków/filmów/zdjęć)
-        else if (primaryAtt.media && primaryAtt.media.image) {
-          imageSrc = primaryAtt.media.image.src;
+        // 2. Jeśli nie ma subattachments, weź obrazek z głównego załącznika
+        else if (firstAttachment.media && firstAttachment.media.image) {
+          imageSrc = firstAttachment.media.image.src;
         }
       }
       // -------------------------------------------------------
