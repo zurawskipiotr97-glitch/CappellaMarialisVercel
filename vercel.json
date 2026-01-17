@@ -9,7 +9,7 @@
     { "source": "/pl/dostepnosc.html", "destination": "/dostepnosc", "permanent": true },
     { "source": "/pl/kontakt.html", "destination": "/kontakt", "permanent": true },
     { "source": "/en/terms.html", "destination": "/terms", "permanent": true },
-    { "source": "/en/privacy_en.html", "destination": "/privacy_en", "permanent": true },
+    { "source": "/en/privacy.html", "destination": "/privacy", "permanent": true },
     { "source": "/en/GDPR.html", "destination": "/GDPR", "permanent": true },
     { "source": "/en/accessibility.html", "destination": "/accessibility", "permanent": true },
     { "source": "/en/contact.html", "destination": "/contact", "permanent": true }
@@ -21,7 +21,7 @@
     { "source": "/dostepnosc", "destination": "/pl/dostepnosc.html" },
     { "source": "/kontakt", "destination": "/pl/kontakt.html" },
     { "source": "/terms", "destination": "/en/terms.html" },
-    { "source": "/privacy_en", "destination": "/en/privacy_en.html" },
+    { "source": "/privacy", "destination": "/en/privacy.html" },
     { "source": "/GDPR", "destination": "/en/GDPR.html" },
     { "source": "/accessibility", "destination": "/en/accessibility.html" },
     { "source": "/contact", "destination": "/en/contact.html" }
