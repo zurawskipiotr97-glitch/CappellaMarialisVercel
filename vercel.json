@@ -17,6 +17,7 @@
       { "source": "/GDPR", "destination": "/en/GDPR" },
       { "source": "/accessibility", "destination": "/en/accessibility" },
       { "source": "/contact", "destination": "/en/contact" }
+      
     ]
   }
 }
