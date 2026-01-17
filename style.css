@@ -21,11 +21,28 @@
   box-sizing: border-box;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'opensans';
   src: url('fonts/OpenSans-Italic-VariableFont_wdth,wght.ttf') format('truetype'),
   url('fonts/OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
+} */
+
+/* 1. Deklaracja dla stylu NORMALNEGO */
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans-VariableFont_wdth,wght.ttf') format('truetype');
+  font-weight: 300 800; /* Ustawienie zakresu wag (grubości) */
+  font-style: normal; /* Jawne określenie, że to jest styl normalny */
 }
+
+/* 2. Deklaracja dla stylu KURSYWY (ITALIC) */
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+  font-weight: 300 800;
+  font-style: italic; /* Jawne określenie, że to jest styl italic */
+}
+
 
 body {
   font-family: 'opensans', sans-serif;
