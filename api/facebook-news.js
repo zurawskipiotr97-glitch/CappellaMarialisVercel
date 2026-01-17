@@ -348,28 +348,30 @@ export default async function handler(req, res) {
       return;
     }
 
-    // 3. Zbudowanie tablicy postów (prawie jak w PHP)
+    // 3. Zbudowanie tablicy postów
     const posts = [];
     for (const item of fbJson.data) {
       const message = item.message || item.story || '';
       if (!message) continue;
 
-      // 1. Logika wyciągania tytułu
+      // Najpierw przygotowujemy dane:
+      
+      // 1. Tytuł
       let title = message.split(/[.!?\n]/)[0].trim();
       if (title.length > 60) title = title.slice(0, 59) + '…';
 
-      // 2. Logika wyciągania obrazka (najpierw zmienna, potem push)
+      // 2. Obrazek (logika dla postów własnych i udostępnionych)
       let image = item.full_picture || '';
 
+      // Jeśli Facebook nie dał full_picture, szukamy w załącznikach (np. dla shares)
       if (!image && item.attachments?.data?.[0]) {
         const attachment = item.attachments.data[0];
-        // Sprawdzamy media bezpośrednie lub w sub-załącznikach (np. albumy)
         image = attachment.media?.image?.src || 
                 attachment.subattachments?.data?.[0]?.media?.image?.src || 
                 '';
       }
 
-      // 3. Dodanie gotowego obiektu do tablicy
+      // 3. Dopiero teraz robimy PUSH gotowych danych do tablicy
       posts.push({
         title,
         body: message,
