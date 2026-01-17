@@ -14,61 +14,61 @@
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/pl/regulamin</loc>
+    <loc>https://www.cappellamarialis.pl/regulamin</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/pl/prywatnosc</loc>
+    <loc>https://www.cappellamarialis.pl/prywatnosc</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/pl/rodo</loc>
+    <loc>https://www.cappellamarialis.pl/rodo</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
    <url>
-    <loc>https://www.cappellamarialis.pl/pl/dostepnosc</loc>
+    <loc>https://www.cappellamarialis.pl/dostepnosc</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/pl/kontakt</loc>
+    <loc>https://www.cappellamarialis.pl/kontakt</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/en/terms</loc>
+    <loc>https://www.cappellamarialis.pl/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/en/privacy</loc>
+    <loc>https://www.cappellamarialis.pl/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/en/GDPR</loc>
+    <loc>https://www.cappellamarialis.pl/GDPR</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
    <url>
-    <loc>https://www.cappellamarialis.pl/en/accessibility</loc>
+    <loc>https://www.cappellamarialis.pl/accessibility</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://www.cappellamarialis.pl/en/contact</loc>
+    <loc>https://www.cappellamarialis.pl/contact</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
