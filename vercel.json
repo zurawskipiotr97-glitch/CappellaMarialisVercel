@@ -1,18 +1,11 @@
 {
   "cleanUrls": true,
+  "trailingSlash": false,
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
     { "source": "/en.html", "destination": "/en", "permanent": true },
-    { "source": "/pl/regulamin.html", "destination": "/regulamin", "permanent": true },
-    { "source": "/pl/prywatnosc.html", "destination": "/prywatnosc", "permanent": true },
-    { "source": "/pl/rodo.html", "destination": "/rodo", "permanent": true },
-    { "source": "/pl/dostepnosc.html", "destination": "/dostepnosc", "permanent": true },
-    { "source": "/pl/kontakt.html", "destination": "/kontakt", "permanent": true },
-    { "source": "/en/terms.html", "destination": "/terms", "permanent": true },
-    { "source": "/en/privacy.html", "destination": "/privacy", "permanent": true },
-    { "source": "/en/GDPR.html", "destination": "/GDPR", "permanent": true },
-    { "source": "/en/accessibility.html", "destination": "/accessibility", "permanent": true },
-    { "source": "/en/contact.html", "destination": "/contact", "permanent": true }
+    { "source": "/pl/:path*.html", "destination": "/:path*", "permanent": true },
+    { "source": "/en/:path*.html", "destination": "/:path*", "permanent": true }
   ],
   "rewrites": [
     { "source": "/regulamin", "destination": "/pl/regulamin.html" },
