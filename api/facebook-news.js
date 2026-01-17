@@ -502,3 +502,6 @@ const sourceHash = stablePostsFingerprint(posts);
     res.end(JSON.stringify({ error: 'Błąd serwera.' }));
   }
 }
+
+console.log(JSON.stringify(item.attachments, null, 2));
+
