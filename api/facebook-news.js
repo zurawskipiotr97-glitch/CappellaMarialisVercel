@@ -351,6 +351,7 @@ export default async function handler(req, res) {
     // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
     for (const item of fbJson.data) {
+      console.log('DEBUG POST:', item.id, JSON.stringify(item.attachments));
       const message = item.message || item.story || '';
       if (!message) continue;
 
