@@ -122,6 +122,18 @@ export default async function handler(req, res) {
 
     const nowMs = Date.now();
 
+   function extractImage(item) {
+    if (item.full_picture) return item.full_picture;
+
+    const att = item.attachments?.data?.[0];
+    if (att?.media?.image?.src) return att.media.image.src;
+
+    const sub = att?.subattachments?.data?.[0];
+    if (sub?.media?.image?.src) return sub.media.image.src;
+
+    return '';
+}
+
     // Parametry endpointu:
     // - /api/facebook-news?lang=en -> zwraca EN (z cache, a jeśli PL się zmieniło to aktualizuje EN)
     // - /api/facebook-news?prefetch_en=1 -> przy wywołaniu PL próbuje odświeżyć EN (tylko jeśli zmiana)
@@ -306,8 +318,10 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture'
+      'full_picture',
+      'attachments{media{image{src}},subattachments{media{image{src}}}}'
     ].join(',');
+
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
@@ -378,7 +392,7 @@ export default async function handler(req, res) {
         title,
         body: message,
         date: item.created_time || null,
-        image: item.full_picture || '',
+        image: extractImage(item),
         link: item.permalink_url || null
       });
     }
