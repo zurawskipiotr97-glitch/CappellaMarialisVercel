@@ -22,9 +22,7 @@ async function loadConfig(keys) {
     cfg[row.key] = row.value;
   }
 
-  // Walidacja minimalna
   for (const k of keys) {
-    // deepl_api_key jest opcjonalny (bo endpoint PL może działać bez niego)
     if (k === 'deepl_api_key') continue;
     if (!cfg[k]) {
       throw new Error(`Brak konfiguracji w Supabase (secret_config): ${k}`);
@@ -48,19 +46,15 @@ function postContentHash(p) {
   return crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
 }
 
-// UWAGA: fingerprint liczymy WYŁĄCZNIE z treści (title+body).
-// Dzięki temu zmiany typu: data/link/obrazek nie powodują ponownego tłumaczenia w DeepL.
 function stablePostsFingerprint(posts) {
   const hashes = (posts || []).map(postContentHash);
   return crypto.createHash('sha256').update(JSON.stringify(hashes)).digest('hex');
 }
 
-
 async function translateManyWithDeepL(texts, apiKey) {
   const clean = (texts || []).map(t => String(t ?? ''));
   if (!clean.length) return [];
 
-  // Jeśli wszystkie puste – oszczędzamy request
   if (clean.every(t => !t)) return clean.map(() => '');
 
   const params = new URLSearchParams();
@@ -69,8 +63,6 @@ async function translateManyWithDeepL(texts, apiKey) {
   }
   params.set('target_lang', 'EN');
 
-  // DeepL API Free endpoint:
-  // https://api-free.deepl.com/v2/translate
   const resp = await fetch('https://api-free.deepl.com/v2/translate', {
     method: 'POST',
     headers: {
@@ -86,7 +78,6 @@ async function translateManyWithDeepL(texts, apiKey) {
 
   const json = await resp.json();
   const out = (json?.translations || []).map(x => x?.text || '');
-  // Bezpiecznik: DeepL powinien zwrócić tyle samo elementów co wysłaliśmy
   while (out.length < clean.length) out.push('');
   return out.slice(0, clean.length);
 }
@@ -97,6 +88,44 @@ async function translateWithDeepL(text, apiKey) {
   return t || text;
 }
 
+// NOWA FUNKCJA: Wyciąga obrazek z posta (w tym z udostępnień)
+function extractImageFromPost(item) {
+  // Najpierw sprawdź attachments (tu są obrazki z udostępnień i mediów)
+  if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
+    const attachment = item.attachments.data[0];
+    
+    // Sprawdź czy to media (zdjęcie/wideo)
+    if (attachment.media) {
+      // Dla zdjęć
+      if (attachment.media.image && attachment.media.image.src) {
+        return attachment.media.image.src;
+      }
+    }
+    
+    // Sprawdź subattachments (galerie zdjęć)
+    if (attachment.subattachments && attachment.subattachments.data && 
+        attachment.subattachments.data.length > 0) {
+      const firstSub = attachment.subattachments.data[0];
+      if (firstSub.media && firstSub.media.image && firstSub.media.image.src) {
+        return firstSub.media.image.src;
+      }
+    }
+    
+    // Dla linków udostępnionych (np. artykuły)
+    if (attachment.type === 'share' || attachment.type === 'link') {
+      if (attachment.media && attachment.media.image && attachment.media.image.src) {
+        return attachment.media.image.src;
+      }
+      // Czasem obrazek jest bezpośrednio w attachmencie
+      if (attachment.image && attachment.image.src) {
+        return attachment.image.src;
+      }
+    }
+  }
+  
+  // Fallback na full_picture (starsze posty lub posty bez attachments)
+  return item.full_picture || '';
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -122,9 +151,6 @@ export default async function handler(req, res) {
 
     const nowMs = Date.now();
 
-    // Parametry endpointu:
-    // - /api/facebook-news?lang=en -> zwraca EN (z cache, a jeśli PL się zmieniło to aktualizuje EN)
-    // - /api/facebook-news?prefetch_en=1 -> przy wywołaniu PL próbuje odświeżyć EN (tylko jeśli zmiana)
     const urlObj = new URL(req.url, 'http://localhost');
     const lang = (urlObj.searchParams.get('lang') || 'pl').toLowerCase();
     const prefetchEn = urlObj.searchParams.get('prefetch_en') === '1';
@@ -138,11 +164,8 @@ export default async function handler(req, res) {
         throw new Error('Brak deepl_api_key w secret_config.');
       }
 
-      // Liczymy hash WYŁĄCZNIE z treści (title+body), żeby uniknąć fałszywych zmian.
-      // sourceHash jest przekazywany z zewnątrz, ale dla pewności przeliczamy go stabilnie.
       const localSourceHash = stablePostsFingerprint(posts || []);
 
-      // 1) Odczyt aktualnego EN cache
       const { data: enRow, error: enReadErr } = await supabase
         .from('facebook_cache')
         .select('data')
@@ -153,7 +176,6 @@ export default async function handler(req, res) {
         console.error('Supabase EN cache read error:', enReadErr);
       }
 
-      // Jeśli EN cache już ma ten sam hash treści — nic nie robimy
       const existingHash = enRow?.data?.source_hash;
       if (existingHash && existingHash === localSourceHash) {
         return enRow.data;
@@ -161,7 +183,6 @@ export default async function handler(req, res) {
 
       const existingPosts = Array.isArray(enRow?.data?.posts) ? enRow.data.posts : [];
 
-      // 2) Indeksujemy istniejące EN posty po content_hash (jeśli jest)
       const enByContentHash = new Map();
       for (const p of existingPosts) {
         if (p && p.content_hash) {
@@ -169,11 +190,8 @@ export default async function handler(req, res) {
         }
       }
 
-      // 3) Budujemy nową listę EN postów:
-      //    - jeśli post o tym samym content_hash już jest w EN cache -> reuse tłumaczeń
-      //    - jeśli nie -> tłumaczymy tylko ten post
       const nextEnPosts = [];
-      const toTranslate = []; // { idx, field, text }
+      const toTranslate = [];
 
       for (const p of posts || []) {
         const contentHash = postContentHash(p);
@@ -182,7 +200,6 @@ export default async function handler(req, res) {
         if (existing && (existing.title != null || existing.body != null)) {
           nextEnPosts.push({
             ...existing,
-            // świeże pola z FB (mogą się zmieniać niezależnie od treści)
             date: p.date || null,
             link: p.link || null,
             image: p.image || '',
@@ -191,7 +208,6 @@ export default async function handler(req, res) {
           continue;
         }
 
-        // Brak w cache — dodaj placeholder i przetłumacz tylko tę pozycję
         const idx = nextEnPosts.push({
           ...p,
           content_hash: contentHash,
@@ -203,9 +219,8 @@ export default async function handler(req, res) {
         toTranslate.push({ idx, field: 'body', text: p.body || '' });
       }
 
-      // 4) Batch translate (1 request na wiele tekstów). Pomijamy puste.
       const texts = [];
-      const slots = []; // mapowanie na toTranslate
+      const slots = [];
       for (let i = 0; i < toTranslate.length; i++) {
         const t = toTranslate[i];
         if (!t.text) {
@@ -231,7 +246,6 @@ export default async function handler(req, res) {
         posts: nextEnPosts
       };
 
-      // 5) Zapis EN cache
       const { error: enWriteErr } = await supabase
         .from('facebook_cache')
         .upsert({
@@ -247,8 +261,6 @@ export default async function handler(req, res) {
       return enPayload;
     }
 
-
-    // 1. Cache z Supabase (PL)
     let fallbackCache = null;
     if (cacheHrs > 0) {
       const { data: cacheRow, error: cacheError } = await supabase
@@ -266,8 +278,6 @@ export default async function handler(req, res) {
         if (diffHours < cacheHrs) {
           const plPayload = cacheRow.data;
 
-          // Model B: gdy prosisz o EN, nigdy nie generujemy tłumaczeń na tym wywołaniu.
-          // Zwracamy tylko to, co jest już w cache EN.
           if (lang === 'en') {
             const { data: enRow } = await supabase
               .from('facebook_cache')
@@ -282,14 +292,12 @@ export default async function handler(req, res) {
               return;
             }
 
-            // EN nie jest jeszcze przygotowane — trzeba najpierw odświeżyć PL z prefetch_en=1
             res.statusCode = 503;
             res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane. Odśwież wersję PL (index.html), aby wygenerować tłumaczenie.' }));
+            res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane.' }));
             return;
           }
 
-          // Dla PL zwracamy cache bez zmian.
           res.statusCode = 200;
           res.setHeader('Content-Type', 'application/json; charset=utf-8');
           res.end(JSON.stringify(plPayload));
@@ -300,13 +308,14 @@ export default async function handler(req, res) {
       }
     }
 
-    // 2. Zapytanie do Graph API
+    // ZMIENIONE: Dodano attachments{media,subattachments,type} do fields
     const fields = [
       'message',
       'story',
       'created_time',
       'permalink_url',
-      'full_picture'
+      'full_picture',
+      'attachments{media,subattachments,type,media_type,unshimmed_url,image}'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -347,7 +356,6 @@ export default async function handler(req, res) {
       return;
     }
 
-    // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
     for (const item of fbJson.data) {
       const message = item.message || item.story || '';
@@ -356,44 +364,41 @@ export default async function handler(req, res) {
       let titleRaw = message || item.story || '';
       let title = titleRaw.trim();
 
-      // 1. Tytuł do pierwszego znaku kończącego zdanie (. ! ?)
       const stopIndex = title.search(/[.!?]/);
       if (stopIndex !== -1) {
         title = title.slice(0, stopIndex + 1).trim();
       } else {
-        // 2. Jeśli nie ma kropki/!/?, bierzemy pierwszą linię
         const newlineIndex = title.indexOf('\n');
         if (newlineIndex !== -1) {
           title = title.slice(0, newlineIndex).trim();
         }
       }
 
-      // 3. Ostateczne skrócenie, jeśli bardzo długie (np. > 60 znaków)
       const maxTitle = 60;
       if (title.length > maxTitle) {
         title = title.slice(0, maxTitle - 1) + '…';
       }
 
+      // ZMIENIONE: Użyj nowej funkcji do ekstrakcji obrazka
+      const imageUrl = extractImageFromPost(item);
+
       posts.push({
         title,
         body: message,
         date: item.created_time || null,
-        image: item.full_picture || '',
+        image: imageUrl,
         link: item.permalink_url || null
       });
     }
 
-// content_hash pomaga w re-use tłumaczeń (EN cache) per post
-for (const p of posts) {
-  p.content_hash = postContentHash(p);
-}
+    for (const p of posts) {
+      p.content_hash = postContentHash(p);
+    }
 
-const sourceHash = stablePostsFingerprint(posts);
+    const sourceHash = stablePostsFingerprint(posts);
 
-    // Model B: tłumaczymy EN tylko wtedy, gdy ZMIENIŁ SIĘ stan postów PL.
     const previousHash = fallbackCache?.source_hash || null;
     const plChanged = !previousHash || previousHash !== sourceHash;
-
 
     const payload = {
       cached_at: Math.floor(nowMs / 1000),
@@ -401,7 +406,6 @@ const sourceHash = stablePostsFingerprint(posts);
       posts
     };
 
-    // 4. Zapis cache PL
     if (posts.length > 0) {
       const { error: upsertError } = await supabase
         .from('facebook_cache')
@@ -416,7 +420,6 @@ const sourceHash = stablePostsFingerprint(posts);
       }
 
       if (lang === 'en') {
-        // Model B: nie generujemy tłumaczeń przy wywołaniu EN.
         const { data: enRow } = await supabase
           .from('facebook_cache')
           .select('data')
@@ -432,7 +435,7 @@ const sourceHash = stablePostsFingerprint(posts);
 
         res.statusCode = 503;
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane. Odśwież wersję PL (index.html), aby wygenerować tłumaczenie.' }));
+        res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane.' }));
         return;
       }
 
@@ -450,7 +453,6 @@ const sourceHash = stablePostsFingerprint(posts);
       return;
     }
 
-    // Brak nowych postów → stary cache
     if (fallbackCache) {
       if (lang === 'en') {
         const { data: enRow } = await supabase
@@ -468,7 +470,7 @@ const sourceHash = stablePostsFingerprint(posts);
 
         res.statusCode = 503;
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane. Odśwież wersję PL (index.html), aby wygenerować tłumaczenie.' }));
+        res.end(JSON.stringify({ error: 'EN cache nie jest jeszcze przygotowane.' }));
         return;
       }
 
