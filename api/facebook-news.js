@@ -364,6 +364,9 @@ export default async function handler(req, res) {
     // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
     for (const item of fbJson.data) {
+
+      console.log(JSON.stringify(item.attachments, null, 2));
+
       const message = item.message || item.story || '';
       if (!message) continue;
 
@@ -502,6 +505,3 @@ const sourceHash = stablePostsFingerprint(posts);
     res.end(JSON.stringify({ error: 'Błąd serwera.' }));
   }
 }
-
-console.log(JSON.stringify(item.attachments, null, 2));
-
