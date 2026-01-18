@@ -309,7 +309,7 @@ export default async function handler(req, res) {
       'full_picture'
     ].join(',');
 
-    const fbUrl = `https://graph.facebook.com/v18.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
+    const fbUrl = `https://graph.facebook.com/24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
     let fbJson;
     try {

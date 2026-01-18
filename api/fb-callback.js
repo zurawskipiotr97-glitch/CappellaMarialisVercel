@@ -85,7 +85,7 @@ export default async function handler(req, res) {
       code: String(code)
     });
 
-    const tokenUrl = 'https://graph.facebook.com/v21.0/oauth/access_token?' + tokenParams.toString();
+    const tokenUrl = 'https://graph.facebook.com/v24.0/oauth/access_token?' + tokenParams.toString();
 
     let tokenJson;
     try {
@@ -114,7 +114,7 @@ export default async function handler(req, res) {
       fb_exchange_token: userAccessToken
     });
 
-    const longUrl = 'https://graph.facebook.com/v21.0/oauth/access_token?' + longParams.toString();
+    const longUrl = 'https://graph.facebook.com/v24.0/oauth/access_token?' + longParams.toString();
     try {
       const longRes = await fetch(longUrl);
       if (longRes.ok) {
@@ -132,7 +132,7 @@ export default async function handler(req, res) {
       fields: 'access_token',
       access_token: userAccessToken
     });
-    const pageUrl = `https://graph.facebook.com/v21.0/${encodeURIComponent(pageId)}?` + pageParams.toString();
+    const pageUrl = `https://graph.facebook.com/v24.0/${encodeURIComponent(pageId)}?` + pageParams.toString();
 
     let pageJson;
     try {

@@ -79,7 +79,7 @@ export default async function handler(req, res) {
       scope: scope.join(',')
     });
 
-    const url = 'https://www.facebook.com/v21.0/dialog/oauth?' + params.toString();
+    const url = 'https://www.facebook.com/v24.0/dialog/oauth?' + params.toString();
 
     res.statusCode = 302;
     res.setHeader('Location', url);
