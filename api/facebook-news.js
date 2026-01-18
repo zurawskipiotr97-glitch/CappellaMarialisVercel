@@ -310,10 +310,12 @@ export default async function handler(req, res) {
       'permalink_url',
       'full_picture',
       'attachments',
-      'object_id'  // ← To może być ID eventu/zdjęcia
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
+
+    console.log('DEBUG - Fields:', fields);
+console.log('DEBUG - FB URL:', fbUrl.replace(accessToken, 'HIDDEN'));
 
     let fbJson;
     try {
