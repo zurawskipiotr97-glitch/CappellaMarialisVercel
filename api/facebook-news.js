@@ -363,24 +363,31 @@ export default async function handler(req, res) {
     }
 
     // Funkcja wybiera najlepszy obrazek z posta
-    function getBestImage(item) {
+    function getBestImage(item, accessToken) {  // ← Dodaj parametr
       try {
-        // 1. Priorytet: attachments.media.image.src (lepsze obrazki)
+        // 1. Priorytet: attachments.media.image.src
         if (item.attachments?.data?.length > 0) {
           const attachment = item.attachments.data[0];
           
           // Sprawdź czy to nie jest usunięta/niedostępna zawartość
           if (attachment.type === 'native_templates') {
-            // To jest shared post, którego oryginał został usunięty
-            return ''; // Brak obrazka
+            // Jeśli jest target.id, spróbuj pobrać obrazek z Graph API
+            if (attachment.target?.id) {
+              return `https://graph.facebook.com/v24.0/${attachment.target.id}/picture?type=large&access_token=${accessToken}`;
+            }
+            // Fallback na full_picture
+            if (item.full_picture) {
+              return item.full_picture;
+            }
+            return '';
           }
           
-          // Normalne zdjęcie/video
+          // Normalne zdjęcie
           if (attachment.media?.image?.src) {
             return attachment.media.image.src;
           }
           
-          // Subattachments (galerie/albumy)
+          // Subattachments (galerie)
           if (attachment.subattachments?.data?.length > 0) {
             const subMedia = attachment.subattachments.data[0].media;
             if (subMedia?.image?.src) {
@@ -389,7 +396,7 @@ export default async function handler(req, res) {
           }
         }
         
-        // 2. Fallback: full_picture (dla starszych postów lub innych typów)
+        // 2. Fallback: full_picture
         if (item.full_picture) {
           return item.full_picture;
         }
@@ -398,9 +405,8 @@ export default async function handler(req, res) {
         console.error('getBestImage error dla posta:', item.id, e);
       }
       
-      // 3. Brak obrazka
       return '';
-    }
+}
 
     // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
@@ -433,9 +439,9 @@ export default async function handler(req, res) {
         title,
         body: message,
         date: item.created_time || null,
-        image: getBestImage(item),        // ← NOWA LINIJKA
+        image: getBestImage(item, accessToken),  // ← Dodaj accessToken
         link: item.permalink_url || null
-      });                                     
+      });                                  
     }
 
 // content_hash pomaga w re-use tłumaczeń (EN cache) per post
