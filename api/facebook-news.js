@@ -308,7 +308,8 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture'
+      'full_picture',
+      'attachments'  // Proste pole bez zagnieżdżeń
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -322,6 +323,10 @@ export default async function handler(req, res) {
         throw new Error('Facebook API error');
       }
       fbJson = await fbRes.json();
+      if (fbJson.data && fbJson.data.length > 0) {
+  console.log('DEBUG - Struktura pierwszego posta:');
+  console.log(JSON.stringify(fbJson.data[0], null, 2));
+}
     } catch (err) {
       console.error('Błąd pobierania z Facebooka:', err);
       if (fallbackCache) {
@@ -420,9 +425,9 @@ export default async function handler(req, res) {
         title,
         body: message,
         date: item.created_time || null,
-        image: item.full_picture || '',  // Tylko full_picture
+        image: getBestImage(item),        // ← NOWA LINIJKA
         link: item.permalink_url || null
-      });                                    
+      });                                     
     }
 
 // content_hash pomaga w re-use tłumaczeń (EN cache) per post
