@@ -364,20 +364,43 @@ export default async function handler(req, res) {
     }
 
     // Funkcja wybiera najlepszy obrazek z posta
+// Funkcja wybiera najlepszy obrazek z posta
 function getBestImage(item, accessToken) {
   try {
-    // 1. Priorytet: attachments.media.image.src
     if (item.attachments?.data?.length > 0) {
       const attachment = item.attachments.data[0];
       
-      // Sprawdź czy to nie jest usunięta/niedostępna zawartość
       if (attachment.type === 'native_templates') {
-        // Jeśli jest object_id, użyj go
-        if (item.object_id) {
-          return `https://graph.facebook.com/v24.0/${item.object_id}/picture?type=large&access_token=${accessToken}`;
+          console.log('DEBUG - Native template detected!');
+          console.log('  permalink_url:', item.permalink_url);
+          console.log('  item.id:', item.id);
+
+        // 1. Spróbuj wyciągnąć photo_id z permalink_url
+        if (item.permalink_url) {
+          // Nowy format: https://www.facebook.com/share/p/17zErFVhUv/
+          const shareMatch = item.permalink_url.match(/\/share\/p\/([^\/]+)/);
+          if (shareMatch && shareMatch[1]) {
+            const shareId = shareMatch[1];
+            return `https://graph.facebook.com/v24.0/${shareId}/picture?type=large&access_token=${accessToken}`;
+          }
+          
+          // Stary format: https://www.facebook.com/{page_id}/posts/{post_id}
+          const postMatch = item.permalink_url.match(/\/posts\/(\d+)/);
+          if (postMatch && postMatch[1]) {
+            const postId = postMatch[1];
+            return `https://graph.facebook.com/v24.0/${postId}/picture?type=large&access_token=${accessToken}`;
+          }
         }
         
-        // Fallback na full_picture
+        // 2. Spróbuj item.id (format: page_id_post_id)
+        if (item.id) {
+          const postId = item.id.split('_')[1]; // "887291941135055_122117015619129097" → "122117015619129097"
+          if (postId) {
+            return `https://graph.facebook.com/v24.0/${postId}/picture?type=large&access_token=${accessToken}`;
+          }
+        }
+        
+        // 3. Fallback na full_picture
         if (item.full_picture) {
           return item.full_picture;
         }
@@ -399,16 +422,15 @@ function getBestImage(item, accessToken) {
       }
     }
     
-    // 2. Fallback: full_picture
+    // Fallback: full_picture
     if (item.full_picture) {
       return item.full_picture;
     }
     
-  } catch (e) {  // ← MUSI BYĆ!
+  } catch (e) {
     console.error('getBestImage error dla posta:', item.id, e);
   }
   
-  // 3. Brak obrazka
   return '';
 }
 
