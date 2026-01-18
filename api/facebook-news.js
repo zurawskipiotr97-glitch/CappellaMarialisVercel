@@ -323,18 +323,38 @@ export default async function handler(req, res) {
       }
       fbJson = await fbRes.json();
     } catch (err) {
-      console.error('Błąd pobierania z Facebooka:', err);
-      if (fallbackCache) {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.end(JSON.stringify(fallbackCache));
-        return;
-      }
-      res.statusCode = 500;
+  console.error('Błąd pobierania z Facebooka:', err);
+
+  // 🔹 JEŚLI pytają o EN – spróbuj zwrócić EN cache
+  if (lang === 'en') {
+    const { data: enRow } = await supabase
+      .from('facebook_cache')
+      .select('data')
+      .eq('cache_key', cacheKeyEN)
+      .maybeSingle();
+
+    if (enRow?.data?.posts) {
+      res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ error: 'Błąd pobierania danych z Facebooka.' }));
+      res.end(JSON.stringify(enRow.data));
       return;
     }
+  }
+
+  // 🔹 Dopiero jeśli EN nie ma (albo lang=pl) – fallback do PL
+  if (fallbackCache) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify(fallbackCache));
+    return;
+  }
+
+  res.statusCode = 500;
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.end(JSON.stringify({ error: 'Błąd pobierania danych z Facebooka.' }));
+  return;
+}
+
 
     if (!fbJson || !Array.isArray(fbJson.data) || fbJson.data.length === 0) {
       if (fallbackCache) {
