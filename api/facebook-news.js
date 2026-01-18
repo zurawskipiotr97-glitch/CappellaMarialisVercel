@@ -380,7 +380,7 @@ export default async function handler(req, res) {
         title,
         body: message,
         date: item.created_time || null,
-        image: item.full_picture || '',
+        image: item.full_picture || 'images/mariacki_short_id2.jpg',
         link: item.permalink_url || null
       });
     }
