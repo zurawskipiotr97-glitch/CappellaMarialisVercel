@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
+//Do przerobienia, bo jak token nie działa to na angielskiej stronie newsy są po polsku choć w bazie jest angielska wersja
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY,
