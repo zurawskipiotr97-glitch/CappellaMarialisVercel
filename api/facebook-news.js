@@ -309,9 +309,8 @@ export default async function handler(req, res) {
       'created_time',
       'permalink_url',
       'full_picture',
-      'attachments{media,type,subattachments}',  // ← NOWE
-      'object_id'                                 // ← NOWE
-    ].join(',');  
+      'attachments'  // Proste pole bez zagnieżdżeń
+    ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
@@ -353,27 +352,38 @@ export default async function handler(req, res) {
 
     // Funkcja wybiera najlepszy obrazek z posta (obsługuje udostępnienia)
     function getBestImage(item) {
-      // 1. Sprawdź attachments (najlepsze źródło dla shared posts)
-      if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
-        const attachment = item.attachments.data[0];
-        
-        // 1a. Media w głównym attachmencie
-        if (attachment.media && attachment.media.image && attachment.media.image.src) {
-          return attachment.media.image.src;
-        }
-        
-        // 1b. Subattachments (dla albumów/galerii)
-        if (attachment.subattachments && attachment.subattachments.data && attachment.subattachments.data.length > 0) {
-          const subMedia = attachment.subattachments.data[0].media;
-          if (subMedia && subMedia.image && subMedia.image.src) {
-            return subMedia.image.src;
+      try {
+        // 1. Sprawdź attachments (najlepsze źródło)
+        if (item.attachments?.data?.length > 0) {
+          const attachment = item.attachments.data[0];
+          
+          // 1a. Główne media
+          if (attachment.media?.image?.src) {
+            return attachment.media.image.src;
+          }
+          
+          // 1b. Subattachments (galerie)
+          if (attachment.subattachments?.data?.length > 0) {
+            const subMedia = attachment.subattachments.data[0].media;
+            if (subMedia?.image?.src) {
+              return subMedia.image.src;
+            }
+          }
+          
+          // 1c. Target (dla shared posts)
+          if (attachment.target?.id) {
+            // Fallback - użyj full_picture jako backup
+            return item.full_picture || '';
           }
         }
-      }
-      
-      // 2. Fallback na full_picture (dla zwykłych postów)
-      if (item.full_picture) {
-        return item.full_picture;
+        
+        // 2. Fallback na full_picture
+        if (item.full_picture) {
+          return item.full_picture;
+        }
+        
+      } catch (e) {
+        console.error('getBestImage error:', e);
       }
       
       // 3. Brak obrazka
