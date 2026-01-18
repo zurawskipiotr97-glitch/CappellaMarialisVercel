@@ -578,15 +578,7 @@
             // Szukamy odpowiadającego posta w wersji PL (po indeksie), aby wziąć jego działający obrazek
             const correspondingPlPost = postsPl[index];
             const activeImage = (correspondingPlPost && correspondingPlPost.image) ? correspondingPlPost.image : post.image;
-            const imgHtml = activeImage
-                ? `<a href="${post.link || 'https://www.facebook.com/CappellaMarialis'}"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    <img class="fb-stub"
-                            src="${activeImage}"
-                            alt="Cappella Marialis on Facebook">
-                    </a>`
-                : '';
+            const imgHtml = activeImage ? `<img src="${activeImage}" alt="">` : '';
             // --------------------------------
 
             // Ucinanie tekstu

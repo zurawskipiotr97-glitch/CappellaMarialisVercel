@@ -565,15 +565,7 @@
                     }
 
                     // Obrazek, jeśli jest
-                    const imgHtml = post.image
-                     ? `<a href="${post.link || 'https://www.facebook.com/CappellaMarialis'}"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        <img 
-                            src="${post.image}"
-                            alt="Cappella Marialis na Facebooku">
-                        </a>`
-                    : '';
+                    const imgHtml = post.image ? `<img src="${post.image}" alt="">` : '';
 
                     // Ucinanie tekstu (żeby wyglądało jak dawniej)
                     const rawBody = applyHardSpaces(
