@@ -308,8 +308,7 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture',
-      'attachments'  // Proste pole bez zagnieżdżeń
+      'full_picture'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -421,9 +420,9 @@ export default async function handler(req, res) {
         title,
         body: message,
         date: item.created_time || null,
-        image: getBestImage(item),        // ← NOWA LINIJKA
+        image: item.full_picture || '',  // Tylko full_picture
         link: item.permalink_url || null
-      });                                     
+      });                                    
     }
 
 // content_hash pomaga w re-use tłumaczeń (EN cache) per post
