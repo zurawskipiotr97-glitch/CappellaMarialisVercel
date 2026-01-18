@@ -308,14 +308,10 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture',
-      'attachments',
+      'full_picture'
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
-
-    console.log('DEBUG - Fields:', fields);
-console.log('DEBUG - FB URL:', fbUrl.replace(accessToken, 'HIDDEN'));
 
     let fbJson;
     try {
@@ -326,18 +322,6 @@ console.log('DEBUG - FB URL:', fbUrl.replace(accessToken, 'HIDDEN'));
         throw new Error('Facebook API error');
       }
       fbJson = await fbRes.json();
-
-      console.log('DEBUG - Surowe dane z Facebook API:');
-      console.log(JSON.stringify(fbJson, null, 2));
-      console.log('DEBUG - Pierwszy post z API:');
-      if (fbJson.data && fbJson.data.length > 0) {
-        console.log(JSON.stringify(fbJson.data[0], null, 2));
-      }
-
-      if (fbJson.data && fbJson.data.length > 0) {
-  console.log('DEBUG - Struktura pierwszego posta:');
-  console.log(JSON.stringify(fbJson.data[0], null, 2));
-}
     } catch (err) {
       console.error('Błąd pobierania z Facebooka:', err);
       if (fallbackCache) {
@@ -365,76 +349,41 @@ console.log('DEBUG - FB URL:', fbUrl.replace(accessToken, 'HIDDEN'));
       return;
     }
 
-    // Funkcja wybiera najlepszy obrazek z posta
-// Funkcja wybiera najlepszy obrazek z posta
-function getBestImage(item, accessToken) {
-  try {
-    if (item.attachments?.data?.length > 0) {
-      const attachment = item.attachments.data[0];
-      
-      if (attachment.type === 'native_templates') {
-          console.log('DEBUG - Native template detected!');
-          console.log('  permalink_url:', item.permalink_url);
-          console.log('  item.id:', item.id);
+    // 3. Zbudowanie tablicy postów (prawie jak w PHP)
+    const posts = [];
+    for (const item of fbJson.data) {
+      const message = item.message || item.story || '';
+      if (!message) continue;
 
-        // 1. Spróbuj wyciągnąć photo_id z permalink_url
-        if (item.permalink_url) {
-          // Nowy format: https://www.facebook.com/share/p/17zErFVhUv/
-          const shareMatch = item.permalink_url.match(/\/share\/p\/([^\/]+)/);
-          if (shareMatch && shareMatch[1]) {
-            const shareId = shareMatch[1];
-            return `https://graph.facebook.com/v24.0/${shareId}/picture?type=large&access_token=${accessToken}`;
-          }
-          
-          // Stary format: https://www.facebook.com/{page_id}/posts/{post_id}
-          const postMatch = item.permalink_url.match(/\/posts\/(\d+)/);
-          if (postMatch && postMatch[1]) {
-            const postId = postMatch[1];
-            return `https://graph.facebook.com/v24.0/${postId}/picture?type=large&access_token=${accessToken}`;
-          }
-        }
-        
-        // 2. Spróbuj item.id (format: page_id_post_id)
-        if (item.id) {
-          const postId = item.id.split('_')[1]; // "887291941135055_122117015619129097" → "122117015619129097"
-          if (postId) {
-            return `https://graph.facebook.com/v24.0/${postId}/picture?type=large&access_token=${accessToken}`;
-          }
-        }
-        
-        // 3. Fallback na full_picture
-        if (item.full_picture) {
-          return item.full_picture;
-        }
-        
-        return ''; // Brak obrazka
-      }
-      
-      // Normalne zdjęcie
-      if (attachment.media?.image?.src) {
-        return attachment.media.image.src;
-      }
-      
-      // Subattachments (galerie)
-      if (attachment.subattachments?.data?.length > 0) {
-        const subMedia = attachment.subattachments.data[0].media;
-        if (subMedia?.image?.src) {
-          return subMedia.image.src;
+      let titleRaw = message || item.story || '';
+      let title = titleRaw.trim();
+
+      // 1. Tytuł do pierwszego znaku kończącego zdanie (. ! ?)
+      const stopIndex = title.search(/[.!?]/);
+      if (stopIndex !== -1) {
+        title = title.slice(0, stopIndex + 1).trim();
+      } else {
+        // 2. Jeśli nie ma kropki/!/?, bierzemy pierwszą linię
+        const newlineIndex = title.indexOf('\n');
+        if (newlineIndex !== -1) {
+          title = title.slice(0, newlineIndex).trim();
         }
       }
+
+      // 3. Ostateczne skrócenie, jeśli bardzo długie (np. > 60 znaków)
+      const maxTitle = 60;
+      if (title.length > maxTitle) {
+        title = title.slice(0, maxTitle - 1) + '…';
+      }
+
+      posts.push({
+        title,
+        body: message,
+        date: item.created_time || null,
+        image: item.full_picture || '',
+        link: item.permalink_url || null
+      });
     }
-    
-    // Fallback: full_picture
-    if (item.full_picture) {
-      return item.full_picture;
-    }
-    
-  } catch (e) {
-    console.error('getBestImage error dla posta:', item.id, e);
-  }
-  
-  return '';
-}
 
 // content_hash pomaga w re-use tłumaczeń (EN cache) per post
 for (const p of posts) {
