@@ -581,11 +581,10 @@
             const imgHtml = activeImage  
             ? `<a href="${post.link || 'https://www.facebook.com/CappellaMarialis'}"
                 target="_blank"
-                rel="noopener noreferrer">
-                style="display: contents; text-decoration: none; border: none;">
-                <img src="${activeImage}" alt="">
-                </a>`
-            : '';
+                style="text-decoration: none; border: none; display: block;">
+          <img src="${post.image}" alt="" style="display: block; max-width: 100%; height: auto;">
+       </a>`
+    : '';
             // --------------------------------
 
             // Ucinanie tekstu
