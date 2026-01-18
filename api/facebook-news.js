@@ -308,8 +308,10 @@ export default async function handler(req, res) {
       'story',
       'created_time',
       'permalink_url',
-      'full_picture'
-    ].join(',');
+      'full_picture',
+      'attachments{media,type,subattachments}',  // ← NOWE
+      'object_id'                                 // ← NOWE
+    ].join(',');  
 
     const fbUrl = `https://graph.facebook.com/v24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
 
@@ -349,6 +351,35 @@ export default async function handler(req, res) {
       return;
     }
 
+    // Funkcja wybiera najlepszy obrazek z posta (obsługuje udostępnienia)
+    function getBestImage(item) {
+      // 1. Sprawdź attachments (najlepsze źródło dla shared posts)
+      if (item.attachments && item.attachments.data && item.attachments.data.length > 0) {
+        const attachment = item.attachments.data[0];
+        
+        // 1a. Media w głównym attachmencie
+        if (attachment.media && attachment.media.image && attachment.media.image.src) {
+          return attachment.media.image.src;
+        }
+        
+        // 1b. Subattachments (dla albumów/galerii)
+        if (attachment.subattachments && attachment.subattachments.data && attachment.subattachments.data.length > 0) {
+          const subMedia = attachment.subattachments.data[0].media;
+          if (subMedia && subMedia.image && subMedia.image.src) {
+            return subMedia.image.src;
+          }
+        }
+      }
+      
+      // 2. Fallback na full_picture (dla zwykłych postów)
+      if (item.full_picture) {
+        return item.full_picture;
+      }
+      
+      // 3. Brak obrazka
+      return '';
+    }
+
     // 3. Zbudowanie tablicy postów (prawie jak w PHP)
     const posts = [];
     for (const item of fbJson.data) {
@@ -380,9 +411,9 @@ export default async function handler(req, res) {
         title,
         body: message,
         date: item.created_time || null,
-        image: item.full_picture || '',
+        image: getBestImage(item),        // ← NOWA LINIJKA
         link: item.permalink_url || null
-      });
+      });                                     
     }
 
 // content_hash pomaga w re-use tłumaczeń (EN cache) per post
