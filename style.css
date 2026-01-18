@@ -2225,3 +2225,20 @@ NEWS / FACEBOOK – hover jak logo YouTube
   font-size: 0.9rem;
 }
 
+.link-reset {
+    /* Całkowicie usuwa podkreślenie i zmienia kolor linku na domyślny kolor tekstu */
+    text-decoration: none;
+    color: inherit;
+    
+    /* Upewnia się, że link nie ma narzuconych marginesów ani paddingu */
+    margin: 0;
+    padding: 0;
+
+    /* Sprawia, że link zachowuje się jak element liniowy (domyślny), 
+       co pozwala mu płynąć z resztą tekstu lub w układzie kolumn */
+    display: inline; 
+
+    /* Ważne dla niektórych układów, by zapobiec niechcianym spacjom pod obrazkiem */
+    vertical-align: middle; 
+}
+
