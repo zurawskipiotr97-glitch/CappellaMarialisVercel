@@ -362,40 +362,40 @@ export default async function handler(req, res) {
       return;
     }
 
-    // Funkcja wybiera najlepszy obrazek z posta (obsługuje udostępnienia)
+    // Funkcja wybiera najlepszy obrazek z posta
     function getBestImage(item) {
       try {
-        // 1. Sprawdź attachments (najlepsze źródło)
+        // 1. Priorytet: attachments.media.image.src (lepsze obrazki)
         if (item.attachments?.data?.length > 0) {
           const attachment = item.attachments.data[0];
           
-          // 1a. Główne media
+          // Sprawdź czy to nie jest usunięta/niedostępna zawartość
+          if (attachment.type === 'native_templates') {
+            // To jest shared post, którego oryginał został usunięty
+            return ''; // Brak obrazka
+          }
+          
+          // Normalne zdjęcie/video
           if (attachment.media?.image?.src) {
             return attachment.media.image.src;
           }
           
-          // 1b. Subattachments (galerie)
+          // Subattachments (galerie/albumy)
           if (attachment.subattachments?.data?.length > 0) {
             const subMedia = attachment.subattachments.data[0].media;
             if (subMedia?.image?.src) {
               return subMedia.image.src;
             }
           }
-          
-          // 1c. Target (dla shared posts)
-          if (attachment.target?.id) {
-            // Fallback - użyj full_picture jako backup
-            return item.full_picture || '';
-          }
         }
         
-        // 2. Fallback na full_picture
+        // 2. Fallback: full_picture (dla starszych postów lub innych typów)
         if (item.full_picture) {
           return item.full_picture;
         }
         
       } catch (e) {
-        console.error('getBestImage error:', e);
+        console.error('getBestImage error dla posta:', item.id, e);
       }
       
       // 3. Brak obrazka
