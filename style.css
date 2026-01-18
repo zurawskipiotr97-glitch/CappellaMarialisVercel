@@ -2224,3 +2224,7 @@ NEWS / FACEBOOK – hover jak logo YouTube
   line-height: 1.1;
   font-size: 0.9rem;
 }
+
+.post a {
+  display: contents;
+}
