@@ -323,6 +323,14 @@ export default async function handler(req, res) {
         throw new Error('Facebook API error');
       }
       fbJson = await fbRes.json();
+
+      console.log('DEBUG - Surowe dane z Facebook API:');
+      console.log(JSON.stringify(fbJson, null, 2));
+      console.log('DEBUG - Pierwszy post z API:');
+      if (fbJson.data && fbJson.data.length > 0) {
+        console.log(JSON.stringify(fbJson.data[0], null, 2));
+      }
+
       if (fbJson.data && fbJson.data.length > 0) {
   console.log('DEBUG - Struktura pierwszego posta:');
   console.log(JSON.stringify(fbJson.data[0], null, 2));
