@@ -309,7 +309,8 @@ export default async function handler(req, res) {
       'created_time',
       'permalink_url',
       'full_picture',
-      'attachments'  // Proste pole bez zagnieżdżeń
+      'attachments',
+      'object_id'  // ← To może być ID eventu/zdjęcia
     ].join(',');
 
     const fbUrl = `https://graph.facebook.com/v24.0/${pageId}/posts?fields=${fields}&limit=${limit}&access_token=${accessToken}`;
@@ -363,49 +364,52 @@ export default async function handler(req, res) {
     }
 
     // Funkcja wybiera najlepszy obrazek z posta
-    function getBestImage(item, accessToken) {  // ← Dodaj parametr
-      try {
-        // 1. Priorytet: attachments.media.image.src
-        if (item.attachments?.data?.length > 0) {
-          const attachment = item.attachments.data[0];
-          
-          // Sprawdź czy to nie jest usunięta/niedostępna zawartość
-          if (attachment.type === 'native_templates') {
-            // Jeśli jest target.id, spróbuj pobrać obrazek z Graph API
-            if (attachment.target?.id) {
-              return `https://graph.facebook.com/v24.0/${attachment.target.id}/picture?type=large&access_token=${accessToken}`;
-            }
-            // Fallback na full_picture
-            if (item.full_picture) {
-              return item.full_picture;
-            }
-            return '';
-          }
-          
-          // Normalne zdjęcie
-          if (attachment.media?.image?.src) {
-            return attachment.media.image.src;
-          }
-          
-          // Subattachments (galerie)
-          if (attachment.subattachments?.data?.length > 0) {
-            const subMedia = attachment.subattachments.data[0].media;
-            if (subMedia?.image?.src) {
-              return subMedia.image.src;
-            }
-          }
+    function getBestImage(item, accessToken) {
+  try {
+    if (item.attachments?.data?.length > 0) {
+      const attachment = item.attachments.data[0];
+      
+      if (attachment.type === 'native_templates') {
+        // 1. Spróbuj object_id (może być event/photo)
+        if (item.object_id) {
+          return `https://graph.facebook.com/v24.0/${item.object_id}/picture?type=large&access_token=${accessToken}`;
         }
         
-        // 2. Fallback: full_picture
-        if (item.full_picture) {
-          return item.full_picture;
+        // 2. Spróbuj wyciągnąć photo_id z post_id
+        const postId = item.id.split('_')[1];
+        if (postId) {
+          return `https://graph.facebook.com/v24.0/${postId}/picture?type=large&access_token=${accessToken}`;
         }
         
-      } catch (e) {
-        console.error('getBestImage error dla posta:', item.id, e);
+        // 3. Fallback - brak obrazka
+        return '';
       }
       
-      return '';
+      // Normalne zdjęcie
+      if (attachment.media?.image?.src) {
+        return attachment.media.image.src;
+      }
+      
+      // Subattachments
+      if (attachment.subattachments?.data?.length > 0) {
+        const subMedia = attachment.subattachments.data[0].media;
+        if (subMedia?.image?.src) {
+          return subMedia.image.src;
+        }
+      }
+    }
+    
+    // Fallback: full_picture
+    if (item.full_picture) {
+      return item.full_picture;
+    }
+    
+  } catch (e) {
+    console.error('getBestImage error dla posta:', item.id, e);
+  }
+  
+  return '';
+}
 }
 
     // 3. Zbudowanie tablicy postów (prawie jak w PHP)
