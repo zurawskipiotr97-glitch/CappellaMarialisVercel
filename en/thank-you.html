@@ -129,7 +129,7 @@
         }
 
         try{
-          const r = await fetch('../api/p24/check?sessionId=' + encodeURIComponent(sessionId), { cache: 'no-store' });
+          const r = await fetch('/api/p24/check?sessionId=' + encodeURIComponent(sessionId), { cache: 'no-store' });
           const j = await r.json();
           const tx = j && j.transaction;
 

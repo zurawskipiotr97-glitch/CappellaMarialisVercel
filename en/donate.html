@@ -214,7 +214,7 @@
         payBtn.textContent = 'Redirecting...';
 
         try{
-          const res = await fetch('../api/p24/create', {
+          const res = await fetch('/api/p24/create', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({
