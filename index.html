@@ -200,13 +200,13 @@
 
                 </br>
             
-                <label class="rodo-label" for="consent-info">
+                <!-- <label class="rodo-label" for="consent-info">
                 <input id="consent-info" type="checkbox" required>
                 Oświadczam, że zapoznałem(-am) się z klauzulą informacyjną
                 <a href="pl/rodo.html" class="album-link" target="_blank" rel="noopener noreferrer">RODO</a>  
                 oraz
                 <a href="pl/prywatnosc.html" class="album-link" target="_blank" rel="noopener noreferrer">Polityką Prywatności</a>.
-                </label>
+                </label> -->
 
             </div>
         </section>
@@ -611,6 +611,7 @@
       // re-announce for screen readers
       status.textContent = 'Przekierowuję na stronę wpłaty…';
     }
+    // Local preview friendly (works from file:// as well as on Vercel)
     window.location.href = 'pl/wplata.html';
   }
 </script>

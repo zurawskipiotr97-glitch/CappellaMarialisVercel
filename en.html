@@ -198,14 +198,14 @@
 
             
                 </br>
-                <label class="rodo-label" for="consent-info">
+                <!-- <label class="rodo-label" for="consent-info">
                 <input id="consent-info" type="checkbox" required>
                 I declare that I have read the information clause
                 <a href="en/GDPR.html" class="album-link" target="_blank" rel="noopener noreferrer">GDPR</a>  
                 and
                 <a href="en/privacy.html" class="album-link" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
                 </label>
-            
+             -->
             </div>
         </section>
 
@@ -625,7 +625,8 @@ window.addEventListener('DOMContentLoaded', loadFacebookNews);
       consent.focus();
       return;
     }
-    window.location.href = 'pl/donate.html';
+    // Local preview friendly (works from file:// as well as on Vercel)
+    window.location.href = 'en/donate.html';
   }
 </script>
 

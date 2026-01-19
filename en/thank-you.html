@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Dziękujemy za wsparcie – Cappella Marialis</title>
-  <meta name="description" content="Dziękujemy za wsparcie Fundacji Cappella Marialis. Sprawdzamy status płatności." />
+  <title>Thank you for your donation – Cappella Marialis</title>
+  <meta name="description" content="Thank you for supporting the Cappella Marialis Foundation. We are checking your payment status." />
 
   <link rel="stylesheet" href="../style.css" />
 
@@ -27,20 +27,20 @@
 </head>
 
 <body>
-  <a href="#main-content" class="skip-link">Przejdź do treści</a>
+  <a href="#main-content" class="skip-link">Skip to content</a>
 
-  <h1 class="visually-hidden">Dziękujemy za wsparcie</h1>
+  <h1 class="visually-hidden">Thank you</h1>
 
-  <!-- HEADER (spójny z regulamin.html) -->
+  <!-- HEADER (aligned with terms.html layout) -->
   <header>
     <div class="header-logo">
-      <a href="../index.html">
+      <a href="../en.html">
         <img src="../images/CM_logo.png" alt="Cappella Marialis Logo" />
       </a>
     </div>
 
     <div class="lang-switcher">
-      <a href="../index.html" class="lang">Strona Główna</a>
+      <a href="../en.html" class="lang">Home Page</a>
       <span class="separator">|</span>
       <a href="../pl/dziekujemy.html" class="lang">PL</a>
       <span class="separator">|</span>
@@ -51,42 +51,42 @@
   <!-- MAIN -->
   <main class="container" id="main-content">
     <section style="margin-bottom: 0rem;">
-      <h2>Dziękujemy!</h2>
-      <p class="p24-muted">Sprawdzamy status Twojej wpłaty. Jeśli dopiero co wróciłeś z płatności, może to chwilę potrwać.</p>
+      <h2>Thank you!</h2>
+      <p class="p24-muted">We’re verifying your payment status.</p>
 
       <div class="p24-card">
-        <p id="status" class="p24-muted">Sprawdzam status płatności…</p>
+        <p id="status" class="p24-muted">Checking payment status…</p>
 
         <div id="details" style="display:none">
           <div class="p24-row">
-            <div><strong>Numer wpłaty:</strong> <span id="ref"></span></div>
-            <div><strong>Kwota:</strong> <span id="amt"></span></div>
+            <div><strong>Donation reference:</strong> <span id="ref"></span></div>
+            <div><strong>Amount:</strong> <span id="amt"></span></div>
             <div><strong>Status:</strong> <span id="st" class="p24-badge"></span></div>
           </div>
-          <p class="p24-muted" style="margin-top:12px">Jeśli status nie zmieni się w ciągu kilku minut, odśwież stronę lub skontaktuj się z nami.</p>
+          <p class="p24-muted" style="margin-top:12px">If the status doesn’t update within a few minutes, refresh the page or contact us.</p>
         </div>
       </div>
 
-      <div style="margin-top: 14px;">
-        <a class="album-link" href="../index.html#wesprzyj">Wróć do strony głównej</a>
-      </div>
+      <p class="p24-muted" style="margin-top: 14px;">
+        <strong>Note:</strong> when opened locally from disk, the status check won’t work (the /api endpoints run only after deploy on Vercel).
+      </p>
     </section>
   </main>
 
-  <!-- FOOTER (spójny z regulamin.html) -->
+  <!-- FOOTER (aligned with terms.html) -->
   <footer id="rodo-footer">
     <p style="color: #d4af37"><strong>Cappella&nbsp;Marialis</strong></p>
 
-    <a href="regulamin.html" class="album-link" style="margin-right: 5px;">Regulamin Sprzedaży</a>
-    <a href="prywatnosc.html" class="album-link" style="margin-right: 5px;">Privacy Policy</a>
-    <a href="rodo.html" class="album-link" style="margin-right: 5px;">Klauzura RODO</a>
-    <a href="dostepnosc.html" class="album-link" style="margin-right: 5px;">Deklaracja dostępności</a>
-    <a href="kontakt.html" class="album-link">Dane kontaktowe</a>
+    <a href="terms.html" class="album-link" style="margin-right: 5px;">Terms</a>
+    <a href="privacy.html" class="album-link" style="margin-right: 5px;">Privacy Policy</a>
+    <a href="GDPR.html" class="album-link" style="margin-right: 5px;">GDPR clause</a>
+    <a href="accessibility.html" class="album-link" style="margin-right: 5px;">Accessibility statement</a>
+    <a href="contact.html" class="album-link">Contact</a>
 
-    <p class="copyright">© 2025 Cappella Marialis. Wszelkie prawa zastrzeżone.</p>
+    <p class="copyright">© 2025 Cappella Marialis. All rights reserved.</p>
   </footer>
 
-  <button id="scrollToTop" aria-label="Wróć na górę" type="button">
+  <button id="scrollToTop" aria-label="Back to top" type="button">
     <svg class="to-top-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
@@ -100,7 +100,7 @@
       const amtEl = document.getElementById('amt');
       const stEl = document.getElementById('st');
 
-      const params = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(location.search);
       const sessionId = params.get('sessionId');
 
       function fmtAmount(grosze, currency){
@@ -115,17 +115,16 @@
 
       async function poll(){
         if (!sessionId){
-          statusEl.textContent = 'Brak identyfikatora płatności (sessionId).';
+          statusEl.textContent = 'Missing payment identifier (sessionId).';
           return;
         }
 
         if (isProbablyLocalFile()){
-          // Local preview fallback
-          statusEl.textContent = 'Podgląd lokalny: tutaj normalnie sprawdzamy status w /api/p24/check. Po deployu na Vercel status będzie aktualizowany automatycznie.';
-          detailsEl.style.display = '';
-          refEl.textContent = sessionId;
+          statusEl.textContent = 'Local preview: payment status is unavailable.';
+          detailsEl.style.display = 'block';
+          refEl.textContent = '—';
           amtEl.textContent = '—';
-          stEl.textContent = 'pending';
+          stEl.textContent = 'preview';
           return;
         }
 
@@ -135,27 +134,29 @@
           const tx = j && j.transaction;
 
           if (!tx){
-            statusEl.textContent = 'Nie znaleziono płatności. Jeśli dopiero płacisz – odśwież za chwilę.';
+            statusEl.textContent = 'Payment not found. If you just paid, refresh in a moment.';
             return;
           }
 
-          detailsEl.style.display = '';
-          refEl.textContent = tx.public_ref || tx.session_id || sessionId;
+          detailsEl.style.display = 'block';
+          refEl.textContent = tx.public_ref || tx.session_id || '';
           amtEl.textContent = fmtAmount(tx.amount_grosze, tx.currency);
-          stEl.textContent = tx.status;
-          statusEl.textContent = (tx.status === 'paid')
-            ? 'Płatność potwierdzona. Dziękujemy za wsparcie!'
-            : (tx.status === 'failed')
-              ? 'Płatność nie została potwierdzona.'
-              : 'Płatność w trakcie weryfikacji…';
+          stEl.textContent = tx.status || '';
 
+          if (tx.status === 'paid'){
+            statusEl.textContent = 'Payment confirmed. Thank you for your support!';
+            return; // stop polling
+          }
+
+          statusEl.textContent = 'Payment status: ' + (tx.status || 'unknown') + '. Refreshing…';
+          setTimeout(poll, 2500);
         } catch (e){
-          statusEl.textContent = 'Nie udało się sprawdzić statusu. Spróbuj ponownie za chwilę.';
+          statusEl.textContent = 'Could not check status. Please try again later.';
+          setTimeout(poll, 4000);
         }
       }
 
       poll();
-      setInterval(poll, 3000);
     })();
 
     (function() {
@@ -182,7 +183,6 @@
         if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
         const behavior = reduceMotion() ? 'auto' : 'smooth';
-
         window.scrollTo({ top: window.scrollY, behavior: 'auto' });
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {

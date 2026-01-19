@@ -1,12 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Wpłata – Fundacja Cappella Marialis</title>
-  <link rel="stylesheet" href="/style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Wpłata darowizny – Cappella Marialis</title>
+  <meta name="description" content="Dokonaj darowizny na rzecz Fundacji Cappella Marialis przez Przelewy24." />
+
+  <link rel="stylesheet" href="../style.css" />
+
+  <link rel="icon" href="../favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="../favicon-48.png" sizes="48x48" />
+  <link rel="icon" type="image/png" href="../images/favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="../images/android-chrome-192x192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="../images/apple-touch-icon.png" sizes="180x180" />
+  <link rel="manifest" href="../site.webmanifest" />
+  <meta name="theme-color" content="#0f3460" />
+
   <style>
-    .p24-wrap{max-width:760px;margin:40px auto;padding:0 16px}
+    /* Minimal layout helpers for this page (keeps your global CSS untouched) */
     .p24-card{padding:16px;border:1px solid rgba(0,0,0,.12);border-radius:12px}
     .p24-grid{display:grid;grid-template-columns:1fr;gap:12px}
     .p24-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -24,176 +36,251 @@
     .p24-consents input{margin-top:4px}
   </style>
 </head>
+
 <body>
-  <div class="p24-wrap">
-    <h1>Wesprzyj Fundację</h1>
-    <p class="p24-muted">Wybierz kwotę, podaj e-mail do potwierdzenia i przejdź do płatności Przelewy24.</p>
+  <a href="#main-content" class="skip-link">Przejdź do treści</a>
 
-    <div class="p24-card">
-      <form id="donationForm" class="p24-grid" novalidate>
-        <div>
-          <strong>Kwota</strong>
-          <div class="p24-amounts" style="margin-top:10px">
-            <button type="button" data-pln="20">20 zł</button>
-            <button type="button" data-pln="50">50 zł</button>
-            <button type="button" data-pln="100">100 zł</button>
-            <button type="button" data-pln="200">200 zł</button>
-          </div>
-        </div>
+  <h1 class="visually-hidden">Wpłata darowizny</h1>
 
-        <div class="p24-row">
-          <div style="min-width:220px">
-            <label for="amountCustom"><strong>Inna kwota (PLN)</strong></label>
-            <input id="amountCustom" class="p24-input" inputmode="decimal" autocomplete="off" placeholder="np. 25" />
-          </div>
-          <div style="min-width:260px">
-            <label for="email"><strong>E-mail</strong> <span class="p24-muted">(na potwierdzenie)</span></label>
-            <input id="email" class="p24-input" type="email" autocomplete="email" placeholder="twoj@email.pl" required />
-          </div>
-        </div>
-
-        <div class="p24-consents">
-          <label>
-            <input id="consentPrivacy" type="checkbox" required />
-            <span>Akceptuję <a href="/prywatnosc" target="_blank" rel="noopener noreferrer">Politykę Prywatności</a>.</span>
-          </label>
-          <label>
-            <input id="consentTerms" type="checkbox" required />
-            <span>Akceptuję <a href="/regulamin" target="_blank" rel="noopener noreferrer">Regulamin</a>.</span>
-          </label>
-          <div class="p24-muted">Informacje RODO: <a href="/rodo" target="_blank" rel="noopener noreferrer">klauzula informacyjna</a>.</div>
-        </div>
-
-        <div class="p24-actions">
-          <button id="payBtn" class="donate-btn" type="submit">Przejdź do płatności</button>
-          <a class="album-link" href="/#wesprzyj">Wróć</a>
-        </div>
-
-        <p id="msg" class="p24-muted" role="status" aria-live="polite"></p>
-      </form>
+  <!-- HEADER (spójny z regulamin.html) -->
+  <header>
+    <div class="header-logo">
+      <a href="../index.html">
+        <img src="../images/CM_logo.png" alt="Cappella Marialis Logo" />
+      </a>
     </div>
-  </div>
 
-<script>
-(function(){
-  const form = document.getElementById('donationForm');
-  const amountCustom = document.getElementById('amountCustom');
-  const email = document.getElementById('email');
-  const consentPrivacy = document.getElementById('consentPrivacy');
-  const consentTerms = document.getElementById('consentTerms');
-  const msg = document.getElementById('msg');
-  const payBtn = document.getElementById('payBtn');
+    <div class="lang-switcher">
+      <a href="../index.html" class="lang">Strona Główna</a>
+      <span class="separator">|</span>
+      <a href="../pl/wplata.html" class="lang">PL</a>
+      <span class="separator">|</span>
+      <a href="../en/donate.html" class="lang">EN</a>
+    </div>
+  </header>
 
-  let selectedPln = null;
+  <!-- MAIN -->
+  <main class="container" id="main-content">
+    <section style="margin-bottom: 0rem;">
+      <h2>Wesprzyj Fundację</h2>
+      <p class="p24-muted">Wybierz kwotę, podaj e-mail do potwierdzenia i przejdź do płatności Przelewy24.</p>
 
-  function setMsg(text, kind){
-    msg.className = 'p24-muted';
-    if (kind === 'error') msg.classList.add('p24-error');
-    if (kind === 'success') msg.classList.add('p24-success');
-    msg.textContent = text || '';
-  }
+      <div class="p24-card">
+        <form id="donationForm" class="p24-grid" novalidate>
+          <div>
+            <strong>Kwota</strong>
+            <div class="p24-amounts" style="margin-top:10px">
+              <button type="button" data-pln="20">20 zł</button>
+              <button type="button" data-pln="50">50 zł</button>
+              <button type="button" data-pln="100">100 zł</button>
+              <button type="button" data-pln="200">200 zł</button>
+            </div>
+          </div>
 
-  function setActive(btn){
-    document.querySelectorAll('.p24-amounts button').forEach(b => b.classList.remove('is-active'));
-    if (btn) btn.classList.add('is-active');
-  }
+          <div class="p24-row">
+            <div style="min-width:220px">
+              <label for="amountCustom"><strong>Inna kwota (PLN)</strong></label>
+              <input id="amountCustom" class="p24-input" inputmode="decimal" autocomplete="off" placeholder="np. 25" />
+            </div>
+            <div style="min-width:260px">
+              <label for="email"><strong>E-mail</strong> <span class="p24-muted">(na potwierdzenie)</span></label>
+              <input id="email" class="p24-input" type="email" autocomplete="email" placeholder="twoj@email.pl" required />
+            </div>
+          </div>
 
-  document.querySelectorAll('.p24-amounts button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedPln = Number(btn.getAttribute('data-pln'));
-      amountCustom.value = '';
-      setActive(btn);
-      setMsg('Wybrano: ' + selectedPln + ' zł');
-    });
-  });
+          <div class="p24-consents">
+            <label>
+              <input id="consentPrivacy" type="checkbox" required />
+              <span>Akceptuję <a href="prywatnosc.html" target="_blank" rel="noopener noreferrer">Politykę Prywatności</a>.</span>
+            </label>
+            <label>
+              <input id="consentTerms" type="checkbox" required />
+              <span>Akceptuję <a href="regulamin.html" target="_blank" rel="noopener noreferrer">Regulamin</a>.</span>
+            </label>
+            <div class="p24-muted">Informacje RODO: <a href="rodo.html" target="_blank" rel="noopener noreferrer">klauzula informacyjna</a>.</div>
+          </div>
 
-  amountCustom.addEventListener('input', () => {
-    selectedPln = null;
-    setActive(null);
-  });
+          <div class="p24-actions">
+            <button id="payBtn" class="donate-btn" type="submit">Przejdź do płatności</button>
+            <a class="album-link" href="../index.html#wesprzyj">Wróć</a>
+          </div>
 
-  function parsePln(){
-    if (selectedPln && Number.isFinite(selectedPln)) return selectedPln;
-    const raw = (amountCustom.value || '').trim().replace(',', '.');
-    if (!raw) return null;
-    const n = Number(raw);
-    if (!Number.isFinite(n)) return null;
-    return n;
-  }
+          <p id="msg" class="p24-muted" role="status" aria-live="polite"></p>
+        </form>
+      </div>
 
-  function toGrosze(pln){
-    // Zaokrąglenie do 1 grosza
-    return Math.round(pln * 100);
-  }
+      <p class="p24-muted" style="margin-top: 14px;">
+        <strong>Uwaga:</strong> otwierając tę stronę lokalnie z dysku, płatność nie zadziała (endpointy /api działają dopiero po deployu na Vercel).
+      </p>
+    </section>
+  </main>
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    setMsg('');
+  <!-- FOOTER (spójny z regulamin.html) -->
+  <footer>
+    <p style="color: #d4af37"><strong>Cappella&nbsp;Marialis</strong></p>
 
-    const pln = parsePln();
-    if (!pln || pln <= 0){
-      setMsg('Podaj poprawną kwotę.', 'error');
-      return;
-    }
+    <a href="regulamin.html" class="album-link" style="margin-right: 5px;">Regulamin Sprzedaży</a>
+    <a href="prywatnosc.html" class="album-link" style="margin-right: 5px;">Privacy Policy</a>
+    <a href="rodo.html" class="album-link" style="margin-right: 5px;">Klauzura RODO</a>
+    <a href="dostepnosc.html" class="album-link" style="margin-right: 5px;">Deklaracja dostępności</a>
+    <a href="kontakt.html" class="album-link">Dane kontaktowe</a>
 
-    const amountGrosze = toGrosze(pln);
-    if (amountGrosze < 100){
-      setMsg('Minimalna kwota to 1,00 zł.', 'error');
-      return;
-    }
+    <p class="copyright">© 2025 Cappella Marialis. Wszelkie prawa zastrzeżone.</p>
+  </footer>
 
-    const em = (email.value || '').trim();
-    if (!em){
-      setMsg('Podaj adres e-mail.', 'error');
-      return;
-    }
+  <button id="scrollToTop" aria-label="Wróć na górę" type="button">
+    <svg class="to-top-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
-    if (!consentPrivacy.checked || !consentTerms.checked){
-      setMsg('Zaznacz wymagane zgody (Polityka Prywatności i Regulamin).', 'error');
-      return;
-    }
+  <script>
+    (function(){
+      const form = document.getElementById('donationForm');
+      const amountCustom = document.getElementById('amountCustom');
+      const email = document.getElementById('email');
+      const consentPrivacy = document.getElementById('consentPrivacy');
+      const consentTerms = document.getElementById('consentTerms');
+      const msg = document.getElementById('msg');
+      const payBtn = document.getElementById('payBtn');
 
-    payBtn.disabled = true;
-    payBtn.setAttribute('aria-disabled', 'true');
-    setMsg('Rejestruję płatność…');
+      let selectedPln = null;
 
-    try{
-      const res = await fetch('/api/p24/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amountGrosze,
-          email: em,
-          consents: { privacy: true, terms: true },
-          consentsVersion: new Date().toISOString().slice(0,10),
-          meta: { page: 'pl/wplata' }
-        })
+      function setMsg(text, kind){
+        msg.className = 'p24-muted';
+        if (kind === 'error') msg.classList.add('p24-error');
+        if (kind === 'success') msg.classList.add('p24-success');
+        msg.textContent = text || '';
+      }
+
+      function setActive(btn){
+        document.querySelectorAll('.p24-amounts button').forEach(b => b.classList.remove('is-active'));
+        if (btn) btn.classList.add('is-active');
+      }
+
+      document.querySelectorAll('.p24-amounts button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedPln = Number(btn.getAttribute('data-pln'));
+          amountCustom.value = '';
+          setActive(btn);
+          setMsg('Wybrano: ' + selectedPln + ' zł');
+        });
       });
 
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok){
-        setMsg((json && (json.error || json.message)) || 'Nie udało się rozpocząć płatności.', 'error');
-        payBtn.disabled = false;
-        payBtn.removeAttribute('aria-disabled');
-        return;
+      amountCustom.addEventListener('input', () => {
+        selectedPln = null;
+        setActive(null);
+      });
+
+      function parsePln(){
+        if (selectedPln && Number.isFinite(selectedPln)) return selectedPln;
+        const raw = (amountCustom.value || '').trim().replace(',', '.');
+        if (!raw) return null;
+        const n = Number(raw);
+        if (!Number.isFinite(n)) return null;
+        return n;
       }
 
-      if (!json || !json.redirectUrl){
-        setMsg('Brak adresu przekierowania z Przelewy24.', 'error');
-        payBtn.disabled = false;
-        payBtn.removeAttribute('aria-disabled');
-        return;
+      function isProbablyLocalFile(){
+        return window.location && window.location.protocol === 'file:';
       }
 
-      setMsg('Przekierowuję do Przelewy24…', 'success');
-      window.location.href = json.redirectUrl;
-    }catch(err){
-      setMsg('Błąd sieci. Spróbuj ponownie.', 'error');
-      payBtn.disabled = false;
-      payBtn.removeAttribute('aria-disabled');
-    }
-  });
-})();
-</script>
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        setMsg('');
+
+        const pln = parsePln();
+        const em = (email.value || '').trim();
+
+        if (!pln || pln <= 0){
+          setMsg('Podaj poprawną kwotę.', 'error');
+          return;
+        }
+        if (!em){
+          setMsg('Podaj adres e-mail.', 'error');
+          return;
+        }
+        if (!consentPrivacy.checked || !consentTerms.checked){
+          setMsg('Zaznacz wymagane zgody (Polityka Prywatności i Regulamin).', 'error');
+          return;
+        }
+
+        if (isProbablyLocalFile()){
+          setMsg('Podgląd lokalny: formularz jest tylko do wyglądu. Płatność zadziała po deployu na Vercel.', 'success');
+          return;
+        }
+
+        const amountGrosze = Math.round(pln * 100);
+        payBtn.disabled = true;
+        payBtn.textContent = 'Przekierowuję...';
+
+        try{
+          const res = await fetch('../api/p24/create', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              amountGrosze,
+              email: em,
+              consents: { privacy: true, terms: true },
+              consentsVersion: '2026-01-19',
+              meta: { page: 'pl/wplata' }
+            })
+          });
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok){
+            throw new Error(data && data.error ? data.error : 'Nie udało się rozpocząć płatności.');
+          }
+          if (!data.redirectUrl){
+            throw new Error('Brak redirectUrl z backendu.');
+          }
+          window.location.href = data.redirectUrl;
+        } catch (err){
+          setMsg(err && err.message ? err.message : 'Wystąpił błąd.', 'error');
+          payBtn.disabled = false;
+          payBtn.textContent = 'Przejdź do płatności';
+        }
+      });
+    })();
+
+    (function() {
+      const scrollBtn = document.getElementById('scrollToTop');
+      if (!scrollBtn) return;
+
+      function reduceMotion() {
+        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      }
+
+      function updateVisibility() {
+        scrollBtn.classList.toggle('is-visible', window.scrollY > 400);
+      }
+
+      window.addEventListener('scroll', updateVisibility, { passive: true });
+      updateVisibility();
+
+      let pending = false;
+
+      function goTopNow(e) {
+        if (pending) return;
+        pending = true;
+
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+        const behavior = reduceMotion() ? 'auto' : 'smooth';
+
+        window.scrollTo({ top: window.scrollY, behavior: 'auto' });
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior });
+            setTimeout(() => { pending = false; }, 250);
+          });
+        });
+      }
+
+      scrollBtn.addEventListener('pointerdown', goTopNow, { passive: false });
+      scrollBtn.addEventListener('touchstart', goTopNow, { passive: false });
+      scrollBtn.addEventListener('click', goTopNow);
+    })();
+  </script>
 </body>
 </html>
