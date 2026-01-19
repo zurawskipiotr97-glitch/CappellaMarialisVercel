@@ -2229,14 +2229,38 @@ NEWS / FACEBOOK – hover jak logo YouTube
 
 /* === Donation CTA: small Przelewy24 mark + non-shifting status text === */
 .donate-cta {
-  /* display: inline-flex; */
+  justify-content: center;
+  display: flex;
   align-items: center;
-  gap: 10px;
+  position: relative;
+  gap: 2rem;
 }
 
 .p24-mini {
   height: 22px;
   width: auto;
+  position: absolute;      /* Wyjmuje obrazek z układu (nie zajmuje miejsca) */
+  left: calc(50% + 160px); /* Przesunięcie: środek strony + połowa szerokości przycisku */
+  /* left: calc(50% + 100px); /* Przesunięcie: środek strony + połowa szerokości przycisku */
+  /* Możesz też użyć po prostu: */
+  /* margin-left: 20px; i zostawić go w flexie, ale wtedy środek się lekko przesunie. 
+     Metoda z absolute jest matematycznie idealna. */
+} 
+
+@media (max-width: 768px) {
+  .donate-cta {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.p24-mini {
+  height: 22px;
+  width: auto;
+  position: static;      /* Przywraca normalny przepływ dokumentu na mobile */ 
+} 
+  
 }
 
 .donation-status {
