@@ -193,19 +193,23 @@
                     </div>
                 </div>
                 
-                <button class="donate-btn" type="button" onclick="goToDonationPage()">Support Us</button>
-                <p id="donationStatus" class="visually-hidden" role="status" aria-live="polite">Redirecting to the donation page…</p>
+                <div class="donate-cta">
+                  <button class="donate-btn" type="button" onclick="goToDonationPage()">Support Us</button>
+                  <img class="p24-mini" src="images/przelewy24.svg" alt="Przelewy24" loading="lazy" decoding="async" />
+                </div>
+                <!-- Reserved space so the message does not shift layout -->
+                <p id="donationStatus" class="donation-status is-hidden" role="status" aria-live="polite">Redirecting to the donation page…</p>
 
             
                 </br>
-                <!-- <label class="rodo-label" for="consent-info">
+                <label class="rodo-label" for="consent-info">
                 <input id="consent-info" type="checkbox" required>
                 I declare that I have read the information clause
                 <a href="en/GDPR.html" class="album-link" target="_blank" rel="noopener noreferrer">GDPR</a>  
                 and
                 <a href="en/privacy.html" class="album-link" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
                 </label>
-             -->
+            
             </div>
         </section>
 
@@ -624,6 +628,11 @@ window.addEventListener('DOMContentLoaded', loadFacebookNews);
     if (consent && !consent.checked) {
       consent.focus();
       return;
+    }
+    const status = document.getElementById('donationStatus');
+    if (status) {
+      status.classList.remove('is-hidden');
+      status.textContent = 'Redirecting to the donation page…';
     }
     // Local preview friendly (works from file:// as well as on Vercel)
     window.location.href = 'en/donate.html';

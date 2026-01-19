@@ -2226,3 +2226,24 @@ NEWS / FACEBOOK – hover jak logo YouTube
 }
 
 
+
+/* === Donation CTA: small Przelewy24 mark + non-shifting status text === */
+.donate-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.p24-mini {
+  height: 22px;
+  width: auto;
+}
+
+.donation-status {
+  margin-top: 10px;
+  min-height: 1.2em; /* reserve space so layout doesn't jump */
+}
+
+.donation-status.is-hidden {
+  visibility: hidden;
+}

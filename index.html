@@ -195,18 +195,22 @@
                     </div>
                 </div>
                 
-                <button class="donate-btn" type="button" onclick="goToDonationPage()">Wesprzyj nas</button>
-                <p id="donationStatus" class="visually-hidden" role="status" aria-live="polite">Przekierowuję na stronę wpłaty…</p>
+                <div class="donate-cta">
+                  <button class="donate-btn" type="button" onclick="goToDonationPage()">Wesprzyj nas</button>
+                  <img class="p24-mini" src="images/przelewy24.svg" alt="Przelewy24" loading="lazy" decoding="async" />
+                </div>
+                <!-- Reserved space so the message does not shift layout -->
+                <p id="donationStatus" class="donation-status is-hidden" role="status" aria-live="polite">Przekierowuję na stronę wpłaty…</p>
 
                 </br>
             
-                <!-- <label class="rodo-label" for="consent-info">
+                <label class="rodo-label" for="consent-info">
                 <input id="consent-info" type="checkbox" required>
                 Oświadczam, że zapoznałem(-am) się z klauzulą informacyjną
                 <a href="pl/rodo.html" class="album-link" target="_blank" rel="noopener noreferrer">RODO</a>  
                 oraz
                 <a href="pl/prywatnosc.html" class="album-link" target="_blank" rel="noopener noreferrer">Polityką Prywatności</a>.
-                </label> -->
+                </label>
 
             </div>
         </section>
@@ -607,7 +611,7 @@
   function goToDonationPage() {
     const status = document.getElementById('donationStatus');
     if (status) {
-      status.classList.remove('visually-hidden');
+      status.classList.remove('is-hidden');
       // re-announce for screen readers
       status.textContent = 'Przekierowuję na stronę wpłaty…';
     }

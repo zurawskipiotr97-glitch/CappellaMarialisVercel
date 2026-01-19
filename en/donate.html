@@ -23,8 +23,10 @@
     .p24-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .p24-row>*{flex:1 1 auto}
     .p24-amounts{display:flex;gap:10px;flex-wrap:wrap}
-    .p24-amounts button{padding:.65rem .9rem;border-radius:999px;border:1px solid rgba(0,0,0,.18);background:transparent;cursor:pointer}
-    .p24-amounts button.is-active{border-color:rgba(0,0,0,.45)}
+    /* Amount presets (gold, but subtle) */
+    .p24-amounts button{padding:.65rem .9rem;border-radius:999px;border:1px solid rgba(212,175,55,.75);background:linear-gradient(135deg, rgba(212,175,55,.22), rgba(245,224,142,.38));cursor:pointer;color:#2b2000;font-weight:600}
+    .p24-amounts button:hover{filter:brightness(1.05)}
+    .p24-amounts button.is-active{border-color:rgba(212,175,55,1);background:linear-gradient(135deg, rgba(212,175,55,.32), rgba(245,224,142,.55));box-shadow:0 0 0 2px rgba(212,175,55,.22)}
     .p24-input{width:100%;padding:.7rem .9rem;border-radius:10px;border:1px solid rgba(0,0,0,.18);background:transparent}
     .p24-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:flex-start}
     .p24-muted{opacity:.85}
