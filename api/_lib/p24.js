@@ -61,8 +61,12 @@ export function p24RegisterSign({ sessionId, merchantId, amount, currency, crc }
 /**
  * Sign for transaction/verify: sha384(JSON({sessionId, orderId, amount, currency, crc}))
  */
-export function p24VerifySign({ merchantId, posId, sessionId, orderId, amount, currency, crc }) {
-  const payload = { merchantId, posId, sessionId, orderId, amount, currency, crc };
+// IMPORTANT: Per P24 docs the verify sign MUST be computed only from:
+// { sessionId, orderId, amount, currency, crc }
+// (i.e. without merchantId/posId). If you include extra fields, P24 will reject
+// verification and transactions may stay in "registered" forever.
+export function p24VerifySign({ sessionId, orderId, amount, currency, crc }) {
+  const payload = { sessionId, orderId, amount, currency, crc };
   return sha384Hex(JSON.stringify(payload));
 }
 
