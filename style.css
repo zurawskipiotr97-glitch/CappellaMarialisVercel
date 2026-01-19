@@ -2229,7 +2229,7 @@ NEWS / FACEBOOK – hover jak logo YouTube
 
 /* === Donation CTA: small Przelewy24 mark + non-shifting status text === */
 .donate-cta {
-  display: inline-flex;
+  /* display: inline-flex; */
   align-items: center;
   gap: 10px;
 }
