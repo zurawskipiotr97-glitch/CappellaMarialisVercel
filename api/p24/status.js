@@ -79,12 +79,14 @@ export default async function handler(req, res) {
     if (!amount) throw new Error(`Invalid amount_grosze in DB: ${tx.amount_grosze}`);
 
     const sign = p24VerifySign({
-      sessionId,
-      orderId,
-      amount,
-      currency,
-      crc: cfg.crc,
-    });
+  merchantId: cfg.merchantId,
+  posId: cfg.posId,
+  sessionId,
+  orderId,
+  amount,
+  currency,
+  crc: cfg.crc,
+});
 
     const verifyBody = {
       merchantId: cfg.merchantId,
