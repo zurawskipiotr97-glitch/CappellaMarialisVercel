@@ -63,8 +63,13 @@
       "permanent": true
     },
     {
-      "source": "/dziekujemy(.html)?",
+      "source": "/pl/dziekujemy(.html)?",
       "destination": "/dziekujemy",
+      "permanent": true
+    },
+    {
+      "source": "/en/thank-you(.html)?",
+      "destination": "/thank-you",
       "permanent": true
     },
     {
@@ -122,6 +127,10 @@
     {
       "source": "/dziekujemy",
       "destination": "/pl/dziekujemy"
+    },
+    {
+      "source": "/thank-you",
+      "destination": "/en/thank-you"
     },
     {
       "source": "/wplata",

@@ -92,8 +92,21 @@ export default async function handler(req, res) {
     const supabase = getSupabaseAdmin();
     const cfg = getP24Config();
 
-    const urlReturn = buildAbsoluteUrl(req, `${cfg.returnPath}?sessionId=${encodeURIComponent(sessionId)}`);
-    const urlStatus = buildAbsoluteUrl(req, cfg.statusPath);
+    // === language + returnUrl based on frontend page ===
+    const metaPage = String(body?.meta?.page || '');
+    const isEn = metaPage.startsWith('en/');
+
+    const returnPath = isEn
+      ? '/en/thank-you'
+      : (cfg.returnPath || '/pl/dziekujemy');
+
+    const urlReturn = buildAbsoluteUrl(
+      req,
+      `${returnPath}?sessionId=${encodeURIComponent(sessionId)}`
+    );
+
+    // (opcjonalnie) defensywnie, żeby nie wywalić się gdy cfg.statusPath puste
+    const urlStatus = buildAbsoluteUrl(req, cfg.statusPath || '/api/p24/status');
 
     // 1) INSERT initiated
     const { error: insErr } = await supabase
@@ -135,7 +148,7 @@ export default async function handler(req, res) {
       description: cfg.description,
       email: email || 'donor@example.com',
       country: 'PL',
-      language: 'pl',
+      language: metaPage.startsWith('en/') ? 'en' : 'pl',
       urlReturn,
       urlStatus,
       sign,
@@ -144,6 +157,7 @@ export default async function handler(req, res) {
     const registerResp = await p24PostJson({
       url: `${cfg.baseUrl}/transaction/register`,
       merchantId: cfg.merchantId,
+      posId: cfg.posId, 
       apiKey: cfg.apiKey,
       body: registerBody,
     });

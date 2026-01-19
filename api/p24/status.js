@@ -103,6 +103,7 @@ export default async function handler(req, res) {
     const verifyResp = await p24PostJson({
       url: `${cfg.baseUrl}/transaction/verify`,
       merchantId: cfg.merchantId,
+      posId: cfg.posId,  
       apiKey: cfg.apiKey,
       body: verifyBody,
     });
