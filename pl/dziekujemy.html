@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dziękujemy</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .p24-wrap{max-width:720px;margin:40px auto;padding:0 16px}
+    .p24-card{padding:16px;border:1px solid rgba(0,0,0,.12);border-radius:12px}
+    .p24-muted{opacity:.8}
+    .p24-row{display:flex;gap:10px;flex-wrap:wrap}
+    .p24-row>div{min-width:220px}
+  </style>
+</head>
+<body>
+  <div class="p24-wrap">
+    <h1>Dziękujemy!</h1>
+    <div class="p24-card">
+      <p id="status" class="p24-muted">Sprawdzam status płatności…</p>
+      <div id="details" style="display:none">
+        <div class="p24-row">
+          <div><strong>Numer wpłaty:</strong> <span id="ref"></span></div>
+          <div><strong>Kwota:</strong> <span id="amt"></span></div>
+          <div><strong>Status:</strong> <span id="st"></span></div>
+        </div>
+        <p class="p24-muted" style="margin-top:12px">Jeśli status nie zmieni się w ciągu kilku minut, odśwież stronę lub skontaktuj się z nami.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const statusEl = document.getElementById('status');
+  const detailsEl = document.getElementById('details');
+  const refEl = document.getElementById('ref');
+  const amtEl = document.getElementById('amt');
+  const stEl = document.getElementById('st');
+
+  const params = new URLSearchParams(location.search);
+  const sessionId = params.get('sessionId');
+
+  function fmtAmount(grosze, currency){
+    const n = Number(grosze);
+    if (!Number.isFinite(n)) return '';
+    return (n/100).toFixed(2) + ' ' + (currency || 'PLN');
+  }
+
+  async function poll(){
+    if (!sessionId){
+      statusEl.textContent = 'Brak identyfikatora płatności (sessionId).';
+      return;
+    }
+
+    try{
+      const r = await fetch('/api/p24/check?sessionId=' + encodeURIComponent(sessionId), { cache: 'no-store' });
+      const j = await r.json();
+      const tx = j && j.transaction;
+
+      if (!tx){
+        statusEl.textContent = 'Nie znaleziono płatności. Jeśli dopiero płacisz – odśwież za chwilę.';
+        return;
+      }
+
+      detailsEl.style.display = 'block';
+      refEl.textContent = tx.public_ref || tx.session_id;
+      amtEl.textContent = fmtAmount(tx.amount_grosze, tx.currency);
+      stEl.textContent = tx.status || '—';
+
+      if (tx.status === 'paid'){
+        statusEl.textContent = 'Płatność potwierdzona. Dziękujemy za wsparcie!';
+        return;
+      }
+
+      if (tx.status === 'failed'){
+        statusEl.textContent = 'Płatność nie została potwierdzona.';
+        return;
+      }
+
+      statusEl.textContent = 'Płatność w toku – czekamy na potwierdzenie z Przelewy24…';
+      setTimeout(poll, 2500);
+    }catch(e){
+      statusEl.textContent = 'Błąd sprawdzania statusu. Odśwież stronę.';
+    }
+  }
+
+  poll();
+</script>
+</body>
+</html>

@@ -195,8 +195,8 @@
                     </div>
                 </div>
                 
-                <button class="donate-btn" type="button" onclick="showDonationInfo()">Wesprzyj nas</button>
-                <p id="donationStatus" class="visually-hidden" role="status" aria-live="polite">Dziękujemy za chęć wsparcia naszej działalności. Obecnie trwają prace nad wdrożeniem dodatkowych metod płatności. Do tego czasu prosimy o dokonanie przelewu na numer konta podany poniżej. W razie pytań lub trudności prosimy o kontakt mailowy.</p>
+                <button class="donate-btn" type="button" onclick="goToDonationPage()">Wesprzyj nas</button>
+                <p id="donationStatus" class="visually-hidden" role="status" aria-live="polite">Przekierowuję na stronę wpłaty…</p>
 
                 </br>
             
@@ -603,57 +603,15 @@
     <!--
 -->
 <script>
-  function showDonationInfo() {
+  // Przekierowanie na stronę wpłaty (prostsze i bardziej niezawodne niż modal)
+  function goToDonationPage() {
     const status = document.getElementById('donationStatus');
-    if (!status) return;
-    // Re-announce message for screen readers
-    status.textContent = status.textContent;
-    status.classList.remove('visually-hidden');
-    // Hide again after a moment for visual users (message is not needed visually)
-    window.setTimeout(() => status.classList.add('visually-hidden'), 3000);
-  }
-</script>
-
-
-<div id="donationToast"
-     class="toast is-hidden"
-     role="status"
-     aria-live="polite"
-     aria-atomic="true">
-  <div class="toast__content" id="donationToastText"></div>
-  <button type="button"
-          class="toast__close"
-          aria-label="Zamknij komunikat"
-          onclick="hideDonationToast()">×</button>
-</div>
-
-<script>
-  let toastTimer = null;
-
-  function showDonationInfo() {
-    const status = document.getElementById('donationStatus');
-    const toast = document.getElementById('donationToast');
-    const text  = document.getElementById('donationToastText');
-    if (!status || !toast || !text) return;
-
-    const msg = status.textContent.trim();
-
-    text.textContent = msg;
-    toast.classList.remove('is-hidden');
-
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(hideDonationToast, 8000);
-
-    status.textContent = '';
-    setTimeout(() => status.textContent = msg, 20);
-  }
-
-  function hideDonationToast() {
-    const toast = document.getElementById('donationToast');
-    if (!toast) return;
-    toast.classList.add('is-hidden');
-    clearTimeout(toastTimer);
-    toastTimer = null;
+    if (status) {
+      status.classList.remove('visually-hidden');
+      // re-announce for screen readers
+      status.textContent = 'Przekierowuję na stronę wpłaty…';
+    }
+    window.location.href = 'pl/wplata.html';
   }
 </script>
 
@@ -708,6 +666,7 @@
         scrollBtn.addEventListener('click', goTopNow);
       })();
     </script>
+
 
   <!-- Recording modal -->
   <div class="recording-modal" id="recording-modal" aria-hidden="true" role="dialog" aria-modal="true">

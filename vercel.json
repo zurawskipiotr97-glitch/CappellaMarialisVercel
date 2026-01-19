@@ -2,29 +2,134 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/en.html", "destination": "/en", "permanent": true },
-    { "source": "/pl/regulamin(.html)?", "destination": "/regulamin", "permanent": true },
-    { "source": "/pl/prywatnosc(.html)?", "destination": "/prywatnosc", "permanent": true },
-    { "source": "/pl/rodo(.html)?", "destination": "/rodo", "permanent": true },
-    { "source": "/pl/dostepnosc(.html)?", "destination": "/dostepnosc", "permanent": true },
-    { "source": "/pl/kontakt(.html)?", "destination": "/kontakt", "permanent": true },
-    { "source": "/en/terms(.html)?", "destination": "/terms", "permanent": true },
-    { "source": "/en/privacy(.html)?", "destination": "/privacy", "permanent": true },
-    { "source": "/en/GDPR(.html)?", "destination": "/gdpr", "permanent": true },
-    { "source": "/en/accessibility(.html)?", "destination": "/accessibility", "permanent": true },
-    { "source": "/en/contact(.html)?", "destination": "/contact", "permanent": true }
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/en.html",
+      "destination": "/en",
+      "permanent": true
+    },
+    {
+      "source": "/pl/regulamin(.html)?",
+      "destination": "/regulamin",
+      "permanent": true
+    },
+    {
+      "source": "/pl/prywatnosc(.html)?",
+      "destination": "/prywatnosc",
+      "permanent": true
+    },
+    {
+      "source": "/pl/rodo(.html)?",
+      "destination": "/rodo",
+      "permanent": true
+    },
+    {
+      "source": "/pl/dostepnosc(.html)?",
+      "destination": "/dostepnosc",
+      "permanent": true
+    },
+    {
+      "source": "/pl/kontakt(.html)?",
+      "destination": "/kontakt",
+      "permanent": true
+    },
+    {
+      "source": "/en/terms(.html)?",
+      "destination": "/terms",
+      "permanent": true
+    },
+    {
+      "source": "/en/privacy(.html)?",
+      "destination": "/privacy",
+      "permanent": true
+    },
+    {
+      "source": "/en/GDPR(.html)?",
+      "destination": "/gdpr",
+      "permanent": true
+    },
+    {
+      "source": "/en/accessibility(.html)?",
+      "destination": "/accessibility",
+      "permanent": true
+    },
+    {
+      "source": "/en/contact(.html)?",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/dziekujemy(.html)?",
+      "destination": "/dziekujemy",
+      "permanent": true
+    },
+    {
+      "source": "/pl/wplata(.html)?",
+      "destination": "/wplata",
+      "permanent": true
+    },
+    {
+      "source": "/en/donate(.html)?",
+      "destination": "/donate",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/regulamin", "destination": "/pl/regulamin" },
-    { "source": "/prywatnosc", "destination": "/pl/prywatnosc" },
-    { "source": "/rodo", "destination": "/pl/rodo" },
-    { "source": "/dostepnosc", "destination": "/pl/dostepnosc" },
-    { "source": "/kontakt", "destination": "/pl/kontakt" },
-    { "source": "/terms", "destination": "/en/terms" },
-    { "source": "/privacy", "destination": "/en/privacy" },
-    { "source": "/gdpr", "destination": "/en/GDPR" },
-    { "source": "/accessibility", "destination": "/en/accessibility" },
-    { "source": "/contact", "destination": "/en/contact" }
+    {
+      "source": "/regulamin",
+      "destination": "/pl/regulamin"
+    },
+    {
+      "source": "/prywatnosc",
+      "destination": "/pl/prywatnosc"
+    },
+    {
+      "source": "/rodo",
+      "destination": "/pl/rodo"
+    },
+    {
+      "source": "/dostepnosc",
+      "destination": "/pl/dostepnosc"
+    },
+    {
+      "source": "/kontakt",
+      "destination": "/pl/kontakt"
+    },
+    {
+      "source": "/terms",
+      "destination": "/en/terms"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/en/privacy"
+    },
+    {
+      "source": "/gdpr",
+      "destination": "/en/GDPR"
+    },
+    {
+      "source": "/accessibility",
+      "destination": "/en/accessibility"
+    },
+    {
+      "source": "/contact",
+      "destination": "/en/contact"
+    },
+    {
+      "source": "/dziekujemy",
+      "destination": "/pl/dziekujemy"
+    },
+    {
+      "source": "/wplata",
+      "destination": "/pl/wplata"
+    },
+    {
+      "source": "/donate",
+      "destination": "/en/donate"
+    }
   ]
 }

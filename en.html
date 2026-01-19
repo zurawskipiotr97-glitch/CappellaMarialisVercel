@@ -193,8 +193,8 @@
                     </div>
                 </div>
                 
-                <button class="donate-btn" type="button" onclick="showDonationInfo()">Support Us</button>
-                <p id="donationStatus" class="visually-hidden" role="status" aria-live="polite">Thank you for your willingness to support our activities. We are currently working on implementing additional payment methods. Until then, please make a bank transfer to the account number provided below. If you have any questions or encounter any issues, please contact us by email.</p>
+                <button class="donate-btn" type="button" onclick="goToDonationPage()">Support Us</button>
+                <p id="donationStatus" class="visually-hidden" role="status" aria-live="polite">Redirecting to the donation page…</p>
 
             
                 </br>
@@ -618,57 +618,14 @@ window.addEventListener('DOMContentLoaded', loadFacebookNews);
     <!--
 -->
 <script>
-  function showDonationInfo() {
-    const status = document.getElementById('donationStatus');
-    if (!status) return;
-    // Re-announce message for screen readers
-    status.textContent = status.textContent;
-    status.classList.remove('visually-hidden');
-    // Hide again after a moment for visual users (message is not needed visually)
-    window.setTimeout(() => status.classList.add('visually-hidden'), 3000);
-  }
-</script>
-
-
-<div id="donationToast"
-     class="toast is-hidden"
-     role="status"
-     aria-live="polite"
-     aria-atomic="true">
-  <div class="toast__content" id="donationToastText"></div>
-  <button type="button"
-          class="toast__close"
-          aria-label="Close message"
-          onclick="hideDonationToast()">×</button>
-</div>
-
-<script>
-  let toastTimer = null;
-
-  function showDonationInfo() {
-    const status = document.getElementById('donationStatus');
-    const toast = document.getElementById('donationToast');
-    const text  = document.getElementById('donationToastText');
-    if (!status || !toast || !text) return;
-
-    const msg = status.textContent.trim();
-
-    text.textContent = msg;
-    toast.classList.remove('is-hidden');
-
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(hideDonationToast, 8000);
-
-    status.textContent = '';
-    setTimeout(() => status.textContent = msg, 20);
-  }
-
-  function hideDonationToast() {
-    const toast = document.getElementById('donationToast');
-    if (!toast) return;
-    toast.classList.add('is-hidden');
-    clearTimeout(toastTimer);
-    toastTimer = null;
+  function goToDonationPage() {
+    // Optional: require the "I have read" checkbox on the homepage.
+    const consent = document.getElementById('consent-info');
+    if (consent && !consent.checked) {
+      consent.focus();
+      return;
+    }
+    window.location.href = 'pl/donate.html';
   }
 </script>
 

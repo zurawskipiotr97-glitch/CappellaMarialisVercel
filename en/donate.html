@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Donation – Cappella Marialis Foundation</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    .p24-wrap{max-width:760px;margin:40px auto;padding:0 16px}
+    .p24-card{padding:16px;border:1px solid rgba(0,0,0,.12);border-radius:12px}
+    .p24-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .p24-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .p24-row>*{flex:1 1 auto}
+    .p24-amounts{display:flex;gap:10px;flex-wrap:wrap}
+    .p24-amounts button{padding:.65rem .9rem;border-radius:999px;border:1px solid rgba(0,0,0,.18);background:transparent;cursor:pointer}
+    .p24-amounts button.is-active{border-color:rgba(0,0,0,.45)}
+    .p24-input{width:100%;padding:.7rem .9rem;border-radius:10px;border:1px solid rgba(0,0,0,.18);background:transparent}
+    .p24-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:flex-start}
+    .p24-muted{opacity:.85}
+    .p24-error{color:#b00020}
+    .p24-success{color:#0b6b2d}
+    .p24-consents{display:grid;gap:10px;margin-top:6px}
+    .p24-consents label{display:flex;gap:10px;align-items:flex-start}
+    .p24-consents input{margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="p24-wrap">
+    <h1>Support the Foundation</h1>
+    <p class="p24-muted">Choose an amount, enter your email for confirmation, and proceed to Przelewy24.</p>
+
+    <div class="p24-card">
+      <form id="donationForm" class="p24-grid" novalidate>
+        <div>
+          <strong>Amount</strong>
+          <div class="p24-amounts" style="margin-top:10px">
+            <button type="button" data-pln="20">20 PLN</button>
+            <button type="button" data-pln="50">50 PLN</button>
+            <button type="button" data-pln="100">100 PLN</button>
+            <button type="button" data-pln="200">200 PLN</button>
+          </div>
+        </div>
+
+        <div class="p24-row">
+          <div style="min-width:220px">
+            <label for="amountCustom"><strong>Other amount (PLN)</strong></label>
+            <input id="amountCustom" class="p24-input" inputmode="decimal" autocomplete="off" placeholder="e.g. 25" />
+          </div>
+          <div style="min-width:260px">
+            <label for="email"><strong>Email</strong> <span class="p24-muted">(for confirmation)</span></label>
+            <input id="email" class="p24-input" type="email" autocomplete="email" placeholder="you@email.com" required />
+          </div>
+        </div>
+
+        <div class="p24-consents">
+          <label>
+            <input id="consentPrivacy" type="checkbox" required />
+            <span>I accept the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</span>
+          </label>
+          <label>
+            <input id="consentTerms" type="checkbox" required />
+            <span>I accept the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a>.</span>
+          </label>
+          <div class="p24-muted">GDPR information: <a href="/gdpr" target="_blank" rel="noopener noreferrer">information clause</a>.</div>
+        </div>
+
+        <div class="p24-actions">
+          <button id="payBtn" class="donate-btn" type="submit">Proceed to payment</button>
+          <a class="album-link" href="/en#wesprzyj">Back</a>
+        </div>
+
+        <p id="msg" class="p24-muted" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const form = document.getElementById('donationForm');
+  const amountCustom = document.getElementById('amountCustom');
+  const email = document.getElementById('email');
+  const consentPrivacy = document.getElementById('consentPrivacy');
+  const consentTerms = document.getElementById('consentTerms');
+  const msg = document.getElementById('msg');
+  const payBtn = document.getElementById('payBtn');
+
+  let selectedPln = null;
+
+  function setMsg(text, kind){
+    msg.className = 'p24-muted';
+    if (kind === 'error') msg.classList.add('p24-error');
+    if (kind === 'success') msg.classList.add('p24-success');
+    msg.textContent = text || '';
+  }
+
+  function setActive(btn){
+    document.querySelectorAll('.p24-amounts button').forEach(b => b.classList.remove('is-active'));
+    if (btn) btn.classList.add('is-active');
+  }
+
+  document.querySelectorAll('.p24-amounts button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedPln = Number(btn.getAttribute('data-pln'));
+      amountCustom.value = '';
+      setActive(btn);
+      setMsg('Selected: ' + selectedPln + ' PLN');
+    });
+  });
+
+  amountCustom.addEventListener('input', () => {
+    selectedPln = null;
+    setActive(null);
+  });
+
+  function parsePln(){
+    if (selectedPln && Number.isFinite(selectedPln)) return selectedPln;
+    const raw = (amountCustom.value || '').trim().replace(',', '.');
+    if (!raw) return null;
+    const n = Number(raw);
+    if (!Number.isFinite(n)) return null;
+    return n;
+  }
+
+  function toGrosze(pln){
+    return Math.round(pln * 100);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    setMsg('');
+
+    const pln = parsePln();
+    if (!pln || pln <= 0){
+      setMsg('Please enter a valid amount.', 'error');
+      return;
+    }
+
+    const amountGrosze = toGrosze(pln);
+    if (amountGrosze < 100){
+      setMsg('Minimum amount is 1.00 PLN.', 'error');
+      return;
+    }
+
+    const em = (email.value || '').trim();
+    if (!em){
+      setMsg('Please enter your email.', 'error');
+      return;
+    }
+
+    if (!consentPrivacy.checked || !consentTerms.checked){
+      setMsg('Please accept the required consents (Privacy Policy and Terms).', 'error');
+      return;
+    }
+
+    payBtn.disabled = true;
+    payBtn.setAttribute('aria-disabled', 'true');
+    setMsg('Creating payment…');
+
+    try{
+      const res = await fetch('/api/p24/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amountGrosze,
+          email: em,
+          consents: { privacy: true, terms: true },
+          consentsVersion: new Date().toISOString().slice(0,10),
+          meta: { page: 'en/donate' }
+        })
+      });
+
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok){
+        setMsg((json && (json.error || json.message)) || 'Could not start the payment.', 'error');
+        payBtn.disabled = false;
+        payBtn.removeAttribute('aria-disabled');
+        return;
+      }
+
+      if (!json || !json.redirectUrl){
+        setMsg('Missing redirect URL from Przelewy24.', 'error');
+        payBtn.disabled = false;
+        payBtn.removeAttribute('aria-disabled');
+        return;
+      }
+
+      setMsg('Redirecting to Przelewy24…', 'success');
+      window.location.href = json.redirectUrl;
+    }catch(err){
+      setMsg('Network error. Please try again.', 'error');
+      payBtn.disabled = false;
+      payBtn.removeAttribute('aria-disabled');
+    }
+  });
+})();
+</script>
+</body>
+</html>
