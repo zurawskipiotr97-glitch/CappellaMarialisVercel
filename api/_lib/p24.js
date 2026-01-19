@@ -16,7 +16,7 @@ export function getP24Config() {
   const hostForRedirect = isSandbox ? 'https://sandbox.przelewy24.pl' : 'https://secure.przelewy24.pl';
 
   const description = process.env.P24_DESCRIPTION || 'Darowizna';
-  const returnPath = process.env.P24_RETURN_PATH || '/dziekujemy';
+  const returnPath = process.env.P24_RETURN_PATH || '/pl/dziekujemy';
   const statusPath = process.env.P24_STATUS_PATH || '/api/p24/status';
 
   if (!merchantId || !apiKey || !crc) {
@@ -62,11 +62,17 @@ export function buildAbsoluteUrl(req, path) {
   return `${proto}://${host}${path.startsWith('/') ? path : '/' + path}`;
 }
 
-export async function p24PostJson({ url, merchantId, apiKey, body }) {
+// api/_lib/p24.js
+
+export async function p24PostJson({ url, merchantId, posId, apiKey, body }) {
+  // P24 REST auth: login = posId, password = apiKey
+  // fallback: if posId not provided, use merchantId (legacy)
+  const login = (posId ?? merchantId);
+
   const resp = await fetch(url, {
     method: 'POST',
     headers: {
-      'Authorization': basicAuthHeader(String(merchantId), apiKey),
+      'Authorization': basicAuthHeader(String(login), apiKey),
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
