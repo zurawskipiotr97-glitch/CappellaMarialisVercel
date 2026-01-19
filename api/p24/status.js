@@ -99,6 +99,11 @@ export default async function handler(req, res) {
     // Log where we call (helps if any misconfig)
     console.log('[P24 verify] url=', `${cfg.baseUrl}/transaction/verify`);
 
+    const { sign: _sign, ...verifyBodyNoSign } = verifyBody;
+console.log('[P24 verify body]', verifyBodyNoSign);
+
+
+
     const verifyResp = await p24PostJson({
       url: `${cfg.baseUrl}/transaction/verify`,
       posId: cfg.posId,

@@ -92,6 +92,7 @@ export async function p24PostJson({ url, posId, apiKey, body }) {
       Authorization: basicAuthHeader(login, apiKey),
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'User-Agent': 'cappellamarialis-vercel/1.0',
     },
     body: JSON.stringify(body),
   });
