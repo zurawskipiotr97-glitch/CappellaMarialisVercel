@@ -67,7 +67,10 @@ export function buildAbsoluteUrl(req, path) {
 export async function p24PostJson({ url, merchantId, posId, apiKey, body }) {
   // P24 REST auth: login = posId, password = apiKey
   // fallback: if posId not provided, use merchantId (legacy)
-  const login = (posId ?? merchantId);
+  const login = String(posId || '').trim();
+if (!login) {
+  throw new Error('P24 config error: posId missing');
+}
 
   const resp = await fetch(url, {
     method: 'POST',

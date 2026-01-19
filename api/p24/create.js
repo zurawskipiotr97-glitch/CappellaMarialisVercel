@@ -92,6 +92,16 @@ export default async function handler(req, res) {
     const supabase = getSupabaseAdmin();
     const cfg = getP24Config();
 
+    // 🔍 P24 debug (bez sekretów)
+console.log('[P24 cfg]', {
+  sandbox: cfg.sandbox,
+  baseUrl: cfg.baseUrl,
+  merchantId: String(cfg.merchantId),
+  posId: String(cfg.posId),
+  apiKeyLen: (cfg.apiKey || '').length
+});
+
+
     // === language + returnUrl based on frontend page ===
     const metaPage = String(body?.meta?.page || '');
     const isEn = metaPage.startsWith('en/');
