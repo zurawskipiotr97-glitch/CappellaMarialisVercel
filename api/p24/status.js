@@ -10,103 +10,77 @@ async function readRawBody(req) {
   return Buffer.concat(chunks).toString('utf8');
 }
 
-function parseBody(raw, contentType) {
+function parseP24Body(raw, contentType) {
   const ct = String(contentType || '').toLowerCase();
 
-  // Prefer urlencoded if header says so OR raw looks like key=value&...
+  // P24 webhook is often x-www-form-urlencoded
   if (ct.includes('application/x-www-form-urlencoded') || raw.includes('=')) {
     return querystring.parse(raw);
   }
 
-  // JSON fallback
+  // fallback JSON
   try {
     return JSON.parse(raw);
   } catch {
-    // last resort: try urlencoded anyway
     return querystring.parse(raw);
   }
 }
 
 function toInt(x) {
   const n = Number(x);
-  if (!Number.isFinite(n)) return null;
-  return Math.trunc(n);
+  return Number.isFinite(n) ? Math.trunc(n) : null;
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.status(405).send('Method not allowed');
-    return;
-  }
+  if (req.method !== 'POST') return res.status(405).send('Method not allowed');
 
   const supabase = getSupabaseAdmin();
   const cfg = getP24Config();
 
   try {
     const raw = await readRawBody(req);
-    const payload = parseBody(raw, req.headers['content-type']);
+    const payload = parseP24Body(raw, req.headers['content-type']);
 
-    // P24 fields (urlencoded => strings)
-    const sessionId =
-      payload.sessionId ||
-      payload.p24_session_id ||
-      payload.p24_sessionid ||
-      null;
+    // P24 field names
+    const sessionId = String(
+      payload.p24_session_id || payload.sessionId || ''
+    ).trim();
 
-    const orderId =
-      payload.orderId ||
-      payload.p24_order_id ||
-      payload.p24_orderid ||
-      null;
+    const orderIdRaw = payload.p24_order_id || payload.orderId || null;
+    const orderId = orderIdRaw != null ? Number(orderIdRaw) : null;
 
-    // Zapisz event zawsze (append-only), nawet jeśli brak sessionId
+    // Always log event (audyt)
     await supabase.from('p24_events').insert({
       event_type: 'webhook_status',
-      session_id: sessionId,
+      session_id: sessionId || null,
       p24_order_id: orderId ? String(orderId) : null,
       payload_json: payload,
     });
 
-    // Brak identyfikatorów = nie zwracaj błędu, żeby P24 nie spamował
-    if (!sessionId) {
-      res.status(200).send('OK');
-      return;
-    }
+    // If webhook without ids => ACK to avoid storm
+    if (!sessionId || !orderId) return res.status(200).send('OK');
 
-    // Pobierz transakcję
+    // Load transaction by sessionId
     const { data: tx, error: txErr } = await supabase
       .from('p24_transactions')
       .select('*')
       .eq('session_id', sessionId)
       .maybeSingle();
 
-    if (txErr) throw new Error('DB read failed: ' + txErr.message);
-    if (!tx) {
-      res.status(200).send('OK');
-      return;
-    }
+    if (txErr) throw new Error(`DB read failed: ${txErr.message}`);
+    if (!tx) return res.status(200).send('OK');
 
-    // Idempotencja
-    if (tx.status === 'paid') {
-      res.status(200).send('OK');
-      return;
-    }
+    // Idempotent
+    if (tx.status === 'paid') return res.status(200).send('OK');
 
     const amount = toInt(tx.amount_grosze);
     const currency = String(tx.currency || 'PLN');
 
-    // orderId preferuj z webhooka, fallback z DB
-    const orderIdFinal = orderId || tx.p24_order_id;
-    if (!orderIdFinal) {
-      // nie da się zrobić verify bez orderId
-      res.status(200).send('OK');
-      return;
-    }
+    if (!amount) throw new Error(`Invalid amount_grosze in DB: ${tx.amount_grosze}`);
 
-    // SIGN do verify (na bazie Twoich danych + CRC)
     const sign = p24VerifySign({
       sessionId,
-      orderId: Number(orderIdFinal),
+      orderId,
       amount,
       currency,
       crc: cfg.crc,
@@ -118,13 +92,15 @@ export default async function handler(req, res) {
       sessionId,
       amount,
       currency,
-      orderId: Number(orderIdFinal),
+      orderId,
       sign,
     };
 
+    // Log where we call (helps if any misconfig)
+    console.log('[P24 verify] url=', `${cfg.baseUrl}/transaction/verify`);
+
     const verifyResp = await p24PostJson({
       url: `${cfg.baseUrl}/transaction/verify`,
-      merchantId: cfg.merchantId,
       posId: cfg.posId,
       apiKey: cfg.apiKey,
       body: verifyBody,
@@ -132,33 +108,33 @@ export default async function handler(req, res) {
 
     const paidAt = new Date().toISOString();
 
-    // Update transakcji (idempotentnie)
+    // Update tx to paid (idempotent)
     const { data: updatedRows, error: updErr } = await supabase
       .from('p24_transactions')
       .update({
         status: 'paid',
         paid_at: paidAt,
-        p24_order_id: String(orderIdFinal),
+        p24_order_id: String(orderId),
         verify_payload: { request: verifyBody, response: verifyResp },
       })
       .eq('session_id', sessionId)
       .neq('status', 'paid')
       .select('session_id, email, amount_grosze, currency, public_ref, p24_order_id, thankyou_email_sent_at');
 
-    if (updErr) throw new Error('DB update failed: ' + updErr.message);
+    if (updErr) throw new Error(`DB update failed: ${updErr.message}`);
 
     const updated = updatedRows?.[0] || null;
 
-    // Event verify
+    // Verify event
     await supabase.from('p24_events').insert({
       event_type: 'verify',
       session_id: sessionId,
-      p24_order_id: String(orderIdFinal),
+      p24_order_id: String(orderId),
       payload_json: { request: verifyBody, response: verifyResp },
     });
 
-    // Email exactly-once
-    if (updated && updated.email && !updated.thankyou_email_sent_at) {
+    // Send thank-you email once
+    if (updated?.email && !updated.thankyou_email_sent_at) {
       try {
         await sendThankYouEmail({
           to: updated.email,
@@ -177,16 +153,16 @@ export default async function handler(req, res) {
           })
           .eq('session_id', sessionId)
           .is('thankyou_email_sent_at', null);
-      } catch (emailErr) {
-        console.error('Email error:', emailErr);
+      } catch (e) {
+        console.error('Email error:', e);
         await supabase
           .from('p24_transactions')
-          .update({ thankyou_email_error: String(emailErr?.message || emailErr) })
+          .update({ thankyou_email_error: String(e?.message || e) })
           .eq('session_id', sessionId);
       }
     }
 
-    res.status(200).send('OK');
+    return res.status(200).send('OK');
   } catch (err) {
     console.error(err);
 
@@ -200,7 +176,7 @@ export default async function handler(req, res) {
       });
     } catch {}
 
-    // 200 żeby P24 nie robił stormu; i tak będzie retry + możesz “dopchnąć” checkiem
-    res.status(200).send('OK');
+    // ACK 200 so P24 doesn't hammer you; you can retry via next webhook
+    return res.status(200).send('OK');
   }
 }
