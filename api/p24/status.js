@@ -78,13 +78,19 @@ export default async function handler(req, res) {
 
     if (!amount) throw new Error(`Invalid amount_grosze in DB: ${tx.amount_grosze}`);
 
-    const sign = p24VerifySign({
+    const signPayload = {
       sessionId,
       orderId,
       amount,
       currency,
       crc: cfg.crc,
-    });
+    };
+
+    const sign = p24VerifySign(signPayload);
+
+    // Diagnostics (safe): helps confirm we sign exactly what P24 expects
+    console.log('[P24 verify sign payload json]', JSON.stringify(signPayload));
+    console.log('[P24 verify sign]', sign);
 
     const verifyBody = {
       merchantId: cfg.merchantId,
@@ -100,7 +106,9 @@ export default async function handler(req, res) {
     console.log('[P24 verify] url=', `${cfg.baseUrl}/transaction/verify`);
 
     const { sign: _sign, ...verifyBodyNoSign } = verifyBody;
-console.log('[P24 verify body]', verifyBodyNoSign);
+    console.log('[P24 verify body]', verifyBodyNoSign);
+    console.log('[P24 verify sign payload json]', JSON.stringify(signPayload));
+    console.log('[P24 verify sign]', sign);
 
 
 
@@ -171,13 +179,21 @@ console.log('[P24 verify body]', verifyBodyNoSign);
   } catch (err) {
     console.error(err);
 
+    if (err?.p24_raw_start) {
+      console.error('P24 raw start:', err.p24_raw_start);
+    }
+
     // best-effort error event
     try {
       await supabase.from('p24_events').insert({
         event_type: 'error',
         session_id: null,
         p24_order_id: null,
-        payload_json: { message: String(err?.message || err) },
+        payload_json: {
+          message: String(err?.message || err),
+          p24_code: err?.p24_code || null,
+          p24_raw_start: err?.p24_raw_start || null,
+        },
       });
     } catch {}
 

@@ -92,6 +92,9 @@ export async function p24PostJson({ url, posId, apiKey, body }) {
 
   const resp = await fetch(url, {
     method: 'POST',
+    // If P24 (or an intermediate proxy/WAF) returns a redirect to an HTML page,
+    // don't follow it silently — we want to see the real response.
+    redirect: 'manual',
     headers: {
       Authorization: basicAuthHeader(login, apiKey),
       'Content-Type': 'application/json',
@@ -116,6 +119,8 @@ export async function p24PostJson({ url, posId, apiKey, body }) {
     const err = new Error(`P24 HTTP ${resp.status}: ${message}`);
     err.p24_code = data?.code || resp.status;
     err.p24_response = data;
+    // Helpful, short snippet for logs/DB (HTML errors can be huge)
+    err.p24_raw_start = String(data?.raw || '').slice(0, 800);
     throw err;
   }
 
