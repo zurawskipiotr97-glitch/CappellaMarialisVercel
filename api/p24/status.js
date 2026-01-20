@@ -100,17 +100,12 @@ export default async function handler(req, res) {
       currency,
       orderId,
       sign,
+      crc: cfg.crc,
     };
 
     // Log where we call (helps if any misconfig)
-    console.log('[P24 verify] url=', `${cfg.baseUrl}/transaction/verify`);
-
-    const { sign: _sign, ...verifyBodyNoSign } = verifyBody;
-    console.log('[P24 verify body]', verifyBodyNoSign);
-    console.log('[P24 verify sign payload json]', JSON.stringify(signPayload));
-    console.log('[P24 verify sign]', sign);
-
-
+    console.log("[P24 verify] url=", cfg.baseUrl + "/transaction/verify");
+    console.log("[P24 verify body FULL]", verifyBody);
 
     const verifyResp = await p24PostJson({
       url: `${cfg.baseUrl}/transaction/verify`,
