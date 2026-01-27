@@ -104,17 +104,43 @@ export default async function handler(req, res) {
     };
 
     // Log where we call (helps if any misconfig)
-    console.log("[P24 verify] url=", cfg.baseUrl + "/transaction/verify");
-    console.log("[P24 verify body FULL]", verifyBody);
+   // Log where we call (helps if any misconfig)
+const proxyUrl = process.env.P24_VERIFY_PROXY_URL;
 
-    const verifyResp = await p24PostJson({
-      url: `${cfg.baseUrl}/transaction/verify`,
-      posId: cfg.posId,
-      apiKey: cfg.apiKey,
-      body: verifyBody,
-    });
+if (proxyUrl) {
+  console.log("[P24 verify] url=", proxyUrl);
+  console.log("[P24 verify body FULL]", verifyBody);
 
-    const paidAt = new Date().toISOString();
+  const r = await fetch(proxyUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(verifyBody),
+  });
+
+  const raw = await r.text();
+  if (!r.ok) {
+    throw new Error(`P24 VERIFY PROXY HTTP ${r.status}: ${raw.slice(0, 500)}`);
+  }
+
+  // proxy powinno zwracać JSON
+  const verifyResp = raw ? JSON.parse(raw) : {};
+  const paidAt = new Date().toISOString();
+  // ... dalej Twoja logika na verifyResp
+} else {
+  console.log("[P24 verify] url=", cfg.baseUrl + "/transaction/verify");
+  console.log("[P24 verify body FULL]", verifyBody);
+
+  const verifyResp = await p24PostJson({
+    url: `${cfg.baseUrl}/transaction/verify`,
+    posId: cfg.posId,
+    apiKey: cfg.apiKey,
+    body: verifyBody,
+  });
+
+  const paidAt = new Date().toISOString();
+  // ... dalej Twoja logika na verifyResp
+}
+
 
     // Update tx to paid (idempotent)
     const { data: updatedRows, error: updErr } = await supabase
