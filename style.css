@@ -181,7 +181,7 @@ section h2 {
 
 section p {
   margin-bottom: 1rem;
-  text-wrap: balance;
+  /* text-wrap: balance; */
   text-align: justify;
   color: #444;
 }
