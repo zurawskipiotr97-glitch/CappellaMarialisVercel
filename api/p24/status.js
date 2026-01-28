@@ -1,180 +1,138 @@
-import querystring from 'node:querystring';
-
 import { getSupabaseAdmin } from '../_lib/supabase.js';
-import { getP24Config, p24PostJson, p24VerifySign } from '../_lib/p24.js';
-import { sendThankYouEmail } from '../_lib/email.js';
+import { readJson, readForm, getContentType } from '../_lib/body.js';
+import { getP24Config, p24VerifySign, p24PostJson, p24LegacyVerifySign } from '../_lib/p24.js';
 
-async function readRawBody(req) {
-  const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
-  return Buffer.concat(chunks).toString('utf8');
-}
-
-function parseP24Body(raw, contentType) {
-  const ct = String(contentType || '').toLowerCase();
-
-  if (ct.includes('application/x-www-form-urlencoded') || raw.includes('=')) {
-    return querystring.parse(raw);
-  }
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return querystring.parse(raw);
-  }
-}
-
-function toInt(x) {
-  const n = Number(x);
-  return Number.isFinite(n) ? Math.trunc(n) : null;
-}
-
+/**
+ * urlStatus handler:
+ * - In LEGACY mode: validate MD5 p24_sign and mark transaction as paid.
+ * - In REST mode: you can still do server-to-server verify (may require whitelisted IP / proxy).
+ */
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).send('Method not allowed');
-
-  const supabase = getSupabaseAdmin();
   const cfg = getP24Config();
+  const supabase = getSupabaseAdmin();
+
+  if (req.method !== 'POST') {
+    res.status(405).send('Method not allowed');
+    return;
+  }
 
   try {
-    const raw = await readRawBody(req);
-    const payload = parseP24Body(raw, req.headers['content-type']);
+    const ct = getContentType(req);
+    const payload = ct.includes('application/json') ? (await readJson(req)) : (await readForm(req));
 
-    const sessionId = String(
-      payload.p24_session_id || payload.sessionId || ''
-    ).trim();
+    // Normalize fields (legacy uses p24_* names)
+    const sessionId = String(payload?.sessionId || payload?.p24_session_id || '').trim();
+    const orderIdRaw = payload?.orderId ?? payload?.p24_order_id ?? payload?.p24_orderid;
+    const amountRaw = payload?.amount ?? payload?.p24_amount;
+    const currency = String(payload?.currency || payload?.p24_currency || 'PLN').trim();
+    const sign = String(payload?.sign || payload?.p24_sign || '').trim();
 
-    const orderIdRaw = payload.p24_order_id || payload.orderId || null;
     const orderId = orderIdRaw != null ? Number(orderIdRaw) : null;
+    const amount = amountRaw != null ? Number(amountRaw) : null;
 
-    await supabase.from('p24_events').insert({
-      event_type: 'webhook_status',
-      session_id: sessionId || null,
-      p24_order_id: orderId ? String(orderId) : null,
-      payload_json: payload,
-    });
+    if (!sessionId || !orderId || !amount) {
+      res.status(400).send('Bad request');
+      return;
+    }
 
-    if (!sessionId || !orderId) return res.status(200).send('OK');
-
-    const { data: tx, error: txErr } = await supabase
+    // Load tx
+    const { data: tx, error: selErr } = await supabase
       .from('p24_transactions')
       .select('*')
       .eq('session_id', sessionId)
       .maybeSingle();
 
-    if (txErr) throw new Error(`DB read failed: ${txErr.message}`);
-    if (!tx) return res.status(200).send('OK');
-    if (tx.status === 'paid') return res.status(200).send('OK');
+    if (selErr) throw new Error('DB select failed: ' + selErr.message);
+    if (!tx) {
+      // Still respond OK to avoid retries; you can inspect logs
+      res.status(200).send('OK');
+      return;
+    }
 
-    const amount = toInt(tx.amount_grosze);
-    const currency = String(tx.currency || 'PLN');
-    if (!amount) throw new Error(`Invalid amount_grosze in DB: ${tx.amount_grosze}`);
+    // Basic amount/currency match
+    if (Number(tx.amount_grosze) !== amount || String(tx.currency) !== currency) {
+      res.status(400).send('Mismatch');
+      return;
+    }
 
-    const signPayload = {
+    if (cfg.mode === 'legacy') {
+      // Validate legacy sign if present
+      if (sign) {
+        const expected = p24LegacyVerifySign({
+          sessionId,
+          orderId,
+          amount,
+          currency,
+          crc: cfg.crc,
+        });
+
+        if (expected !== sign) {
+          res.status(400).send('Invalid sign');
+          return;
+        }
+      }
+
+      const { error: updErr } = await supabase
+        .from('p24_transactions')
+        .update({
+          status: 'paid',
+          p24_order_id: orderId,
+          status_payload: payload,
+          paid_at: new Date().toISOString(),
+        })
+        .eq('session_id', sessionId);
+
+      if (updErr) throw new Error('DB update failed: ' + updErr.message);
+
+      // P24 expects plain OK
+      res.status(200).send('OK');
+      return;
+    }
+
+    // REST mode: optional verify (may require proxy)
+    const verifySign = p24VerifySign({
       sessionId,
       orderId,
       amount,
       currency,
-      crc: cfg.crc, // ✅ CRC TYLKO TUTAJ
-    };
+      crc: cfg.crc,
+    });
 
-    const sign = p24VerifySign(signPayload);
-
-    console.log('[P24 verify sign payload]', signPayload);
-    console.log('[P24 verify sign]', sign);
-
-    // ✅ POPRAWIONE BODY – BEZ CRC
     const verifyBody = {
-      // merchantId: cfg.merchantId,
+      merchantId: cfg.merchantId,
       posId: cfg.posId,
       sessionId,
       amount,
       currency,
       orderId,
-      sign,
+      sign: verifySign,
     };
 
     const verifyUrl = `${cfg.baseUrl}/transaction/verify`;
-    console.log('[P24 verify] url=', verifyUrl, 'proxyBase=', process.env.P24_PROXY_BASE || '');
-
-    const verifyResp = await p24PostJson({
+    await p24PostJson({
       url: verifyUrl,
       posId: cfg.posId,
       apiKey: cfg.apiKey,
       body: verifyBody,
     });
 
-    const paidAt = new Date().toISOString();
-
-    const { data: updatedRows, error: updErr } = await supabase
+    const { error: updErr } = await supabase
       .from('p24_transactions')
       .update({
         status: 'paid',
-        paid_at: paidAt,
-        p24_order_id: String(orderId),
-        verify_payload: { request: verifyBody, response: verifyResp },
+        p24_order_id: orderId,
+        status_payload: payload,
+        verify_payload: verifyBody,
+        paid_at: new Date().toISOString(),
       })
-      .eq('session_id', sessionId)
-      .neq('status', 'paid')
-      .select('*');
+      .eq('session_id', sessionId);
 
-    if (updErr) throw new Error(`DB update failed: ${updErr.message}`);
+    if (updErr) throw new Error('DB update failed: ' + updErr.message);
 
-    const updated = updatedRows?.[0] || null;
-
-    await supabase.from('p24_events').insert({
-      event_type: 'verify',
-      session_id: sessionId,
-      p24_order_id: String(orderId),
-      payload_json: { request: verifyBody, response: verifyResp },
-    });
-
-    if (updated?.email && !updated.thankyou_email_sent_at) {
-      try {
-        await sendThankYouEmail({
-          to: updated.email,
-          amountGrosze: updated.amount_grosze,
-          currency: updated.currency,
-          publicRef: updated.public_ref,
-          p24OrderId: updated.p24_order_id,
-          paidAtIso: paidAt,
-        });
-
-        await supabase
-          .from('p24_transactions')
-          .update({
-            thankyou_email_sent_at: new Date().toISOString(),
-            thankyou_email_error: null,
-          })
-          .eq('session_id', sessionId)
-          .is('thankyou_email_sent_at', null);
-      } catch (e) {
-        console.error('Email error:', e);
-        await supabase
-          .from('p24_transactions')
-          .update({ thankyou_email_error: String(e?.message || e) })
-          .eq('session_id', sessionId);
-      }
-    }
-
-    return res.status(200).send('OK');
+    res.status(200).send('OK');
   } catch (err) {
     console.error(err);
-
-    if (err?.p24_raw_start) {
-      console.error('P24 raw start:', err.p24_raw_start);
-    }
-
-    try {
-      await supabase.from('p24_events').insert({
-        event_type: 'error',
-        payload_json: {
-          message: String(err?.message || err),
-          p24_code: err?.p24_code || null,
-          p24_raw_start: err?.p24_raw_start || null,
-        },
-      });
-    } catch {}
-
-    return res.status(200).send('OK');
+    // P24 will retry on non-200; but if we are failing due to our code, better return 200 after logging?
+    res.status(500).send('ERR');
   }
 }

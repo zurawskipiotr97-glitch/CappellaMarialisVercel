@@ -1,15 +1,16 @@
 import crypto from 'crypto';
 import { getSupabaseAdmin } from '../_lib/supabase.js';
-import { getContentType, readJson } from '../_lib/body.js';
+import { readJson } from '../_lib/body.js';
 import {
   getP24Config,
   buildAbsoluteUrl,
   p24PostJson,
   p24RegisterSign,
+  p24LegacyRegisterSign,
+  p24TrnRegister,
 } from '../_lib/p24.js';
 
 function uuid() {
-  // Node 18 has crypto.randomUUID
   return crypto.randomUUID();
 }
 
@@ -21,162 +22,123 @@ function toInt(x) {
 
 function validateAmount(amountGrosze) {
   const n = toInt(amountGrosze);
-  if (n === null) return { ok: false, error: 'Nieprawidłowa kwota' };
-  // MVP defaults: min 1 PLN, max 10 000 PLN; adjust via env if needed
-  const min = toInt(process.env.DONATION_MIN_GROSZE || 100);
-  const max = toInt(process.env.DONATION_MAX_GROSZE || 1_000_000);
-  if (n < min) return { ok: false, error: `Minimalna kwota to ${(min/100).toFixed(2)} PLN` };
-  if (n > max) return { ok: false, error: `Maksymalna kwota to ${(max/100).toFixed(2)} PLN` };
+  if (n == null) return { ok: false, error: 'Brak kwoty' };
+  if (n < 100) return { ok: false, error: 'Minimalna kwota to 1,00 PLN' };
+  if (n > 20000000) return { ok: false, error: 'Maksymalna kwota jest zbyt duża' };
   return { ok: true, value: n };
 }
 
-function mustBeTrue(v) {
-  return v === true || v === 'true' || v === 1 || v === '1' || v === 'on';
-}
-
-function makePublicRef(sessionId) {
-  // Human-friendly reference derived from UUID (no PII)
-  return 'DON-' + sessionId.replace(/-/g, '').slice(0, 12).toUpperCase();
-}
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.statusCode = 405;
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify({ error: 'Method not allowed' }));
-    return;
-  }
+  if (req.method !== 'POST') return res.status(405).send('Method not allowed');
+
+  const supabase = getSupabaseAdmin();
+  const cfg = getP24Config();
 
   try {
-    const ct = getContentType(req);
-    if (!ct.includes('application/json')) {
-      res.statusCode = 415;
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ error: 'Content-Type must be application/json' }));
-      return;
-    }
-
-    const body = (await readJson(req)) || {};
-
-    const amountCheck = validateAmount(body.amountGrosze);
+    const body = await readJson(req);
+    const amountCheck = validateAmount(body?.amountGrosze);
     if (!amountCheck.ok) {
-      res.statusCode = 400;
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ error: amountCheck.error }));
+      res.status(400).json({ error: amountCheck.error });
       return;
     }
 
-    const consents = body.consents || {};
-    if (!mustBeTrue(consents.privacy) || !mustBeTrue(consents.terms)) {
-      res.statusCode = 400;
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ error: 'Wymagane zgody: prywatność i regulamin.' }));
-      return;
-    }
-
-    const email = (body.email || '').trim();
-    const requireEmail = String(process.env.REQUIRE_DONOR_EMAIL || 'true').toLowerCase() !== 'false';
-    if (requireEmail && !email) {
-      res.statusCode = 400;
-      res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ error: 'Podaj e-mail (wyślemy potwierdzenie i podziękowanie).' }));
-      return;
-    }
-
-    const currency = String(body.currency || 'PLN');
-    const amountGrosze = amountCheck.value;
+    const amount = amountCheck.value; // in grosze
+    const currency = 'PLN';
+    const email = String(body?.email || '').trim() || null;
 
     const sessionId = uuid();
-    const publicRef = makePublicRef(sessionId);
+    const publicRef = crypto.randomBytes(6).toString('hex').toUpperCase(); // short human ref
 
-    const supabase = getSupabaseAdmin();
-    const cfg = getP24Config();
+    // 1) INSERT initial transaction
+    const { error: insErr } = await supabase.from('p24_transactions').insert({
+      session_id: sessionId,
+      public_ref: publicRef,
+      amount_grosze: amount,
+      currency,
+      email,
+      status: 'created',
+      meta: body?.meta || null,
+      consents: body?.consents || null,
+      consents_version: body?.consentsVersion || null,
+    });
 
-    // 🔍 P24 debug (bez sekretów)
-console.log('[P24 cfg]', {
-  sandbox: cfg.sandbox,
-  baseUrl: cfg.baseUrl,
-  merchantId: String(cfg.merchantId),
-  posId: String(cfg.posId),
-  apiKeyLen: (cfg.apiKey || '').length
-});
+    if (insErr) throw new Error('DB insert failed: ' + insErr.message);
 
+    const urlReturn = buildAbsoluteUrl(req, cfg.returnPath);
+    const urlStatus = buildAbsoluteUrl(req, cfg.statusPath);
 
-    // === language + returnUrl based on frontend page ===
-    const metaPage = String(body?.meta?.page || '');
-    const isEn = metaPage.startsWith('en/');
+    // 2) REGISTER
+    let token = null;
+    let orderId = null;
+    let registerPayload = null;
 
-    const returnPath = isEn
-      ? '/en/thank-you'
-      : (cfg.returnPath || '/pl/dziekujemy');
-
-    const urlReturn = buildAbsoluteUrl(
-      req,
-      `${returnPath}?sessionId=${encodeURIComponent(sessionId)}`
-    );
-
-    // (opcjonalnie) defensywnie, żeby nie wywalić się gdy cfg.statusPath puste
-    const urlStatus = buildAbsoluteUrl(req, cfg.statusPath || '/api/p24/status');
-
-    // 1) INSERT initiated
-    const { error: insErr } = await supabase
-      .from('p24_transactions')
-      .insert({
-        session_id: sessionId,
-        public_ref: publicRef,
-        amount_grosze: amountGrosze,
+    if (cfg.mode === 'legacy') {
+      // Legacy /trnRegister (no BasicAuth)
+      const sign = p24LegacyRegisterSign({
+        sessionId,
+        merchantId: cfg.merchantId,
+        amount,
         currency,
-        status: 'initiated',
-        email: email || null,
-        consents_json: {
-          privacy: mustBeTrue(consents.privacy),
-          terms: mustBeTrue(consents.terms),
-        },
-        consents_version: String(body.consentsVersion || process.env.CONSENTS_VERSION || '1'),
-        meta_json: body.meta || null,
+        crc: cfg.crc,
       });
 
-    if (insErr) {
-      throw new Error('DB insert failed: ' + insErr.message);
-    }
+      const form = {
+        p24_session_id: sessionId,
+        p24_merchant_id: String(cfg.merchantId),
+        p24_pos_id: String(cfg.posId),
+        p24_amount: String(amount),
+        p24_currency: currency,
+        p24_description: cfg.description,
+        p24_email: email || 'no-reply@cappellamarialis.pl',
+        p24_country: 'PL',
+        p24_language: 'pl',
+        p24_url_return: urlReturn,
+        p24_url_status: urlStatus,
+        p24_api_version: '3.2',
+        p24_sign: sign,
+      };
 
-    // 2) Register transaction in P24
-    const sign = p24RegisterSign({
-      sessionId,
-      merchantId: cfg.merchantId,
-      amount: amountGrosze,
-      currency,
-      crc: cfg.crc,
-    });
+      const reg = await p24TrnRegister({ host: cfg.hostForRedirect, form });
+      token = reg.token;
+      registerPayload = { request: form, response: reg };
+    } else {
+      // REST /api/v1/transaction/register (BasicAuth required)
+      const sign = p24RegisterSign({
+        sessionId,
+        merchantId: cfg.merchantId,
+        amount,
+        currency,
+        crc: cfg.crc,
+      });
 
-    const registerBody = {
-      merchantId: cfg.merchantId,
-      posId: cfg.posId,
-      sessionId,
-      amount: amountGrosze,
-      currency,
-      description: cfg.description,
-      email: email || 'donor@example.com',
-      country: 'PL',
-      language: metaPage.startsWith('en/') ? 'en' : 'pl',
-      urlReturn,
-      urlStatus,
-      sign,
-    };
+      const registerBody = {
+        merchantId: cfg.merchantId,
+        posId: cfg.posId,
+        sessionId,
+        amount,
+        currency,
+        description: cfg.description,
+        email: email,
+        country: 'PL',
+        language: 'pl',
+        urlReturn,
+        urlStatus,
+        sign,
+      };
 
-    const registerResp = await p24PostJson({
-      url: `${cfg.baseUrl}/transaction/register`,
-      merchantId: cfg.merchantId,
-      posId: cfg.posId, 
-      apiKey: cfg.apiKey,
-      body: registerBody,
-    });
+      const registerUrl = `${cfg.baseUrl}/transaction/register`;
+      const registerResp = await p24PostJson({
+        url: registerUrl,
+        posId: cfg.posId,
+        apiKey: cfg.apiKey,
+        body: registerBody,
+      });
 
-    const token = registerResp?.data?.token || registerResp?.token;
-    const orderId = registerResp?.data?.orderId || registerResp?.orderId || null;
+      token = registerResp?.data?.token || registerResp?.token || null;
+      orderId = registerResp?.data?.orderId || registerResp?.orderId || null;
+      registerPayload = { request: registerBody, response: registerResp };
 
-    if (!token) {
-      throw new Error('P24 register: missing token in response');
+      if (!token) throw new Error('P24 register: missing token in response');
     }
 
     const redirectUrl = `${cfg.hostForRedirect}/trnRequest/${encodeURIComponent(token)}`;
@@ -189,22 +151,15 @@ console.log('[P24 cfg]', {
         p24_order_id: orderId,
         p24_token: token,
         redirect_url: redirectUrl,
-        register_payload: { request: registerBody, response: registerResp },
+        register_payload: registerPayload,
       })
       .eq('session_id', sessionId);
 
-    if (updErr) {
-      throw new Error('DB update failed: ' + updErr.message);
-    }
+    if (updErr) throw new Error('DB update failed: ' + updErr.message);
 
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify({ sessionId, publicRef, redirectUrl }));
+    res.status(200).json({ sessionId, publicRef, redirectUrl });
   } catch (err) {
     console.error(err);
-
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.end(JSON.stringify({ error: 'Błąd serwera', details: String(err?.message || err) }));
+    res.status(500).json({ error: 'Błąd serwera', details: String(err?.message || err) });
   }
 }
