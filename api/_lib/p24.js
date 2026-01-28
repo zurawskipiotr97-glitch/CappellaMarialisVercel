@@ -29,7 +29,9 @@ export function getP24Config() {
 
   // Guard: avoid accidental short key (common misconfig)
   if (apiKey.length < 16) {
-    throw new Error(`P24_API_KEY looks too short (len=${apiKey.length}). Use "Klucz API" from P24 panel (not "klucz do zamówień").`);
+    throw new Error(
+      `P24_API_KEY looks too short (len=${apiKey.length}). Use "Klucz API" from P24 panel (not "klucz do zamówień").`
+    );
   }
 
   return {
@@ -61,10 +63,6 @@ export function p24RegisterSign({ sessionId, merchantId, amount, currency, crc }
 /**
  * Sign for transaction/verify: sha384(JSON({sessionId, orderId, amount, currency, crc}))
  */
-// IMPORTANT: Per P24 docs the verify sign MUST be computed only from:
-// { sessionId, orderId, amount, currency, crc }
-// (i.e. without merchantId/posId). If you include extra fields, P24 will reject
-// verification and transactions may stay in "registered" forever.
 export function p24VerifySign({ sessionId, orderId, amount, currency, crc }) {
   const payload = { sessionId, orderId, amount, currency, crc };
   return sha384Hex(JSON.stringify(payload));
@@ -84,17 +82,24 @@ export function buildAbsoluteUrl(req, path) {
 export async function p24PostJson({ url, posId, apiKey, body }) {
   const proxyBase = String(process.env.P24_PROXY_BASE || '').trim().replace(/\/$/, '');
 
-  // If P24 IP-whitelist blocks serverless egress (e.g. Vercel), route REST calls via your fixed-IP proxy.
-  // Set: P24_PROXY_BASE=https://api.cappellamarialis.pl
-  if (proxyBase) {
-    const u = new URL(url);
-    // expected: /api/v1/transaction/<action>
-    const parts = u.pathname.split('/').filter(Boolean);
-    const action = parts[parts.length - 1];
-    if (!action) throw new Error(`Cannot derive P24 action from url: ${url}`);
+  // Backward-compat (older envs). Prefer P24_PROXY_BASE.
+  const legacyVerifyProxy = String(process.env.P24_VERIFY_PROXY_URL || '').trim();
+  const legacyRegisterProxy = String(process.env.P24_REGISTER_PROXY_URL || '').trim();
 
-    const proxyUrl = `${proxyBase}/p24/${action}`;
+  // Decide whether to route via proxy
+  const u = new URL(url);
+  const parts = u.pathname.split('/').filter(Boolean);
+  const action = parts[parts.length - 1]; // e.g. register / verify
+  if (!action) throw new Error(`Cannot derive P24 action from url: ${url}`);
 
+  const proxyUrl =
+    proxyBase ? `${proxyBase}/p24/${action}` :
+    (action === 'verify' && legacyVerifyProxy) ? legacyVerifyProxy :
+    (action === 'register' && legacyRegisterProxy) ? legacyRegisterProxy :
+    '';
+
+  // If proxyUrl is set, call proxy without Basic Auth here (proxy adds auth).
+  if (proxyUrl) {
     const resp = await fetch(proxyUrl, {
       method: 'POST',
       redirect: 'manual',
@@ -119,34 +124,27 @@ export async function p24PostJson({ url, posId, apiKey, body }) {
       const err = new Error(`P24 HTTP ${resp.status}: ${message}`);
       err.p24_code = data?.code || resp.status;
       err.p24_response = data;
-      err.p24_raw_start = String(data?.raw || '').slice(0, 800);
+      err.p24_raw_start = text?.slice?.(0, 1200) || String(text);
       throw err;
     }
 
     return data;
   }
 
-  // Direct call to P24 (works only if your runtime egress IP is whitelisted in P24)
-  const login = String(posId || '').trim();
-  if (!login) throw new Error('P24 config error: posId missing');
-
+  // Direct call to P24 (requires IP not restricted OR running from whitelisted IP)
   const resp = await fetch(url, {
     method: 'POST',
-    // If P24 (or an intermediate proxy/WAF) returns a redirect to an HTML page,
-    // don't follow it silently — we want to see the real response.
     redirect: 'manual',
     headers: {
-      Authorization: basicAuthHeader(login, apiKey),
+      Authorization: basicAuthHeader(posId, apiKey),
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'User-Agent': 'cappellamarialis-vercel/1.0',
     },
     body: JSON.stringify(body),
   });
 
   const text = await resp.text();
 
-  // Try JSON; if not JSON, preserve raw (helps debug HTML 400)
   let data;
   try {
     data = text ? JSON.parse(text) : null;
@@ -159,8 +157,7 @@ export async function p24PostJson({ url, posId, apiKey, body }) {
     const err = new Error(`P24 HTTP ${resp.status}: ${message}`);
     err.p24_code = data?.code || resp.status;
     err.p24_response = data;
-    // Helpful, short snippet for logs/DB (HTML errors can be huge)
-    err.p24_raw_start = String(data?.raw || '').slice(0, 800);
+    err.p24_raw_start = text?.slice?.(0, 1200) || String(text);
     throw err;
   }
 
