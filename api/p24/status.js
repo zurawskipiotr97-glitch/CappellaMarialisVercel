@@ -84,7 +84,7 @@ export default async function handler(req, res) {
 
     // ✅ POPRAWIONE BODY – BEZ CRC
     const verifyBody = {
-      merchantId: cfg.merchantId,
+      // merchantId: cfg.merchantId,
       posId: cfg.posId,
       sessionId,
       amount,
