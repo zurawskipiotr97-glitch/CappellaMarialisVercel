@@ -9,12 +9,12 @@ export function getP24Config() {
   const sandboxFlag = String(process.env.P24_SANDBOX || '').toLowerCase();
   const isSandbox = sandboxFlag === '1' || sandboxFlag === 'true' || sandboxFlag === 'yes';
 
-  // PROPER REST API base URLs
+  // REST API base
   const baseUrl = isSandbox
     ? 'https://sandbox.przelewy24.pl/api/v1'
     : 'https://secure.przelewy24.pl/api/v1';
 
-  // Redirect host (P24 payment page)
+  // Redirect host (payment page)
   const hostForRedirect = isSandbox
     ? 'https://sandbox.przelewy24.pl'
     : 'https://secure.przelewy24.pl';
@@ -27,10 +27,10 @@ export function getP24Config() {
     throw new Error('Missing P24 env vars: P24_MERCHANT_ID/P24_POS_ID/P24_API_KEY/P24_CRC');
   }
 
-  // Guard: avoid accidental short key (common misconfig)
+  // Guard: common misconfig
   if (apiKey.length < 16) {
     throw new Error(
-      `P24_API_KEY looks too short (len=${apiKey.length}). Use "Klucz API" from P24 panel (not "klucz do zamówień").`
+      `P24_API_KEY looks too short (len=${apiKey.length}). Use "Klucz API" from P24 panel.`
     );
   }
 
@@ -79,17 +79,30 @@ export function buildAbsoluteUrl(req, path) {
   return `${proto}://${host}${path.startsWith('/') ? path : '/' + path}`;
 }
 
-export async function p24PostJson({ url, posId, apiKey, body }) {
+function normalizeMethod(method) {
+  const m = String(method || 'POST').toUpperCase().trim();
+  if (!['POST', 'PUT', 'GET', 'DELETE', 'PATCH'].includes(m)) return 'POST';
+  return m;
+}
+
+/**
+ * Calls P24 REST API, optionally via proxy.
+ * - If proxy is used: we DO NOT add Authorization here (proxy should add it).
+ * - If direct: we add BasicAuth.
+ */
+export async function p24PostJson({ url, posId, apiKey, body, method = 'POST' }) {
+  const m = normalizeMethod(method);
+
   const proxyBase = String(process.env.P24_PROXY_BASE || '').trim().replace(/\/$/, '');
 
   // Backward-compat (older envs). Prefer P24_PROXY_BASE.
   const legacyVerifyProxy = String(process.env.P24_VERIFY_PROXY_URL || '').trim();
   const legacyRegisterProxy = String(process.env.P24_REGISTER_PROXY_URL || '').trim();
 
-  // Decide whether to route via proxy
+  // Decide action name from URL (register / verify / etc.)
   const u = new URL(url);
   const parts = u.pathname.split('/').filter(Boolean);
-  const action = parts[parts.length - 1]; // e.g. register / verify
+  const action = parts[parts.length - 1];
   if (!action) throw new Error(`Cannot derive P24 action from url: ${url}`);
 
   const proxyUrl =
@@ -98,16 +111,18 @@ export async function p24PostJson({ url, posId, apiKey, body }) {
     (action === 'register' && legacyRegisterProxy) ? legacyRegisterProxy :
     '';
 
-  // If proxyUrl is set, call proxy without Basic Auth here (proxy adds auth).
+  const headersBase = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+
+  // Proxy route
   if (proxyUrl) {
     const resp = await fetch(proxyUrl, {
-      method: 'POST',
+      method: m,
       redirect: 'manual',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(body),
+      headers: headersBase,
+      body: body == null ? undefined : JSON.stringify(body),
     });
 
     const text = await resp.text();
@@ -131,16 +146,15 @@ export async function p24PostJson({ url, posId, apiKey, body }) {
     return data;
   }
 
-  // Direct call to P24 (requires IP not restricted OR running from whitelisted IP)
+  // Direct route (requires whitelisted IP etc.)
   const resp = await fetch(url, {
-    method: 'POST',
+    method: m,
     redirect: 'manual',
     headers: {
+      ...headersBase,
       Authorization: basicAuthHeader(posId, apiKey),
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
     },
-    body: JSON.stringify(body),
+    body: body == null ? undefined : JSON.stringify(body),
   });
 
   const text = await resp.text();

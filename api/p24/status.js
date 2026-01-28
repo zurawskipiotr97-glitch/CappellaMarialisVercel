@@ -39,13 +39,11 @@ export default async function handler(req, res) {
     const raw = await readRawBody(req);
     const payload = parseP24Body(raw, req.headers['content-type']);
 
-    const sessionId = String(
-      payload.p24_session_id || payload.sessionId || ''
-    ).trim();
-
+    const sessionId = String(payload.p24_session_id || payload.sessionId || '').trim();
     const orderIdRaw = payload.p24_order_id || payload.orderId || null;
     const orderId = orderIdRaw != null ? Number(orderIdRaw) : null;
 
+    // log webhook
     await supabase.from('p24_events').insert({
       event_type: 'webhook_status',
       session_id: sessionId || null,
@@ -53,6 +51,7 @@ export default async function handler(req, res) {
       payload_json: payload,
     });
 
+    // If webhook is incomplete / not paid — acknowledge to P24 anyway
     if (!sessionId || !orderId) return res.status(200).send('OK');
 
     const { data: tx, error: txErr } = await supabase
@@ -66,25 +65,25 @@ export default async function handler(req, res) {
     if (tx.status === 'paid') return res.status(200).send('OK');
 
     const amount = toInt(tx.amount_grosze);
-    const currency = String(tx.currency || 'PLN');
+    const currency = String(tx.currency || 'PLN').toUpperCase();
     if (!amount) throw new Error(`Invalid amount_grosze in DB: ${tx.amount_grosze}`);
 
+    // SIGN uses CRC but CRC is NOT sent in request body
     const signPayload = {
       sessionId,
       orderId,
       amount,
       currency,
-      crc: cfg.crc, // ✅ CRC TYLKO TUTAJ
+      crc: cfg.crc,
     };
-
     const sign = p24VerifySign(signPayload);
 
     console.log('[P24 verify sign payload]', signPayload);
     console.log('[P24 verify sign]', sign);
 
-    // ✅ POPRAWIONE BODY – BEZ CRC
+    // ✅ VERIFY body MUST include merchantId
     const verifyBody = {
-      // merchantId: cfg.merchantId,
+      merchantId: cfg.merchantId,
       posId: cfg.posId,
       sessionId,
       amount,
@@ -96,11 +95,13 @@ export default async function handler(req, res) {
     const verifyUrl = `${cfg.baseUrl}/transaction/verify`;
     console.log('[P24 verify] url=', verifyUrl, 'proxyBase=', process.env.P24_PROXY_BASE || '');
 
+    // ✅ REST API: verify is PUT
     const verifyResp = await p24PostJson({
       url: verifyUrl,
       posId: cfg.posId,
       apiKey: cfg.apiKey,
       body: verifyBody,
+      method: 'PUT',
     });
 
     const paidAt = new Date().toISOString();
@@ -175,6 +176,7 @@ export default async function handler(req, res) {
       });
     } catch {}
 
+    // Always 200 to stop repeated webhook retries while you debug
     return res.status(200).send('OK');
   }
 }
