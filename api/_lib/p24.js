@@ -82,11 +82,51 @@ export function buildAbsoluteUrl(req, path) {
 }
 
 export async function p24PostJson({ url, posId, apiKey, body }) {
-  // hard guard: must hit REST api path
-  if (!String(url).includes('/api/v1/')) {
-    throw new Error(`P24 URL misconfigured (missing /api/v1): ${url}`);
+  const proxyBase = String(process.env.P24_PROXY_BASE || '').trim().replace(/\/$/, '');
+
+  // If P24 IP-whitelist blocks serverless egress (e.g. Vercel), route REST calls via your fixed-IP proxy.
+  // Set: P24_PROXY_BASE=https://api.cappellamarialis.pl
+  if (proxyBase) {
+    const u = new URL(url);
+    // expected: /api/v1/transaction/<action>
+    const parts = u.pathname.split('/').filter(Boolean);
+    const action = parts[parts.length - 1];
+    if (!action) throw new Error(`Cannot derive P24 action from url: ${url}`);
+
+    const proxyUrl = `${proxyBase}/p24/${action}`;
+
+    const resp = await fetch(proxyUrl, {
+      method: 'POST',
+      redirect: 'manual',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const text = await resp.text();
+
+    let data;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch {
+      data = { raw: text };
+    }
+
+    if (!resp.ok) {
+      const message = data?.error || data?.message || `HTTP ${resp.status}`;
+      const err = new Error(`P24 HTTP ${resp.status}: ${message}`);
+      err.p24_code = data?.code || resp.status;
+      err.p24_response = data;
+      err.p24_raw_start = String(data?.raw || '').slice(0, 800);
+      throw err;
+    }
+
+    return data;
   }
 
+  // Direct call to P24 (works only if your runtime egress IP is whitelisted in P24)
   const login = String(posId || '').trim();
   if (!login) throw new Error('P24 config error: posId missing');
 
