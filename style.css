@@ -2256,6 +2256,7 @@ NEWS / FACEBOOK – hover jak logo YouTube
 }
 
 .p24-mini {
+  display: none;
   height: 22px;
   width: auto;
   position: static;      /* Przywraca normalny przepływ dokumentu na mobile */ 
@@ -2270,4 +2271,12 @@ NEWS / FACEBOOK – hover jak logo YouTube
 
 .donation-status.is-hidden {
   visibility: hidden;
+}
+/* 
+.p24-muted {
+  display: none;
+} */
+
+.p24-consents {
+  font-size: 0.8rem;
 }

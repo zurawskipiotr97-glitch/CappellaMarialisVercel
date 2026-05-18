@@ -81,11 +81,11 @@
 
           <div class="p24-row">
             <div style="min-width:220px">
-              <label for="amountCustom"><strong>Inna kwota (PLN)</strong></label>
+              <label for="amountCustom"><strong>Wpisz kwotę ręcznie (PLN)</strong></label>
               <input id="amountCustom" class="p24-input" inputmode="decimal" autocomplete="off" placeholder="np. 25" />
             </div>
             <div style="min-width:260px">
-              <label for="email"><strong>E-mail</strong> <span class="p24-muted">(na potwierdzenie)</span></label>
+              <label for="email"><strong>E-mail</strong></label>
               <input id="email" class="p24-input" type="email" autocomplete="email" placeholder="twoj@email.pl" required />
             </div>
           </div>
@@ -165,7 +165,7 @@
           selectedPln = Number(btn.getAttribute('data-pln'));
           amountCustom.value = '';
           setActive(btn);
-          setMsg('Wybrano: ' + selectedPln + ' zł');
+          // setMsg('Wybrano: ' + selectedPln + ' zł');
         });
       });
 
