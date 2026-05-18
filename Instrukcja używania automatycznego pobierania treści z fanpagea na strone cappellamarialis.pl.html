@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instrukcja konfiguracji – Cappella Marialis</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Open Sans', Arial, sans-serif;
+      background: #f8f7f4;
+      color: #2c2c2c;
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      position: relative;
+    }
+
+    .header-logo {
+      width: 480px;
+      height: 140px;
+      padding-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    nav {
+      background: linear-gradient(135deg, #11111b 0%, #0c2544 50%, #16213e 100%);
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+    }
+
+    nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      padding: 1rem 1.5rem;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      font-size: 0.95rem;
+    }
+
+    nav a:hover {
+      background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
+      border-bottom-color: #d4af37;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+    }
+
+    section {
+      background: white;
+      margin-bottom: 1.5rem;
+      padding: 1.25rem 2.5rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+      border-left: 5px solid #d4af37;
+    }
+
+    section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      font-weight: 400;
+      border-bottom: 2px solid #d4af37;
+      padding-bottom: 0.5rem;
+      color: #2c2c2c;
+    }
+
+    section p {
+      margin-bottom: 1rem;
+      text-align: justify;
+      color: #444;
+    }
+
+    .intro-section {
+      border-left: 5px solid #0f3460;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #d4af37;
+    }
+
+    .step-number {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d4af37 0%, #c99a2e 100%);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(212,175,55,0.4);
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    ol.substeps {
+      list-style: none;
+      counter-reset: sub;
+      padding: 0;
+      margin: 1rem 0 1.25rem 0.5rem;
+    }
+
+    ol.substeps li {
+      counter-increment: sub;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 0.85rem;
+      color: #444;
+      line-height: 1.65;
+    }
+
+    ol.substeps li::before {
+      content: counter(sub);
+      min-width: 28px;
+      height: 28px;
+      background: #f0f4fa;
+      border: 1.5px solid #b0c4de;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0f3460;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .note {
+      background: #fffbea;
+      border: 1px solid #e8d45a;
+      border-left: 4px solid #d4af37;
+      border-radius: 5px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.93rem;
+      color: #5a4a12;
+      margin: 1rem 0 0.5rem;
+      line-height: 1.6;
+    }
+
+    .note-ok {
+      background: #f0faf2;
+      border: 1px solid #7ec89a;
+      border-left: 4px solid #2e7d46;
+      color: #1e4d30;
+    }
+
+    .note-info {
+      background: #eef4ff;
+      border: 1px solid #9ab4e8;
+      border-left: 4px solid #0f3460;
+      color: #1a2e5a;
+    }
+
+    .note-warn {
+      background: #fff4e5;
+      border: 1px solid #f0b87a;
+      border-left: 4px solid #c07820;
+      color: #5a3200;
+    }
+
+    .url-block {
+      background: #1a1a2e;
+      color: #7ec8a0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      padding: 0.7rem 1rem;
+      border-radius: 5px;
+      margin: 0.5rem 0 0.75rem;
+      word-break: break-all;
+      display: block;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .summary-item {
+      background: #f8f7f4;
+      border: 1px solid #e8e0d0;
+      border-top: 3px solid #d4af37;
+      border-radius: 6px;
+      padding: 1rem 1.1rem;
+    }
+
+    .summary-item-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 0.3rem;
+    }
+
+    .summary-item p {
+      font-size: 0.92rem;
+      color: #333;
+      margin-bottom: 0.3rem;
+      text-align: left;
+    }
+
+    .summary-item .time {
+      font-size: 0.8rem;
+      color: #888;
+      font-style: italic;
+    }
+
+    footer {
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 0.87rem;
+    }
+
+    footer a { color: #d4af37; text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .header-logo { width: 260px; height: 90px; }
+      section { padding: 1rem 1.2rem 1.5rem; }
+      .step-title { font-size: 1.1rem; }
+      nav ul { flex-wrap: wrap; }
+      nav a { padding: 0.75rem 0.9rem; font-size: 0.87rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-logo">
+      <a href="https://www.cappellamarialis.pl/">
+        <img src="https://www.cappellamarialis.pl/images/CM_logo.png" alt="Cappella Marialis Logo">
+      </a>
+    </div>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="https://www.cappellamarialis.pl/">Strona główna</a></li>
+      <li><a href="https://www.cappellamarialis.pl/#aktualnosci">Aktualności</a></li>
+      <li><a href="https://www.cappellamarialis.pl/#kontakt">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+
+    <section class="intro-section">
+      <h2>Instrukcja uruchomienia pobierania postów z Facebooka</h2>
+      <p>
+        Strona <strong>cappellamarialis.pl</strong> posiada funkcję automatycznego wyświetlania postów z Waszego fanpage'a na Facebooku. Posty odświeżają się co godzinę – wystarczy regularnie publikować treści na Facebooku, a pojawią się też na stronie.
+      </p>
+      <p>
+        Aby wszystko działało poprawnie, konieczne jest jednorazowe wykonanie kilku prostych kroków opisanych poniżej. Nie wymaga to żadnej wiedzy technicznej – wystarczy postępować zgodnie z instrukcją.
+      </p>
+    </section>
+
+    <!-- KROK 1 -->
+    <section>
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <div class="step-title">Założenie konta Meta for Developers</div>
+      </div>
+
+      <p>
+        Osoba, która posiada na fanpage'u rolę <strong>Administratora</strong> lub <strong>Edytora</strong>, musi zarejestrować się jako deweloper Meta. To jednorazowy, prosty proces.
+      </p>
+      <p><strong>Przed rozpoczęciem:</strong> upewnij się, że jesteś zalogowana/-y do swojego prywatnego konta na Facebooku w przeglądarce.</p>
+
+      <ol class="substeps">
+        <li>Otwórz przeglądarkę (Chrome, Firefox, Edge…) i wejdź pod adres:
+          <a class="url-block" href="https://developers.facebook.com" target="_blank">https://developers.facebook.com</a>
+        </li>
+        <li>W prawym górnym rogu Zaloguj się lub zarejestruj.</li>
+        <li>Zostaniesz przekierowany/-a do strony rejestracji. Przejdź dalej, aby zaakceptować warunki platformy Meta for Developers.</li>
+        <li>Jeśli wcześniej tego nie zrobiłeś system poprosi o weryfikację – na numer telefonu lub e-mail powiązany z Facebookiem zostanie wysłany kod. Wprowadź go i potwierdź.</li>
+        <li>Wybierz swój zawód z listy – najlepiej wybrać <strong>„Developer"</strong>. Jeśli go nie ma, wybierz najbliższą dostępną opcję. Zakończ.</li>
+      </ol>
+
+      <div class="note">
+        ℹ️ Wygląd strony i kolejność kroków może się nieznacznie różnić – Meta regularnie aktualizuje interfejs. Ogólna zasada jest jednak zawsze taka sama: zaloguj się na Facebooka, wejdź na stronę dla deweloperów i zarejestruj się.
+      </div>
+
+      <div class="note note-ok">
+        ✅ Gotowe! Konto Meta for Developers zostało utworzone. Nie musisz nic więcej konfigurować ani tworzyć żadnej aplikacji.
+      </div>
+    </section>
+
+    <!-- KROK 2 -->
+    <section>
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <div class="step-title">Kontakt z deweloperem strony</div>
+      </div>
+
+      <p>
+        Po założeniu konta, proszę o <strong>skontaktowanie się ze mną (<a href="https://www.facebook.com/pizuraw/" target="_blank">Piotr Żurawski</a>) przez Messengera</strong>. Dzięki temu będę widział imię i nazwisko z konta Facebook i szybko przydzielę odpowiednią rolę.
+      </p>
+      <p>Adres e-mail nie jest potrzebny – wystarczy sama wiadomość przez Messenger. Po tej czynności poczekajcie na odpowiedź.</p>
+
+      <div class="note note-info">
+        💬 Kontakt przez Messenger jest zdecydowanie najszybszy – od razu mogę przypisać rolę do właściwego konta.
+      </div>
+    </section>
+
+    <!-- KROK 3 -->
+    <section>
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <div class="step-title">Akceptacja roli w aplikacji Meta</div>
+      </div>
+
+      <p>
+        Po przydzieleniu roli otrzymacie <strong>powiadomienie na Facebooku</strong> lub wiadomość e-mail z zaproszeniem. Należy je zaakceptować.
+      </p>
+
+      <ol class="substeps">
+        <li>Otwórz Facebooka i sprawdź powiadomienia (dzwonek w prawym górnym rogu) <strong>lub</strong> sprawdź skrzynkę e-mail powiązaną z kontem Facebook.</li>
+        <li>Znajdź zaproszenie do roli w aplikacji deweloperskiej i kliknij <strong>„Akceptuj"</strong> lub otwórz link zawarty w e-mailu.</li>
+        <li>Jeśli zostaniesz poproszony o zalogowanie – zaloguj się i ponownie kliknij link z zaproszeniem.</li>
+      </ol>
+
+      <div class="note note-ok">
+        ✅ Po zaakceptowaniu zaproszenia poinformuj mnie (np. przez Messengera). Wy wykonam ostatnią zmianę techniczną po swojej stronie i prześle Wam specjalny link.
+      </div>
+    </section>
+
+    <!-- KROK 4 -->
+    <section>
+      <div class="step-header">
+        <div class="step-number">4</div>
+        <div class="step-title">Kliknięcie linku autoryzacyjnego</div>
+      </div>
+
+      <p>
+        Przyślę Wam <strong>specjalny link autoryzacyjny</strong>. Należy go kliknąć, będąc zalogowanym/-ą na Facebooku w tej samej przeglądarce.
+      </p>
+
+      <ol class="substeps">
+        <li>Upewnij się, że jesteś <strong>zalogowana/-y na Facebooku</strong> w tej samej przeglądarce.</li>
+        <li>Kliknij otrzymany link.</li>
+        <li>Zostaniesz przekierowany/-a na stronę Facebooka z prośbą o zezwolenie na dostęp do danych fanpage'a – kliknij <strong>„Tak"</strong> lub <strong>„Zezwól"</strong>.</li>
+        <li>Powinno nastąpić automatyczne przekierowanie na strone z komunikatem potwierdzającym, że wszystko zadziałało prawidłowo.</li>
+      </ol>
+
+      <div class="note note-ok">
+        ✅ Od tej chwili strona będzie automatycznie pobierać i wyświetlać posty z Waszego fanpage'a. Posty odświeżają się co godzinę (mogę to zmienić w ustawieniach).
+      </div>
+
+      <div class="note note-warn">
+        ⚠️ <strong>Ważne – cykliczne odnawianie autoryzacji:</strong> Kliknięty link tworzy token autoryzacyjny, który ze względu na politykę bezpieczeństwa Facebooka <strong>wygasa co około 2 miesiące</strong>. Należy go odnowić także wtedy, gdy zauważycie, że informacje na stronie przestały się odświeżać. W obu przypadkach wystarczy kliknąć ten sam link przesłany przez dewelopera i ponownie zaakceptować dostęp – procedura jest identyczna jak powyżej.
+      </div>
+    </section>
+
+    <!-- PODSUMOWANIE -->
+    <section>
+      <h2>Podsumowanie – co należy zrobić</h2>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-item-num">Krok 1</div>
+          <p>Wejdź na <strong>developers.facebook.com</strong> i zarejestruj się jako deweloper Meta.</p>
+          <div class="time">~5 minut</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-num">Krok 2</div>
+          <p>Skontaktuj się ze mną (<a href="https://www.facebook.com/pizuraw/" target="_blank">Piotr Żurawski</a>) przez Messengera.</p>
+          <div class="time">Chwila</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-num">Krok 3</div>
+          <p>Zaakceptuj zaproszenie do roli, które przyjdzie na Facebooka lub e-mail.</p>
+          <div class="time">1 kliknięcie</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item-num">Krok 4</div>
+          <p>Kliknij link od dewelopera i zezwól na dostęp. <strong>Powtarzaj co ~2 miesiące.</strong></p>
+          <div class="time">1 kliknięcie</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>W razie pytań lub trudności prosimy o kontakt z deweloperem strony.</p>
+    <p><a href="https://www.cappellamarialis.pl/">cappellamarialis.pl</a></p>
+  </footer>
+
+</body>
+</html>
